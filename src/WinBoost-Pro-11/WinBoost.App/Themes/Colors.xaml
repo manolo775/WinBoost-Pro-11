@@ -1,0 +1,29 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<!-- Background -->
+	<SolidColorBrush x:Key="BackgroundBrush" Color="#1E1E1E"/>
+
+	<!-- Sidebar -->
+	<SolidColorBrush x:Key="SidebarBrush" Color="#252526"/>
+
+	<!-- Header -->
+	<SolidColorBrush x:Key="HeaderBrush" Color="#2D2D30"/>
+
+	<!-- Card -->
+	<SolidColorBrush x:Key="CardBrush" Color="#2B2B2B"/>
+
+	<!-- Accent -->
+	<SolidColorBrush x:Key="AccentBrush" Color="#00C853"/>
+
+	<!-- Hover -->
+	<SolidColorBrush x:Key="HoverBrush" Color="#3C3C3C"/>
+
+	<!-- Text -->
+	<SolidColorBrush x:Key="TextBrush" Color="White"/>
+
+	<!-- Text Secondary -->
+	<SolidColorBrush x:Key="SecondaryTextBrush" Color="#B0B0B0"/>
+
+</ResourceDictionary>
