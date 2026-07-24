@@ -7,6 +7,8 @@ namespace WinBoost.App.ViewModels
     {
         private string _cpuUsage = "0 %";
 
+        private string _ramUsage = "0 %";
+
         public string CpuUsage
         {
             get => _cpuUsage;
@@ -20,6 +22,18 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        public string RamUsage
+        {
+            get => _ramUsage;
+            set
+            {
+                if (_ramUsage == value)
+                    return;
+
+                _ramUsage = value;
+                OnPropertyChanged();
+            }
+        }
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(
