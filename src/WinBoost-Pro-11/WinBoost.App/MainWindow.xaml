@@ -42,16 +42,23 @@
 
             <!-- MENIU -->
 
-            <StackPanel Background="#252526">
+			<StackPanel Background="#252526">
 
-				<Button Content="Dashboard"/>
-				<Button Content="Performance"/>
+				<Button Content="Dashboard"
+						Click="DashboardButton_Click"/>
+
+				<Button Content="Performance"
+						Click="PerformanceButton_Click"/>
+
 				<Button Content="Privacy"/>
+
 				<Button Content="Services"/>
+
 				<Button Content="Windows Update"/>
+
 				<Button Content="Apps"/>
 
-            </StackPanel>
+			</StackPanel>
 
             <!-- ZONA PRINCIPALĂ -->
 

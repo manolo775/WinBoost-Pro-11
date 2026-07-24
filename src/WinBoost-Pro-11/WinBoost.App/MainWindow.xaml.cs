@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using WinBoost.App.ViewModels;
+using WinBoost.App.Views;
 
 namespace WinBoost.App
 {
@@ -9,9 +9,21 @@ namespace WinBoost.App
         {
             InitializeComponent();
 
-            MainContent.Content = new Views.DashboardView();
+            MainContent.Content = new DashboardView();
+        }
 
-            DataContext = new MainViewModel();
+        private void DashboardButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            MainContent.Content = new DashboardView();
+        }
+
+        private void PerformanceButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            MainContent.Content = new PerformanceView();
         }
     }
 }
