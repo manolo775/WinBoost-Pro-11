@@ -9,6 +9,8 @@ namespace WinBoost.App
         {
             InitializeComponent();
 
+            MainContent.Content = new Views.DashboardView();
+
             DataContext = new MainViewModel();
         }
     }

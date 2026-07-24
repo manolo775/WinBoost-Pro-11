@@ -60,7 +60,7 @@
 		 CornerRadius="8"
 		 Background="#333333">
 
-				<views:DashboardView/>
+				<ContentControl x:Name="MainContent"/>
 
 			</Border>
 
