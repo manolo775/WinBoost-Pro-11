@@ -1,13 +1,23 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
+using WinBoost.App.Services;
 
 namespace WinBoost.App.ViewModels
 {
     public class DashboardViewModel : INotifyPropertyChanged
     {
-        private string _cpuUsage = "0 %";
+        private readonly SystemMonitorService _systemMonitorService;
 
+        private string _cpuUsage = "0 %";
         private string _ramUsage = "0 %";
+
+        public DashboardViewModel()
+        {
+            _systemMonitorService = new SystemMonitorService();
+
+            _ = UpdateCpuUsageAsync();
+        }
 
         public string CpuUsage
         {
@@ -34,6 +44,15 @@ namespace WinBoost.App.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private async Task UpdateCpuUsageAsync()
+        {
+            float cpuUsage =
+                await _systemMonitorService.GetCpuUsageAsync();
+
+            CpuUsage = $"{cpuUsage:F1} %";
+        }
+
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(
