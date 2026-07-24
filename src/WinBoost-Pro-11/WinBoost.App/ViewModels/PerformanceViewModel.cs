@@ -3,19 +3,19 @@ using System.Runtime.CompilerServices;
 
 namespace WinBoost.App.ViewModels
 {
-    public class DashboardViewModel : INotifyPropertyChanged
+    public class PerformanceViewModel : INotifyPropertyChanged
     {
-        private string _cpuUsage = "0 %";
+        private string _status = "Ready";
 
-        public string CpuUsage
+        public string Status
         {
-            get => _cpuUsage;
+            get => _status;
             set
             {
-                if (_cpuUsage == value)
+                if (_status == value)
                     return;
 
-                _cpuUsage = value;
+                _status = value;
                 OnPropertyChanged();
             }
         }
