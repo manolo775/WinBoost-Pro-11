@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO;
 using System.Threading.Tasks;
 using WinBoost.App.Models;
 
@@ -9,12 +8,13 @@ namespace WinBoost.App.Services
     {
         private readonly CpuMonitorService _cpuMonitorService;
         private readonly MemoryMonitorService _memoryMonitorService;
-
+        private readonly DiskMonitorService _diskMonitorService;
 
         public SystemMonitorService()
         {
             _cpuMonitorService = new CpuMonitorService();
             _memoryMonitorService = new MemoryMonitorService();
+            _diskMonitorService = new DiskMonitorService();
         }
 
 
@@ -24,7 +24,7 @@ namespace WinBoost.App.Services
             float cpuUsage = await GetSystemCpuUsageAsync();
             float ramUsage = _memoryMonitorService.GetRamUsage();
             var ramInfo = _memoryMonitorService.GetRamInfo();
-            float diskUsage = GetDiskUsage();
+            float diskUsage = _diskMonitorService.GetDiskUsage();
             string uptime = GetWindowsUptime();
 
             return new SystemMetrics
@@ -62,25 +62,5 @@ namespace WinBoost.App.Services
             return $"{uptime.Hours} ore {uptime.Minutes} min";
         }
 
-        public float GetDiskUsage()
-        {
-            string systemDrive =
-                Path.GetPathRoot(Environment.SystemDirectory) ?? "C:\\";
-
-            var drive = new DriveInfo(systemDrive);
-
-            if (!drive.IsReady || drive.TotalSize == 0)
-            {
-                return 0;
-            }
-
-            long usedSpace =
-                drive.TotalSize - drive.AvailableFreeSpace;
-
-            double usage =
-                (double)usedSpace / drive.TotalSize * 100;
-
-            return (float)usage;
-        }
     }
 }
