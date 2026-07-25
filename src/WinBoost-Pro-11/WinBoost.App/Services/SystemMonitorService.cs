@@ -9,14 +9,14 @@ namespace WinBoost.App.Services
         private readonly CpuMonitorService _cpuMonitorService;
         private readonly MemoryMonitorService _memoryMonitorService;
         private readonly DiskMonitorService _diskMonitorService;
-
+        private readonly UptimeService _uptimeService;
         public SystemMonitorService()
         {
             _cpuMonitorService = new CpuMonitorService();
             _memoryMonitorService = new MemoryMonitorService();
             _diskMonitorService = new DiskMonitorService();
+            _uptimeService = new UptimeService();
         }
-
 
 
         public async Task<SystemMetrics> GetSystemMetricsAsync()
@@ -25,7 +25,7 @@ namespace WinBoost.App.Services
             float ramUsage = _memoryMonitorService.GetRamUsage();
             var ramInfo = _memoryMonitorService.GetRamInfo();
             float diskUsage = _diskMonitorService.GetDiskUsage();
-            string uptime = GetWindowsUptime();
+            string uptime = _uptimeService.GetWindowsUptime();
 
             return new SystemMetrics
             {
@@ -45,22 +45,8 @@ namespace WinBoost.App.Services
             return await _cpuMonitorService.GetCpuUsageAsync();
         }
 
-       
 
 
-
-        public string GetWindowsUptime()
-        {
-            TimeSpan uptime =
-                TimeSpan.FromMilliseconds(Environment.TickCount64);
-
-            if (uptime.Days > 0)
-            {
-                return $"{uptime.Days} zile {uptime.Hours} ore";
-            }
-
-            return $"{uptime.Hours} ore {uptime.Minutes} min";
-        }
 
     }
 }
