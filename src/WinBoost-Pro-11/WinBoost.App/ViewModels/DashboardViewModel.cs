@@ -17,6 +17,60 @@ namespace WinBoost.App.ViewModels
         private string _ramDetails = "-- GB / -- GB";
         private string _diskUsage = "-- %";
         private string _uptime = "--";
+        private double _cpuUsageValue;
+        private double _ramUsageValue;
+        private double _diskUsageValue;
+        private string _cpuStatus = "Normal";
+        public double CpuUsageValue
+        {
+            get => _cpuUsageValue;
+            set
+            {
+                if (Math.Abs(_cpuUsageValue - value) < 0.01)
+                    return;
+
+                _cpuUsageValue = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double RamUsageValue
+        {
+            get => _ramUsageValue;
+            set
+            {
+                if (Math.Abs(_ramUsageValue - value) < 0.01)
+                    return;
+
+                _ramUsageValue = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public double DiskUsageValue
+        {
+            get => _diskUsageValue;
+            set
+            {
+                if (Math.Abs(_diskUsageValue - value) < 0.01)
+                    return;
+
+                _diskUsageValue = value;
+                OnPropertyChanged();
+            }
+        }
+        public string CpuStatus
+        {
+            get => _cpuStatus;
+            set
+            {
+                if (_cpuStatus == value)
+                    return;
+
+                _cpuStatus = value;
+                OnPropertyChanged();
+            }
+        }
 
         public DashboardViewModel()
         {
@@ -107,6 +161,11 @@ namespace WinBoost.App.ViewModels
             var metrics =
                 await _systemMonitorService.GetSystemMetricsAsync();
 
+            CpuUsageValue = metrics.CpuUsage;
+            CpuStatus = GetUsageStatus(metrics.CpuUsage);
+            RamUsageValue = metrics.RamUsage;
+            DiskUsageValue = metrics.DiskUsage;
+
             CpuUsage = $"{metrics.CpuUsage:F1} %";
             RamUsage = $"{metrics.RamUsage:F0} %";
 
@@ -116,7 +175,16 @@ namespace WinBoost.App.ViewModels
             DiskUsage = $"{metrics.DiskUsage:F0} %";
             Uptime = metrics.Uptime;
         }
+        private static string GetUsageStatus(double usage)
+        {
+            if (usage >= 85)
+                return "Critic";
 
+            if (usage >= 60)
+                return "Ridicat";
+
+            return "Normal";
+        }
         public event PropertyChangedEventHandler? PropertyChanged;
 
         protected void OnPropertyChanged(

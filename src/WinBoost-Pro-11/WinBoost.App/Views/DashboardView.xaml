@@ -20,28 +20,56 @@
 
 		<!-- CPU -->
 		<Border
-            Width="260"
-            Height="120"
-            Margin="30,90,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Background="#2C2C2C"
-            CornerRadius="12">
+			Width="260"
+			Height="170"
+			Margin="30,90,0,0"
+			HorizontalAlignment="Left"
+			VerticalAlignment="Top"
+			Background="#2C2C2C"
+			CornerRadius="12">
 
 			<StackPanel Margin="15">
 
 				<TextBlock
-                    Text="CPU Usage"
-                    FontSize="18"
-                    Foreground="White"/>
+					Text="CPU Usage"
+					FontSize="18"
+					Foreground="White"/>
 
 				<TextBlock
-                    Text="{Binding CpuUsage}"
-                    FontSize="34"
-                    FontWeight="Bold"
-                    Foreground="{StaticResource AccentBrush}"
-                    Margin="0,10,0,0"/>
+					Text="{Binding CpuUsage}"
+					FontSize="34"
+					FontWeight="Bold"
+					Foreground="{StaticResource AccentBrush}"
+					Margin="0,8,0,0"/>
 
+				<Grid
+                  Height="18"
+                   Margin="0,10,0,0">
+
+					<Border
+						Background="#444444"
+						CornerRadius="9"/>
+
+					<Grid
+						HorizontalAlignment="Left"
+						Width="{Binding CpuUsageValue}"
+						MaxWidth="230">
+
+						<Border
+							Background="{StaticResource AccentBrush}"
+							CornerRadius="9"/>
+
+					</Grid>
+
+				</Grid>
+
+				<TextBlock
+                      Text="{Binding CpuStatus}"
+                      FontSize="18"
+                      FontWeight="Bold"
+                      Foreground="White"
+                      Margin="0,8,0,0"
+                      HorizontalAlignment="Center"/>
 			</StackPanel>
 
 		</Border>
@@ -77,7 +105,14 @@
 					Foreground="White"
 					Opacity="0.85"
 					Margin="0,6,0,0"/>
-
+				<ProgressBar
+					Minimum="0"
+					Maximum="100"
+					Value="{Binding RamUsageValue}"
+					Height="12"
+					Margin="0,10,0,0"
+					Foreground="{StaticResource AccentBrush}"
+					Background="#444444"/>
 			</StackPanel>
 
 		</Border>
@@ -85,7 +120,7 @@
 		<!-- DISK -->
 		<Border
             Width="260"
-            Height="120"
+            Height="145"
             Margin="30,240,0,0"
             HorizontalAlignment="Left"
             VerticalAlignment="Top"
@@ -98,6 +133,14 @@
                     Text="Disk Usage"
                     FontSize="18"
                     Foreground="White"/>
+				<ProgressBar
+    Minimum="0"
+    Maximum="100"
+    Value="{Binding DiskUsageValue}"
+    Height="12"
+    Margin="0,10,0,0"
+    Foreground="{StaticResource AccentBrush}"
+    Background="#444444"/>
 
 				<TextBlock
                     Text="{Binding DiskUsage}"
