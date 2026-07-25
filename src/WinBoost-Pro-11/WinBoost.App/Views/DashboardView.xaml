@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+			 xmlns:controls="clr-namespace:WinBoost.App.Controls"
              mc:Ignorable="d"
              d:DesignHeight="450"
              d:DesignWidth="800">
@@ -18,174 +19,41 @@
             HorizontalAlignment="Left"
             VerticalAlignment="Top"/>
 
-		<!-- CPU -->
-		<Border
-			Width="260"
-			Height="170"
-			Margin="30,90,0,0"
-			HorizontalAlignment="Left"
-			VerticalAlignment="Top"
-			Background="#2C2C2C"
-			CornerRadius="12">
+		<UniformGrid
+			Rows="2"
+			Columns="2"
+			Margin="30,90,30,30">
 
-			<StackPanel Margin="15">
 
-				<TextBlock
-					Text="CPU Usage"
-					FontSize="18"
-					Foreground="White"/>
+			<!-- CPU -->
+			<controls:MetricCard
+				Title="CPU Usage"
+				Value="{Binding CpuUsage}"
+				Status="{Binding CpuStatus}"
+				ProgressValue="{Binding CpuUsageValue}"
+				Margin="10"/>
 
-				<TextBlock
-					Text="{Binding CpuUsage}"
-					FontSize="34"
-					FontWeight="Bold"
-					Foreground="{StaticResource AccentBrush}"
-					Margin="0,8,0,0"/>
+			<!-- RAM -->
+			<controls:MetricCard
+				Title="RAM Usage"
+				Value="{Binding RamUsage}"
+				Status="{Binding RamDetails}"
+				ProgressValue="{Binding RamUsageValue}"
+				Margin="10"/>
 
-				<Grid
-                  Height="18"
-                   Margin="0,10,0,0">
-
-					<Border
-						Background="#444444"
-						CornerRadius="9"/>
-
-					<Grid
-						HorizontalAlignment="Left"
-						Width="{Binding CpuUsageValue}"
-						MaxWidth="230">
-
-						<Border
-							Background="{StaticResource AccentBrush}"
-							CornerRadius="9"/>
-
-					</Grid>
-
-				</Grid>
-
-				<TextBlock
-                      Text="{Binding CpuStatus}"
-                      FontSize="18"
-                      FontWeight="Bold"
-                      Foreground="White"
-                      Margin="0,8,0,0"
-                      HorizontalAlignment="Center"/>
-			</StackPanel>
-
-		</Border>
-
-		<!-- RAM -->
-		<Border
-			Width="260"
-			Height="145"
-			Margin="320,90,0,0"
-			HorizontalAlignment="Left"
-			VerticalAlignment="Top"
-			Background="#2C2C2C"
-			CornerRadius="12">
-
-			<StackPanel Margin="15">
-
-				<TextBlock
-					Text="RAM Usage"
-					FontSize="18"
-					Foreground="White"/>
-
-				<TextBlock
-					Text="{Binding RamUsage}"
-					FontSize="38"
-					FontWeight="Bold"
-					Foreground="{StaticResource AccentBrush}"
-					Margin="0,8,0,0"/>
-
-				<TextBlock
-					Text="{Binding RamDetails}"
-					FontSize="20"
-					FontWeight="SemiBold"
-					Foreground="White"
-					Opacity="0.85"
-					Margin="0,6,0,0"/>
-				<Grid
-    Height="18"
-    Margin="0,10,0,0">
-
-					<Border
-						Background="#444444"
-						CornerRadius="9"/>
-
-					<Grid
-						HorizontalAlignment="Left"
-						Width="{Binding RamUsageValue}"
-						MaxWidth="230">
-
-						<Border
-							Background="{StaticResource AccentBrush}"
-							CornerRadius="9"/>
-
-					</Grid>
-
-				</Grid>
-			</StackPanel>
-
-		</Border>
-
-		<!-- DISK -->
-		<Border
-            Width="260"
-            Height="145"
-            Margin="30,240,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Background="#2C2C2C"
-            CornerRadius="12">
-
-			<StackPanel Margin="15">
-
-				<TextBlock
-                    Text="Disk Usage"
-                    FontSize="18"
-                    Foreground="White"/>
-				<Grid
-					Height="18"
-					Margin="0,10,0,0">
-
-					<Border
-						Background="#444444"
-						CornerRadius="9"/>
-
-					<Grid
-						HorizontalAlignment="Left"
-						Width="{Binding DiskUsageValue}"
-						MaxWidth="230">
-
-						<Border
-							Background="{StaticResource AccentBrush}"
-							CornerRadius="9"/>
-
-					</Grid>
-
-				</Grid>
-
-				<TextBlock
-                    Text="{Binding DiskUsage}"
-                    FontSize="34"
-                    FontWeight="Bold"
-                    Foreground="{StaticResource AccentBrush}"
-                    Margin="0,10,0,0"/>
-
-			</StackPanel>
-
-		</Border>
-
+			<!-- DISK -->
+			<controls:MetricCard
+				Title="Disk Usage"
+				Value="{Binding DiskUsage}"
+				Status=""
+				ProgressValue="{Binding DiskUsageValue}"
+				Margin="10"/>
+			
 		<!-- UPTIME -->
-		<Border
-            Width="260"
-            Height="120"
-            Margin="320,240,0,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"
-            Background="#2C2C2C"
-            CornerRadius="12">
+			<Border
+		Margin="10"
+		Background="#2C2C2C"
+		CornerRadius="12">
 
 			<StackPanel Margin="15">
 
@@ -204,7 +72,7 @@
 			</StackPanel>
 
 		</Border>
-
+		</UniformGrid>
 	</Grid>
 
 </UserControl>
