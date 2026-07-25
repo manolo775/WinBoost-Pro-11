@@ -105,14 +105,26 @@
 					Foreground="White"
 					Opacity="0.85"
 					Margin="0,6,0,0"/>
-				<ProgressBar
-					Minimum="0"
-					Maximum="100"
-					Value="{Binding RamUsageValue}"
-					Height="12"
-					Margin="0,10,0,0"
-					Foreground="{StaticResource AccentBrush}"
-					Background="#444444"/>
+				<Grid
+    Height="18"
+    Margin="0,10,0,0">
+
+					<Border
+						Background="#444444"
+						CornerRadius="9"/>
+
+					<Grid
+						HorizontalAlignment="Left"
+						Width="{Binding RamUsageValue}"
+						MaxWidth="230">
+
+						<Border
+							Background="{StaticResource AccentBrush}"
+							CornerRadius="9"/>
+
+					</Grid>
+
+				</Grid>
 			</StackPanel>
 
 		</Border>
@@ -133,14 +145,26 @@
                     Text="Disk Usage"
                     FontSize="18"
                     Foreground="White"/>
-				<ProgressBar
-    Minimum="0"
-    Maximum="100"
-    Value="{Binding DiskUsageValue}"
-    Height="12"
-    Margin="0,10,0,0"
-    Foreground="{StaticResource AccentBrush}"
-    Background="#444444"/>
+				<Grid
+					Height="18"
+					Margin="0,10,0,0">
+
+					<Border
+						Background="#444444"
+						CornerRadius="9"/>
+
+					<Grid
+						HorizontalAlignment="Left"
+						Width="{Binding DiskUsageValue}"
+						MaxWidth="230">
+
+						<Border
+							Background="{StaticResource AccentBrush}"
+							CornerRadius="9"/>
+
+					</Grid>
+
+				</Grid>
 
 				<TextBlock
                     Text="{Binding DiskUsage}"
