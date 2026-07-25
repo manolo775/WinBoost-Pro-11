@@ -1,18 +1,20 @@
 ﻿using System;
-using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using WinBoost.App.Models;
+
 namespace WinBoost.App.Services
 {
     public class SystemMonitorService
     {
-        private readonly PerformanceCounter _cpuCounter =
-            new PerformanceCounter(
-                "Processor",
-                "% Processor Time",
-                "_Total");
+        private readonly CpuMonitorService _cpuMonitorService;
+
+       
+        public SystemMonitorService()
+        {
+            _cpuMonitorService = new CpuMonitorService();
+        }
 
         [StructLayout(LayoutKind.Sequential)]
         private class MemoryStatusEx
@@ -56,41 +58,11 @@ namespace WinBoost.App.Services
             };
         }
 
-        public async Task<float> GetCpuUsageAsync()
-        {
-            using var process = Process.GetCurrentProcess();
-
-            var startTime = DateTime.UtcNow;
-            var startCpuUsage = process.TotalProcessorTime;
-
-            await Task.Delay(500);
-
-            var endTime = DateTime.UtcNow;
-            var endCpuUsage = process.TotalProcessorTime;
-
-            var cpuUsedMilliseconds =
-                (endCpuUsage - startCpuUsage).TotalMilliseconds;
-
-            var totalMilliseconds =
-                (endTime - startTime).TotalMilliseconds;
-
-            var cpuUsage =
-                cpuUsedMilliseconds /
-                (Environment.ProcessorCount * totalMilliseconds) *
-                100;
-
-            return (float)cpuUsage;
-        }
+        
 
         public async Task<float> GetSystemCpuUsageAsync()
         {
-            _cpuCounter.NextValue();
-
-            await Task.Delay(500);
-
-            float cpuUsage = _cpuCounter.NextValue();
-
-            return Math.Clamp(cpuUsage, 0f, 100f);
+            return await _cpuMonitorService.GetCpuUsageAsync();
         }
 
         public float GetRamUsage()
