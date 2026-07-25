@@ -1,13 +1,19 @@
-﻿using System.IO;
-using System;
+﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-
+using WinBoost.App.Models;
 namespace WinBoost.App.Services
 {
     public class SystemMonitorService
     {
+        private readonly PerformanceCounter _cpuCounter =
+            new PerformanceCounter(
+                "Processor",
+                "% Processor Time",
+                "_Total");
+
         [StructLayout(LayoutKind.Sequential)]
         private class MemoryStatusEx
         {
@@ -30,6 +36,25 @@ namespace WinBoost.App.Services
         [DllImport("kernel32.dll", SetLastError = true)]
         private static extern bool GlobalMemoryStatusEx(
             [In, Out] MemoryStatusEx memoryStatus);
+
+        public async Task<SystemMetrics> GetSystemMetricsAsync()
+        {
+            float cpuUsage = await GetSystemCpuUsageAsync();
+            float ramUsage = GetRamUsage();
+            var ramInfo = GetRamInfo();
+            float diskUsage = GetDiskUsage();
+            string uptime = GetWindowsUptime();
+
+            return new SystemMetrics
+            {
+                CpuUsage = cpuUsage,
+                RamUsage = ramUsage,
+                UsedRamGB = ramInfo.UsedGB,
+                TotalRamGB = ramInfo.TotalGB,
+                DiskUsage = diskUsage,
+                Uptime = uptime
+            };
+        }
 
         public async Task<float> GetCpuUsageAsync()
         {
@@ -55,6 +80,17 @@ namespace WinBoost.App.Services
                 100;
 
             return (float)cpuUsage;
+        }
+
+        public async Task<float> GetSystemCpuUsageAsync()
+        {
+            _cpuCounter.NextValue();
+
+            await Task.Delay(500);
+
+            float cpuUsage = _cpuCounter.NextValue();
+
+            return Math.Clamp(cpuUsage, 0f, 100f);
         }
 
         public float GetRamUsage()
@@ -94,9 +130,11 @@ namespace WinBoost.App.Services
 
             return (used, total);
         }
+
         public string GetWindowsUptime()
         {
-            TimeSpan uptime = TimeSpan.FromMilliseconds(Environment.TickCount64);
+            TimeSpan uptime =
+                TimeSpan.FromMilliseconds(Environment.TickCount64);
 
             if (uptime.Days > 0)
             {
@@ -105,6 +143,7 @@ namespace WinBoost.App.Services
 
             return $"{uptime.Hours} ore {uptime.Minutes} min";
         }
+
         public float GetDiskUsage()
         {
             string systemDrive =

@@ -1,6 +1,8 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Threading;
 using WinBoost.App.Services;
 
 namespace WinBoost.App.ViewModels
@@ -8,6 +10,7 @@ namespace WinBoost.App.ViewModels
     public class DashboardViewModel : INotifyPropertyChanged
     {
         private readonly SystemMonitorService _systemMonitorService;
+        private readonly DispatcherTimer _refreshTimer;
 
         private string _cpuUsage = "0 %";
         private string _ramUsage = "0 %";
@@ -18,6 +21,18 @@ namespace WinBoost.App.ViewModels
         public DashboardViewModel()
         {
             _systemMonitorService = new SystemMonitorService();
+
+            _refreshTimer = new DispatcherTimer
+            {
+                Interval = TimeSpan.FromSeconds(2)
+            };
+
+            _refreshTimer.Tick += async (_, _) =>
+            {
+                await UpdateSystemInfoAsync();
+            };
+
+            _refreshTimer.Start();
 
             _ = UpdateSystemInfoAsync();
         }
@@ -89,25 +104,17 @@ namespace WinBoost.App.ViewModels
 
         private async Task UpdateSystemInfoAsync()
         {
-            float cpuUsage =
-                await _systemMonitorService.GetCpuUsageAsync();
+            var metrics =
+                await _systemMonitorService.GetSystemMetricsAsync();
 
-            float ramUsage =
-                _systemMonitorService.GetRamUsage();
+            CpuUsage = $"{metrics.CpuUsage:F1} %";
+            RamUsage = $"{metrics.RamUsage:F0} %";
 
-            var ramInfo =
-                _systemMonitorService.GetRamInfo();
-            string uptime =
-               _systemMonitorService.GetWindowsUptime();
-            float diskUsage =
-               _systemMonitorService.GetDiskUsage();
-
-            CpuUsage = $"{cpuUsage:F1} %";
-            RamUsage = $"{ramUsage:F0} %";
             RamDetails =
-                $"{ramInfo.UsedGB:F1} GB / {ramInfo.TotalGB:F1} GB";
-            Uptime = uptime;
-            DiskUsage = $"{diskUsage:F0} %";
+                $"{metrics.UsedRamGB:F1} GB / {metrics.TotalRamGB:F1} GB";
+
+            DiskUsage = $"{metrics.DiskUsage:F0} %";
+            Uptime = metrics.Uptime;
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
