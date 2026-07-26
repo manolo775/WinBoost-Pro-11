@@ -32,18 +32,41 @@
 
 	<!-- Hover pentru carduri -->
 	<Style x:Key="MetricCardBorderStyle"
-           TargetType="Border">
+       TargetType="Border">
 
-		<Setter Property="Background" Value="#252525"/>
-		<Setter Property="Cursor" Value="Hand"/>
+		<Setter Property="Background" Value="#2F3136"/>
+
+		<Setter Property="Cursor"
+				Value="Hand"/>
+
+		<Setter Property="Effect">
+			<Setter.Value>
+				<DropShadowEffect
+					BlurRadius="14"
+					ShadowDepth="2"
+					Opacity="0.30"/>
+			</Setter.Value>
+		</Setter>
+		<Setter Property="RenderTransform">
+			<Setter.Value>
+				<ScaleTransform ScaleX="1" ScaleY="1"/>
+			</Setter.Value>
+		</Setter>
 
 		<Style.Triggers>
 
 			<Trigger Property="IsMouseOver"
-                     Value="True">
+					 Value="True">
 
-				<Setter Property="Background"
-                        Value="#303030"/>
+				<Setter Property="Background" Value="#3A3D44"/>
+
+				<Setter Property="RenderTransform">
+					<Setter.Value>
+						<ScaleTransform
+							ScaleX="1.05"
+							ScaleY="1.05"/>
+					</Setter.Value>
+				</Setter>
 
 			</Trigger>
 
