@@ -6,7 +6,7 @@
 	<Application.Resources>
 
 		<ResourceDictionary>
-
+			<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
 			<ResourceDictionary.MergedDictionaries>
 
 				<!-- Culori -->

@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using MaterialDesignThemes.Wpf;
 
 namespace WinBoost.App.Controls
 {
@@ -23,11 +24,11 @@ namespace WinBoost.App.Controls
             InitializeComponent();
         }
         public static readonly DependencyProperty TitleProperty =
-    DependencyProperty.Register(
-        nameof(Title),
-        typeof(string),
-        typeof(MetricCard),
-        new PropertyMetadata("Metric"));
+                               DependencyProperty.Register(
+                            nameof(Title),
+                           typeof(string),
+                           typeof(MetricCard),
+                           new PropertyMetadata("Metric"));
 
         public string Title
         {
@@ -35,11 +36,11 @@ namespace WinBoost.App.Controls
             set => SetValue(TitleProperty, value);
         }
         public static readonly DependencyProperty ValueProperty =
-        DependencyProperty.Register(
-        nameof(Value),
-        typeof(string),
-        typeof(MetricCard),
-        new PropertyMetadata("0%"));
+                            DependencyProperty.Register(
+                            nameof(Value),
+                           typeof(string),
+                           typeof(MetricCard),
+                           new PropertyMetadata("0%"));
 
         public string Value
         {
@@ -47,11 +48,11 @@ namespace WinBoost.App.Controls
             set => SetValue(ValueProperty, value);
         }
         public static readonly DependencyProperty StatusProperty =
-    DependencyProperty.Register(
-        nameof(Status),
-        typeof(string),
-        typeof(MetricCard),
-        new PropertyMetadata("Normal"));
+                                DependencyProperty.Register(
+                                nameof(Status),
+                                 typeof(string),
+                               typeof(MetricCard),
+                                new PropertyMetadata("Normal"));
 
         public string Status
         {
@@ -69,6 +70,42 @@ namespace WinBoost.App.Controls
         {
             get => (double)GetValue(ProgressValueProperty);
             set => SetValue(ProgressValueProperty, value);
+        }
+        public static readonly DependencyProperty IconKindProperty =
+            DependencyProperty.Register(
+                nameof(IconKind),
+                typeof(PackIconKind),
+                typeof(MetricCard),
+                new PropertyMetadata(PackIconKind.DesktopClassic));
+
+        public PackIconKind IconKind
+        {
+            get => (PackIconKind)GetValue(IconKindProperty);
+            set => SetValue(IconKindProperty, value);
+        }
+        public static readonly DependencyProperty SubtitleProperty =
+    DependencyProperty.Register(
+        nameof(Subtitle),
+        typeof(string),
+        typeof(MetricCard),
+        new PropertyMetadata(string.Empty));
+
+        public string Subtitle
+        {
+            get => (string)GetValue(SubtitleProperty);
+            set => SetValue(SubtitleProperty, value);
+        }
+        public static readonly DependencyProperty ShowProgressBarProperty =
+    DependencyProperty.Register(
+        nameof(ShowProgressBar),
+        typeof(bool),
+        typeof(MetricCard),
+        new PropertyMetadata(true));
+
+        public bool ShowProgressBar
+        {
+            get => (bool)GetValue(ShowProgressBarProperty);
+            set => SetValue(ShowProgressBarProperty, value);
         }
     }
 }

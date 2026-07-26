@@ -22,56 +22,43 @@
 		<UniformGrid
 			Rows="2"
 			Columns="2"
-			Margin="30,90,30,30">
+			Margin="40,100,40,40">
 
 
-			<!-- CPU -->
 			<controls:MetricCard
-				Title="CPU Usage"
-				Value="{Binding CpuUsage}"
-				Status="{Binding CpuStatus}"
-				ProgressValue="{Binding CpuUsageValue}"
-				Margin="10"/>
+               IconKind="Cpu64Bit"
+               Title="CPU Usage"
+               Value="{Binding CpuUsage}"
+               Status="{Binding CpuStatus}"
+               ProgressValue="{Binding CpuUsageValue}"
+               Margin="10"/>
 
-			<!-- RAM -->
 			<controls:MetricCard
-				Title="RAM Usage"
-				Value="{Binding RamUsage}"
-				Status="{Binding RamDetails}"
-				ProgressValue="{Binding RamUsageValue}"
-				Margin="10"/>
+		     	IconKind="Memory"
+			    Title="RAM Usage"
+			    Value="{Binding RamUsage}"
+			    Subtitle="{Binding RamDetails}"
+			    Status=""
+			    ProgressValue="{Binding RamUsageValue}"
+			    Margin="10"/>
 
-			<!-- DISK -->
 			<controls:MetricCard
-				Title="Disk Usage"
-				Value="{Binding DiskUsage}"
-				Status=""
-				ProgressValue="{Binding DiskUsageValue}"
-				Margin="10"/>
+		        IconKind="Harddisk"
+		        Title="Disk Usage"
+		        Value="{Binding DiskUsage}"
+		        Status=""
+	        	ProgressValue="{Binding DiskUsageValue}"
+	        	Margin="10"/>
+
+			<controls:MetricCard
+				Title="Windows Uptime"
+				Value="{Binding Uptime}"
+				IconKind="ClockOutline"
+				ProgressValue="0"
+				ShowProgressBar="False"
+				Subtitle=""
+				Status=""/>
 			
-		<!-- UPTIME -->
-			<Border
-		Margin="10"
-		Background="#2C2C2C"
-		CornerRadius="12">
-
-			<StackPanel Margin="15">
-
-				<TextBlock
-                    Text="Windows Uptime"
-                    FontSize="18"
-                    Foreground="White"/>
-
-				<TextBlock
-                    Text="{Binding Uptime}"
-                    FontSize="26"
-                    FontWeight="Bold"
-                    Foreground="{StaticResource AccentBrush}"
-                    Margin="0,14,0,0"/>
-
-			</StackPanel>
-
-		</Border>
 		</UniformGrid>
 	</Grid>
 

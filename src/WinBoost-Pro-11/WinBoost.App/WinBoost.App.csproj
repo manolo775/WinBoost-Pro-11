@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MaterialDesignThemes" Version="5.3.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="ViewModels\DashboardViewModel.cs">
       <Generator>MSBuild:Compile</Generator>
     </Compile>
