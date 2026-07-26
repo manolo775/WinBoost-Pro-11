@@ -7,10 +7,9 @@
 
 	<Border
 		x:Name="CardBorder"
+		Style="{StaticResource MetricCardBorderStyle}"
 		Padding="{StaticResource CardPadding}"
-		Background="#252525"
 		CornerRadius="{StaticResource CardCornerRadius}"
-		Cursor="Hand"
 		RenderTransformOrigin="0.5,0.5">
 
 		<Border.RenderTransform>

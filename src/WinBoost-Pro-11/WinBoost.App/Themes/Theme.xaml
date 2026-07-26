@@ -30,4 +30,25 @@
 	<!-- Progress bar -->
 	<sys:Double x:Key="MetricProgressHeight">14</sys:Double>
 
+	<!-- Hover pentru carduri -->
+	<Style x:Key="MetricCardBorderStyle"
+           TargetType="Border">
+
+		<Setter Property="Background" Value="#252525"/>
+		<Setter Property="Cursor" Value="Hand"/>
+
+		<Style.Triggers>
+
+			<Trigger Property="IsMouseOver"
+                     Value="True">
+
+				<Setter Property="Background"
+                        Value="#303030"/>
+
+			</Trigger>
+
+		</Style.Triggers>
+
+	</Style>
+
 </ResourceDictionary>
