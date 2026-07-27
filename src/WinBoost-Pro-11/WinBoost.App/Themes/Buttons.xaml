@@ -2,7 +2,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-	<!-- Stil general pentru butoane -->
+	<!-- Stil general pentru butoanele obișnuite -->
 	<Style TargetType="Button">
 
 		<Setter Property="Height"
@@ -34,7 +34,8 @@
 
 	</Style>
 
-	<!-- Stil special pentru butoanele din Sidebar -->
+
+	<!-- Stil normal pentru butoanele Sidebar -->
 	<Style x:Key="SidebarButtonStyle"
            TargetType="Button">
 
@@ -72,7 +73,6 @@
                 Value="Hand"/>
 
 		<Setter Property="Template">
-
 			<Setter.Value>
 
 				<ControlTemplate TargetType="Button">
@@ -108,7 +108,7 @@
 							<Setter
                                 TargetName="ButtonBorder"
                                 Property="Background"
-                                Value="#3A3D44"/>
+                                Value="#4A4D54"/>
 
 						</Trigger>
 
@@ -125,8 +125,27 @@
 				</ControlTemplate>
 
 			</Setter.Value>
-
 		</Setter>
+
+	</Style>
+
+
+	<!-- Stil pentru pagina activă -->
+	<Style x:Key="SidebarActiveButtonStyle"
+           TargetType="Button"
+           BasedOn="{StaticResource SidebarButtonStyle}">
+
+		<Setter Property="Background"
+                Value="#33363B"/>
+
+		<Setter Property="BorderBrush"
+                Value="#4CAF50"/>
+
+		<Setter Property="BorderThickness"
+                Value="4,0,0,0"/>
+
+		<Setter Property="Padding"
+                Value="14,0"/>
 
 	</Style>
 

@@ -1,33 +1,73 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using System;
+using System.Collections.ObjectModel;
+using System.Threading.Tasks;
+using System.Windows.Threading;
+using WinBoost.App.Models;
+using WinBoost.App.Services;
 
 namespace WinBoost.App.ViewModels
 {
-    public class PerformanceViewModel : INotifyPropertyChanged
+    public class PerformanceViewModel : DashboardViewModel
     {
-        private string _status = "Ready";
+        private readonly ProcessMonitorService _processMonitorService;
+        private readonly DispatcherTimer _processRefreshTimer;
+        private bool _isRefreshingProcesses;
 
-        public string Status
+        public ObservableCollection<ProcessInfo> TopProcesses { get; }
+
+        public PerformanceViewModel()
         {
-            get => _status;
-            set
-            {
-                if (_status == value)
-                    return;
+            _processMonitorService =
+                new ProcessMonitorService();
 
-                _status = value;
-                OnPropertyChanged();
-            }
+            TopProcesses =
+                new ObservableCollection<ProcessInfo>();
+
+            _processRefreshTimer =
+                new DispatcherTimer
+                {
+                    Interval = TimeSpan.FromSeconds(5)
+                };
+
+            _processRefreshTimer.Tick +=
+                ProcessRefreshTimer_Tick;
+
+            _processRefreshTimer.Start();
+
+            _ = RefreshTopProcessesAsync();
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        protected void OnPropertyChanged(
-            [CallerMemberName] string? propertyName = null)
+        private async void ProcessRefreshTimer_Tick(
+            object? sender,
+            EventArgs e)
         {
-            PropertyChanged?.Invoke(
-                this,
-                new PropertyChangedEventArgs(propertyName));
+            await RefreshTopProcessesAsync();
+        }
+
+        private async Task RefreshTopProcessesAsync()
+        {
+            if (_isRefreshingProcesses)
+                return;
+
+            try
+            {
+                _isRefreshingProcesses = true;
+
+                var processes =
+                    await _processMonitorService
+                        .GetTopProcessesAsync(5);
+
+                TopProcesses.Clear();
+
+                foreach (ProcessInfo process in processes)
+                {
+                    TopProcesses.Add(process);
+                }
+            }
+            finally
+            {
+                _isRefreshingProcesses = false;
+            }
         }
     }
 }
