@@ -163,7 +163,9 @@
 				<!-- SERVICES -->
 
 				<Button
-                    Style="{StaticResource SidebarButtonStyle}">
+                    x:Name="ServicesButton"
+                    Style="{StaticResource SidebarButtonStyle}"
+                    Click="ServicesButton_Click">
 
 					<StackPanel Orientation="Horizontal">
 
@@ -185,7 +187,9 @@
 				<!-- WINDOWS UPDATE -->
 
 				<Button
-                    Style="{StaticResource SidebarButtonStyle}">
+		              x:Name="WindowsUpdateButton"
+		              Style="{StaticResource SidebarButtonStyle}"
+		              Click="WindowsUpdateButton_Click">
 
 					<StackPanel Orientation="Horizontal">
 

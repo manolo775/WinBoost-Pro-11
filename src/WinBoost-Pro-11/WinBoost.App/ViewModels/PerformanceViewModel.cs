@@ -130,9 +130,32 @@ namespace WinBoost.App.ViewModels
             _processRefreshTimer.Tick +=
                 ProcessRefreshTimer_Tick;
 
-            _processRefreshTimer.Start();
+            StartPerformanceMonitoring();
+        }
 
-            _ = RefreshTopProcessesAsync();
+        public void StartPerformanceMonitoring()
+        {
+            StartMonitoring();
+
+            if (!_processRefreshTimer.IsEnabled)
+            {
+                _processRefreshTimer.Start();
+            }
+
+            if (TopProcesses.Count == 0)
+            {
+                _ = RefreshTopProcessesAsync();
+            }
+        }
+
+        public void StopPerformanceMonitoring()
+        {
+            StopMonitoring();
+
+            if (_processRefreshTimer.IsEnabled)
+            {
+                _processRefreshTimer.Stop();
+            }
         }
 
         private async void ProcessRefreshTimer_Tick(
@@ -278,7 +301,8 @@ namespace WinBoost.App.ViewModels
                 return;
 
             IsApplyingOptimizations = true;
-            OptimizationStatus = "Se aplică optimizările selectate...";
+            OptimizationStatus =
+                "Se aplică optimizările selectate...";
 
             try
             {
