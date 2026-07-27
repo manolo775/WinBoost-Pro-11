@@ -57,17 +57,17 @@
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
-                               Text="{Binding CpuUsage}"
-                               Margin="0,12,0,0"
-                               FontSize="34"
-                               FontWeight="Bold"
-                               Foreground="{StaticResource TextBrush}"/>
+                            Text="{Binding CpuUsage}"
+                            Margin="0,12,0,0"
+                            FontSize="34"
+                            FontWeight="Bold"
+                            Foreground="{StaticResource TextBrush}"/>
 
 						<ProgressBar
-							Value="{Binding CpuUsageValue}"
-							Maximum="100"
-							Height="8"
-							Margin="0,15,0,0"/>
+                            Value="{Binding CpuUsageValue}"
+                            Maximum="100"
+                            Height="8"
+                            Margin="0,15,0,0"/>
 
 					</StackPanel>
 
@@ -89,17 +89,17 @@
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
-                             Text="{Binding RamUsage}"
-                             Margin="0,12,0,0"
-                             FontSize="34"
-                             FontWeight="Bold"
-                             Foreground="{StaticResource TextBrush}"/>
+                            Text="{Binding RamUsage}"
+                            Margin="0,12,0,0"
+                            FontSize="34"
+                            FontWeight="Bold"
+                            Foreground="{StaticResource TextBrush}"/>
 
 						<ProgressBar
-							Value="{Binding RamUsageValue}"
-							Maximum="100"
-							Height="8"
-							Margin="0,15,0,0"/>
+                            Value="{Binding RamUsageValue}"
+                            Maximum="100"
+                            Height="8"
+                            Margin="0,15,0,0"/>
 
 					</StackPanel>
 
@@ -121,17 +121,17 @@
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
-							Text="{Binding DiskUsage}"
-							Margin="0,12,0,0"
-							FontSize="34"
-							FontWeight="Bold"
-							Foreground="{StaticResource TextBrush}"/>
+                            Text="{Binding DiskUsage}"
+                            Margin="0,12,0,0"
+                            FontSize="34"
+                            FontWeight="Bold"
+                            Foreground="{StaticResource TextBrush}"/>
 
 						<ProgressBar
-							Value="{Binding DiskUsageValue}"
-							Maximum="100"
-							Height="8"
-							Margin="0,15,0,0"/>
+                            Value="{Binding DiskUsageValue}"
+                            Maximum="100"
+                            Height="8"
+                            Margin="0,15,0,0"/>
 
 					</StackPanel>
 
@@ -155,51 +155,106 @@
 						<ColumnDefinition Width="Auto"/>
 					</Grid.ColumnDefinitions>
 
-					<StackPanel>
+					<!-- RECOMANDĂRI -->
+
+					<StackPanel Grid.Column="0">
 
 						<TextBlock
-							Text="{Binding OptimizationStatus}"
-							Margin="0,8,0,0"
-							TextWrapping="Wrap"
-							Foreground="{StaticResource SecondaryTextBrush}"/>
+                            Text="{Binding OptimizationStatus}"
+                            FontSize="18"
+                            Foreground="{StaticResource SecondaryTextBrush}"
+                            TextWrapping="Wrap"/>
 
-						
+						<TextBlock
+                            Text="Analizează sistemul și aplică optimizările recomandate."
+                            Margin="0,8,0,0"
+                            Foreground="{StaticResource SecondaryTextBrush}"
+                            TextWrapping="Wrap"/>
+
+						<ItemsControl
+                            ItemsSource="{Binding Recommendations}"
+                            Margin="0,12,0,0">
+
+							<ItemsControl.ItemTemplate>
+
+								<DataTemplate>
+
+									<CheckBox
+                                        IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                        Margin="0,5,0,0">
+
+										<StackPanel Margin="8,0,0,0">
+
+											<TextBlock
+                                                Text="{Binding Title}"
+                                                FontWeight="SemiBold"
+                                                Foreground="{StaticResource TextBrush}"/>
+
+											<TextBlock
+                                                Text="{Binding Description}"
+                                                Margin="0,3,0,0"
+                                                TextWrapping="Wrap"
+                                                Foreground="{StaticResource SecondaryTextBrush}"/>
+
+										</StackPanel>
+
+									</CheckBox>
+
+								</DataTemplate>
+
+							</ItemsControl.ItemTemplate>
+
+						</ItemsControl>
 
 					</StackPanel>
 
-					<Button
-			        	Grid.Column="1"
-				        Content="{Binding OptimizationButtonText}"
-				        Command="{Binding OptimizeCommand}"
-				        Width="150"
-			        	Height="42"
-			        	Margin="20,0,0,0"
-				        VerticalAlignment="Center"/>
+					<!-- BUTOANE -->
+
+					<StackPanel
+                        Grid.Column="1"
+                        Margin="20,0,0,0"
+                        VerticalAlignment="Center">
+
+						<Button
+                            Content="{Binding OptimizationButtonText}"
+                            Command="{Binding OptimizeCommand}"
+                            Width="150"
+                            Height="42"/>
+
+						<Button
+                            Content="{Binding ApplyButtonText}"
+                            Command="{Binding ApplyOptimizationsCommand}"
+                            Width="150"
+                            Height="42"
+                            Margin="0,8,0,0"/>
+
+					</StackPanel>
 
 				</Grid>
 
 			</Border>
+
 			<!-- TOP PROCESSES -->
 
 			<Border
-				Grid.Row="3"
-				Margin="0,25,0,0"
-				Padding="22"
-				CornerRadius="10"
-				Background="{StaticResource CardBrush}">
+                Grid.Row="3"
+                Margin="0,25,0,0"
+                Padding="22"
+                CornerRadius="10"
+                Background="{StaticResource CardBrush}">
 
 				<StackPanel>
 
 					<TextBlock
-						Text="Top Processes"
-						FontSize="20"
-						FontWeight="SemiBold"
-						Foreground="{StaticResource TextBrush}"/>
+                        Text="Top Processes"
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource TextBrush}"/>
 
 					<TextBlock
-						Text="Procesele care folosesc cel mai mult procesorul"
-						Margin="0,5,0,18"
-						Foreground="{StaticResource SecondaryTextBrush}"/>
+                        Text="Procesele care folosesc cel mai mult procesorul"
+                        Margin="0,5,0,18"
+                        Foreground="{StaticResource SecondaryTextBrush}"/>
 
 					<!-- ANTET -->
 
@@ -213,34 +268,34 @@
 						</Grid.ColumnDefinitions>
 
 						<TextBlock
-							Text="Proces"
-							FontWeight="SemiBold"
-							Foreground="{StaticResource SecondaryTextBrush}"/>
+                            Text="Proces"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
-							Grid.Column="1"
-							Text="PID"
-							FontWeight="SemiBold"
-							Foreground="{StaticResource SecondaryTextBrush}"/>
+                            Grid.Column="1"
+                            Text="PID"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
-							Grid.Column="2"
-							Text="CPU"
-							FontWeight="SemiBold"
-							Foreground="{StaticResource SecondaryTextBrush}"/>
+                            Grid.Column="2"
+                            Text="CPU"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
-							Grid.Column="3"
-							Text="RAM"
-							FontWeight="SemiBold"
-							Foreground="{StaticResource SecondaryTextBrush}"/>
+                            Grid.Column="3"
+                            Text="RAM"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource SecondaryTextBrush}"/>
 
 					</Grid>
 
 					<Border
-						Height="1"
-						Margin="0,0,0,5"
-						Background="#454545"/>
+                        Height="1"
+                        Margin="0,0,0,5"
+                        Background="#454545"/>
 
 					<!-- LISTA PROCESELOR -->
 
@@ -260,23 +315,23 @@
 									</Grid.ColumnDefinitions>
 
 									<TextBlock
-										Text="{Binding Name}"
-										Foreground="{StaticResource TextBrush}"/>
+                                        Text="{Binding Name}"
+                                        Foreground="{StaticResource TextBrush}"/>
 
 									<TextBlock
-										Grid.Column="1"
-										Text="{Binding ProcessId}"
-										Foreground="{StaticResource SecondaryTextBrush}"/>
+                                        Grid.Column="1"
+                                        Text="{Binding ProcessId}"
+                                        Foreground="{StaticResource SecondaryTextBrush}"/>
 
 									<TextBlock
-										Grid.Column="2"
-										Text="{Binding CpuUsageText}"
-										Foreground="#00C853"/>
+                                        Grid.Column="2"
+                                        Text="{Binding CpuUsageText}"
+                                        Foreground="#00C853"/>
 
 									<TextBlock
-										Grid.Column="3"
-										Text="{Binding MemoryUsageText}"
-										Foreground="{StaticResource TextBrush}"/>
+                                        Grid.Column="3"
+                                        Text="{Binding MemoryUsageText}"
+                                        Foreground="{StaticResource TextBrush}"/>
 
 								</Grid>
 
@@ -289,6 +344,7 @@
 				</StackPanel>
 
 			</Border>
+
 		</Grid>
 
 	</ScrollViewer>
