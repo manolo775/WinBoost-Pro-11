@@ -73,9 +73,47 @@
                         Background="#3A3A3A"
                         VerticalAlignment="Center">
 
-						<TextBlock
-                            Text="{Binding OverallStatus}"
-                            Foreground="{StaticResource SecondaryTextBrush}"/>
+						<TextBlock Text="{Binding OverallStatus}">
+
+							<TextBlock.Style>
+								<Style TargetType="TextBlock">
+
+									<Setter
+										Property="Foreground"
+										Value="{StaticResource SecondaryTextBrush}"/>
+
+									<Style.Triggers>
+
+										<DataTrigger
+											Binding="{Binding OverallStatus}"
+											Value="Verificat">
+											<Setter
+												Property="Foreground"
+												Value="#00C853"/>
+										</DataTrigger>
+
+										<DataTrigger
+											Binding="{Binding OverallStatus}"
+											Value="Se verifică">
+											<Setter
+												Property="Foreground"
+												Value="#FFB300"/>
+										</DataTrigger>
+
+										<DataTrigger
+											Binding="{Binding OverallStatus}"
+											Value="Eroare">
+											<Setter
+												Property="Foreground"
+												Value="#FF5252"/>
+										</DataTrigger>
+
+									</Style.Triggers>
+
+								</Style>
+							</TextBlock.Style>
+
+						</TextBlock>
 
 					</Border>
 
