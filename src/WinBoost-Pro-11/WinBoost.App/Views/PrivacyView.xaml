@@ -132,11 +132,46 @@
 									</StackPanel>
 
 									<TextBlock
-                                        Grid.Column="1"
-                                        Text="{Binding Status}"
-                                        Margin="20,0,0,0"
-                                        VerticalAlignment="Center"
-                                        Foreground="{StaticResource SecondaryTextBrush}"/>
+    Grid.Column="1"
+    Text="{Binding Status}"
+    Margin="20,0,0,0"
+    VerticalAlignment="Center">
+
+										<TextBlock.Style>
+											<Style TargetType="TextBlock">
+
+												<Setter
+													Property="Foreground"
+													Value="{StaticResource SecondaryTextBrush}"/>
+
+												<Style.Triggers>
+
+													<DataTrigger
+														Binding="{Binding StatusLevel}"
+														Value="Good">
+
+														<Setter
+															Property="Foreground"
+															Value="#00C853"/>
+
+													</DataTrigger>
+
+													<DataTrigger
+														Binding="{Binding StatusLevel}"
+														Value="Attention">
+
+														<Setter
+															Property="Foreground"
+															Value="#FFB300"/>
+
+													</DataTrigger>
+
+												</Style.Triggers>
+
+											</Style>
+										</TextBlock.Style>
+
+									</TextBlock>
 
 								</Grid>
 

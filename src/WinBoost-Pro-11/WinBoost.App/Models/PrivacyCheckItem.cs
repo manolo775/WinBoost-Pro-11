@@ -23,9 +23,24 @@ namespace WinBoost.App.Models
                     return;
 
                 _status = value;
+
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(StatusLevel));
             }
         }
+
+        public string StatusLevel =>
+            Status switch
+            {
+                "Dezactivat" => "Good",
+                "Date obligatorii" => "Good",
+
+                "Activat" => "Attention",
+                "Date opționale" => "Attention",
+                "Date îmbunătățite" => "Attention",
+
+                _ => "Neutral"
+            };
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
