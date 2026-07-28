@@ -211,8 +211,9 @@
 				<!-- APPS -->
 
 				<Button
-                    Style="{StaticResource SidebarButtonStyle}">
-
+                     x:Name="AppsButton"
+                     Style="{StaticResource SidebarButtonStyle}"
+                     Click="AppsButton_Click">
 					<StackPanel Orientation="Horizontal">
 
 						<materialDesign:PackIcon
