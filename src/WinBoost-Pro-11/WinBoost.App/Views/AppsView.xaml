@@ -129,6 +129,32 @@
                         Margin="0,5,0,18"
                         Foreground="{StaticResource SecondaryTextBrush}"/>
 
+					
+					<Grid Margin="0,0,0,18">
+
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="Auto"/>
+							<ColumnDefinition Width="320"/>
+						</Grid.ColumnDefinitions>
+
+						<TextBlock
+							Text="Caută:"
+							Margin="0,0,12,0"
+							VerticalAlignment="Center"
+							Foreground="{StaticResource SecondaryTextBrush}"/>
+
+						<TextBox
+							Grid.Column="1"
+							Height="36"
+							Padding="10,6"
+							Text="{Binding SearchText,
+                       UpdateSourceTrigger=PropertyChanged}"
+							Background="#303030"
+							Foreground="{StaticResource TextBrush}"
+							BorderBrush="#454545"/>
+
+					</Grid>
+					
 					<!-- ANTET -->
 
 					<Grid Margin="0,0,0,8">
@@ -172,7 +198,7 @@
 
 					<!-- REZULTATE -->
 
-					<ItemsControl ItemsSource="{Binding Applications}">
+					<ItemsControl ItemsSource="{Binding FilteredApplications}">
 
 						<ItemsControl.ItemTemplate>
 

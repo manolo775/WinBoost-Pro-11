@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using WinBoost.App.Commands;
@@ -16,6 +17,7 @@ namespace WinBoost.App.ViewModels
         private readonly InstalledAppsScanner _installedAppsScanner;
 
         private bool _isScanning;
+        private string _searchText = string.Empty;
 
         private string _scanStatus =
             "Apasă Scan Apps pentru a căuta aplicațiile instalate.";
@@ -26,7 +28,25 @@ namespace WinBoost.App.ViewModels
 
         public ObservableCollection<InstalledAppInfo> Applications { get; }
 
+        public ICollectionView FilteredApplications { get; }
+
         public ICommand ScanAppsCommand { get; }
+
+        public string SearchText
+        {
+            get => _searchText;
+
+            set
+            {
+                if (_searchText == value)
+                    return;
+
+                _searchText = value;
+
+                OnPropertyChanged();
+                FilteredApplications.Refresh();
+            }
+        }
 
         public string ScanStatus
         {
@@ -95,15 +115,59 @@ namespace WinBoost.App.ViewModels
 
         public AppsViewModel()
         {
-            _installedAppsScanner = new InstalledAppsScanner();
+            _installedAppsScanner =
+                new InstalledAppsScanner();
 
             Applications =
                 new ObservableCollection<InstalledAppInfo>();
+
+            FilteredApplications =
+                CollectionViewSource.GetDefaultView(Applications);
+
+            FilteredApplications.Filter =
+                FilterApplication;
 
             ScanAppsCommand =
                 new RelayCommand(
                     async _ => await ScanAppsAsync(),
                     _ => !IsScanning);
+        }
+
+        private bool FilterApplication(object item)
+        {
+            if (item is not InstalledAppInfo application)
+                return false;
+
+            if (string.IsNullOrWhiteSpace(SearchText))
+                return true;
+
+            string search =
+                SearchText.Trim();
+
+            return ContainsText(
+                       application.DisplayName,
+                       search) ||
+                   ContainsText(
+                       application.Publisher,
+                       search) ||
+                   ContainsText(
+                       application.Version,
+                       search) ||
+                   ContainsText(
+                       application.InstallDate,
+                       search);
+        }
+
+        private static bool ContainsText(
+            object? value,
+            string search)
+        {
+            string text =
+                Convert.ToString(value) ?? string.Empty;
+
+            return text.Contains(
+                search,
+                StringComparison.OrdinalIgnoreCase);
         }
 
         private async Task ScanAppsAsync()
@@ -112,7 +176,9 @@ namespace WinBoost.App.ViewModels
                 return;
 
             IsScanning = true;
-            ScanStatus = "Se caută aplicațiile instalate...";
+            ScanStatus =
+                "Se caută aplicațiile instalate...";
+
             ScanBadgeText = "Se verifică";
             ScanBadgeBrush = Brushes.Orange;
 
@@ -123,10 +189,13 @@ namespace WinBoost.App.ViewModels
 
                 Applications.Clear();
 
-                foreach (InstalledAppInfo application in applications)
+                foreach (InstalledAppInfo application
+                         in applications)
                 {
                     Applications.Add(application);
                 }
+
+                FilteredApplications.Refresh();
 
                 ScanStatus =
                     $"Scanare finalizată: {Applications.Count} aplicații găsite.";
