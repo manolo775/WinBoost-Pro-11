@@ -15,6 +15,7 @@ namespace WinBoost.App
         private ServicesView? _servicesView;
         private WindowsUpdateView? _windowsUpdateView;
         private AppsView? _appsView;
+        private StartupView? _startupView;
 
         public MainWindow()
         {
@@ -100,6 +101,16 @@ namespace WinBoost.App
             SetActiveButton(AppsButton);
         }
 
+        private void StartupButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            _startupView ??= new StartupView();
+
+            MainContent.Content = _startupView;
+            SetActiveButton(StartupButton);
+        }
+
         private void SetActiveButton(Button activeButton)
         {
             DashboardButton.Style =
@@ -118,6 +129,9 @@ namespace WinBoost.App
                 (Style)FindResource("SidebarButtonStyle");
 
             AppsButton.Style =
+                (Style)FindResource("SidebarButtonStyle");
+
+            StartupButton.Style =
                 (Style)FindResource("SidebarButtonStyle");
 
             activeButton.Style =
