@@ -102,9 +102,10 @@
 				<!-- OPTIMIZE SYSTEM -->
 
 				<Button
+                    x:Name="OptimizeSystemButton"
                     Height="52"
                     Margin="8,8,0,0"
-                    IsEnabled="False">
+                    Click="OptimizeSystemButton_Click">
 
 					<StackPanel Orientation="Horizontal">
 
