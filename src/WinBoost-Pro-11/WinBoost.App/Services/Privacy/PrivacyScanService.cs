@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using WinBoost.App.Models;
 
-namespace WinBoost.App.Services
+namespace WinBoost.App.Services.Privacy
 {
     public sealed class PrivacyScanService
     {

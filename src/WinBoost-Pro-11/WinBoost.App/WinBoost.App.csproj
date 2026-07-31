@@ -12,8 +12,6 @@
     <Folder Include="Assets\" />
     <Folder Include="Helpers\" />
     <Folder Include="Resources\" />
-    <Folder Include="Services\Monitoring\" />
-    <Folder Include="Services\Privacy\" />
   </ItemGroup>
 
   <ItemGroup>

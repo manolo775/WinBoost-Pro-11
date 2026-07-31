@@ -4,7 +4,7 @@ using System.Linq;
 using System.ServiceProcess;
 using System.Threading.Tasks;
 
-namespace WinBoost.App.Services
+namespace WinBoost.App.Services.WindowsUpdate
 {
     public sealed class WindowsUpdateScanResult
     {

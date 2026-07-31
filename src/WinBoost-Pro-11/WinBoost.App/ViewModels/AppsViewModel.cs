@@ -8,7 +8,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using WinBoost.App.Commands;
 using WinBoost.App.Models;
-using WinBoost.App.Services;
+using WinBoost.App.Services.Apps;
 
 namespace WinBoost.App.ViewModels
 {

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WinBoost.App.Models;
 
-namespace WinBoost.App.Services
+namespace WinBoost.App.Services.Apps
 {
     public class InstalledAppsScanner
     {

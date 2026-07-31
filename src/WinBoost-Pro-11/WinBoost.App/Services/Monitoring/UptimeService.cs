@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace WinBoost.App.Services
+namespace WinBoost.App.Services.Monitoring
 {
     public sealed class UptimeService
     {

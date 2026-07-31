@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Media;
 using WinBoost.App.Models;
 
-namespace WinBoost.App.Services
+namespace WinBoost.App.Services.ServicesManager
 {
     public class WindowsServiceScanner
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace WinBoost.App.Services
+namespace WinBoost.App.Services.Monitoring
 {
     public sealed class DiskMonitorService
     {

@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-namespace WinBoost.App.Services
+namespace WinBoost.App.Services.Monitoring
 {
     public sealed class CpuMonitorService
     {

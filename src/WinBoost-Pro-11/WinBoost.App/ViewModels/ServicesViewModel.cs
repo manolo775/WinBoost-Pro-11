@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using WinBoost.App.Commands;
 using WinBoost.App.Models;
-using WinBoost.App.Services;
+using WinBoost.App.Services.ServicesManager;
 
 namespace WinBoost.App.ViewModels
 {

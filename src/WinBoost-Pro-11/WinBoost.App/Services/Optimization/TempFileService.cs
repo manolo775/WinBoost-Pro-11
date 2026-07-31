@@ -2,7 +2,7 @@
 using System.IO;
 using System.Threading.Tasks;
 
-namespace WinBoost.App.Services
+namespace WinBoost.App.Services.Optimization
 {
     public class TempFileService
     {

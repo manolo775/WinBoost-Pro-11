@@ -3,7 +3,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-using WinBoost.App.Services;
+using WinBoost.App.Services.Monitoring;
 
 namespace WinBoost.App.ViewModels
 {
