@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using WinBoost.App.Models;
 
@@ -11,16 +12,24 @@ namespace WinBoost.App.Services.Optimization
         private readonly TempFilesCleanerService
             _tempFilesCleanerService;
 
+        private readonly RecycleBinCleanerService
+            _recycleBinCleanerService;
+
         public OptimizationEngine()
         {
             _tempFilesCleanerService =
                 new TempFilesCleanerService();
+
+            _recycleBinCleanerService =
+                new RecycleBinCleanerService();
         }
 
         public async Task<OptimizationReport>
-            RunOptimizationAsync()
+            RunOptimizationAsync(
+                bool emptyRecycleBin = false)
         {
-            var stopwatch = Stopwatch.StartNew();
+            var stopwatch =
+                Stopwatch.StartNew();
 
             var report =
                 new OptimizationReport();
@@ -31,19 +40,28 @@ namespace WinBoost.App.Services.Optimization
                     await _tempFilesCleanerService
                         .CleanUserTempAsync();
 
-                report.Results.Add(tempFilesResult);
+                AddResult(
+                    report,
+                    tempFilesResult);
 
-                report.TotalDeletedFiles +=
-                    tempFilesResult.DeletedFilesCount;
+                if (emptyRecycleBin)
+                {
+                    OptimizationResult recycleBinResult =
+                        await _recycleBinCleanerService
+                            .EmptyRecycleBinAsync();
 
-                report.TotalRecoveredBytes +=
-                    tempFilesResult.RecoveredBytes;
+                    AddResult(
+                        report,
+                        recycleBinResult);
+                }
 
                 report.IsSuccessful =
-                    tempFilesResult.IsSuccessful;
+                    report.Results.All(
+                        result =>
+                            result.IsSuccessful);
 
                 report.Message =
-                    tempFilesResult.IsSuccessful
+                    report.IsSuccessful
                         ? "Optimizarea a fost finalizată."
                         : "Optimizarea a fost finalizată cu erori.";
             }
@@ -52,8 +70,8 @@ namespace WinBoost.App.Services.Optimization
                 report.IsSuccessful = false;
 
                 report.Message =
-                    $"Optimizarea nu a putut fi finalizată: " +
-                    $"{ex.Message}";
+                    "Optimizarea nu a putut fi finalizată: " +
+                    ex.Message;
             }
             finally
             {
@@ -65,19 +83,52 @@ namespace WinBoost.App.Services.Optimization
 
             return report;
         }
+
+        private static void AddResult(
+            OptimizationReport report,
+            OptimizationResult result)
+        {
+            report.Results.Add(result);
+
+            report.TotalDeletedFiles +=
+                result.DeletedFilesCount;
+
+            report.TotalRecoveredBytes +=
+                result.RecoveredBytes;
+        }
     }
 
     public class OptimizationReport
     {
-        public bool IsSuccessful { get; set; }
+        public bool IsSuccessful
+        {
+            get;
+            set;
+        }
 
-        public long TotalDeletedFiles { get; set; }
+        public long TotalDeletedFiles
+        {
+            get;
+            set;
+        }
 
-        public long TotalRecoveredBytes { get; set; }
+        public long TotalRecoveredBytes
+        {
+            get;
+            set;
+        }
 
-        public TimeSpan Duration { get; set; }
+        public TimeSpan Duration
+        {
+            get;
+            set;
+        }
 
-        public string Message { get; set; } =
+        public string Message
+        {
+            get;
+            set;
+        } =
             string.Empty;
 
         public List<OptimizationResult> Results
@@ -87,12 +138,14 @@ namespace WinBoost.App.Services.Optimization
             new List<OptimizationResult>();
 
         public string RecoveredSpaceText =>
-            FormatBytes(TotalRecoveredBytes);
+            FormatBytes(
+                TotalRecoveredBytes);
 
         public string DurationText =>
             $"{Duration.TotalSeconds:F1} sec";
 
-        private static string FormatBytes(long bytes)
+        private static string FormatBytes(
+            long bytes)
         {
             string[] units =
             {
@@ -113,7 +166,8 @@ namespace WinBoost.App.Services.Optimization
                 unitIndex++;
             }
 
-            return $"{value:F2} {units[unitIndex]}";
+            return
+                $"{value:F2} {units[unitIndex]}";
         }
     }
 }

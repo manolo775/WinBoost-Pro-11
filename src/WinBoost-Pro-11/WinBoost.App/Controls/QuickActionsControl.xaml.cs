@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using WinBoost.App.Models;
@@ -10,6 +11,9 @@ namespace WinBoost.App.Controls
     {
         private readonly TempFilesCleanerService
             _tempFilesCleanerService;
+
+        private readonly RecycleBinCleanerService
+            _recycleBinCleanerService;
 
         private readonly OptimizationEngine
             _optimizationEngine;
@@ -23,6 +27,9 @@ namespace WinBoost.App.Controls
 
             _tempFilesCleanerService =
                 new TempFilesCleanerService();
+
+            _recycleBinCleanerService =
+                new RecycleBinCleanerService();
 
             _optimizationEngine =
                 new OptimizationEngine();
@@ -115,7 +122,7 @@ namespace WinBoost.App.Controls
                 return;
             }
 
-            MessageBoxResult confirmation =
+            MessageBoxResult startConfirmation =
                 MessageBox.Show(
                     "WinBoost va executa optimizările disponibile.\n\n" +
                     "În această etapă va curăța fișierele temporare " +
@@ -125,10 +132,45 @@ namespace WinBoost.App.Controls
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Question);
 
-            if (confirmation != MessageBoxResult.Yes)
+            if (startConfirmation != MessageBoxResult.Yes)
             {
                 return;
             }
+
+            RecycleBinStatus recycleBinStatus =
+                await _recycleBinCleanerService
+                    .GetRecycleBinStatusAsync();
+
+            string recycleBinMessage;
+
+            if (recycleBinStatus.IsSuccessful)
+            {
+                recycleBinMessage =
+                    $"Coșul de reciclare conține:\n\n" +
+                    $"• Elemente: {recycleBinStatus.ItemCount}\n" +
+                    $"• Spațiu ocupat: " +
+                    $"{recycleBinStatus.TotalSizeText}\n\n" +
+                    $"Dorești să golești și Coșul de reciclare?\n\n" +
+                    $"Fișierele vor fi șterse definitiv și nu " +
+                    $"vor mai putea fi restaurate.";
+            }
+            else
+            {
+                recycleBinMessage =
+                    "Nu s-au putut citi informațiile despre " +
+                    "Coșul de reciclare.\n\n" +
+                    "Dorești totuși să încerci golirea acestuia?";
+            }
+
+            MessageBoxResult recycleBinConfirmation =
+                MessageBox.Show(
+                    recycleBinMessage,
+                    "Golire Coș de reciclare",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+            bool emptyRecycleBin =
+                recycleBinConfirmation == MessageBoxResult.Yes;
 
             _isOptimizingSystem = true;
 
@@ -142,15 +184,13 @@ namespace WinBoost.App.Controls
             {
                 OptimizationReport report =
                     await _optimizationEngine
-                        .RunOptimizationAsync();
+                        .RunOptimizationAsync(
+                            emptyRecycleBin);
 
                 string message =
-                    $"{report.Message}\n\n" +
-                    $"Fișiere șterse: " +
-                    $"{report.TotalDeletedFiles}\n" +
-                    $"Spațiu eliberat: " +
-                    $"{report.RecoveredSpaceText}\n" +
-                    $"Durată: {report.DurationText}";
+                    BuildOptimizationReportMessage(
+                        report,
+                        emptyRecycleBin);
 
                 MessageBox.Show(
                     message,
@@ -181,6 +221,47 @@ namespace WinBoost.App.Controls
 
                 _isOptimizingSystem = false;
             }
+        }
+
+        private static string BuildOptimizationReportMessage(
+            OptimizationReport report,
+            bool recycleBinRequested)
+        {
+            var messageBuilder =
+                new StringBuilder();
+
+            messageBuilder.AppendLine(report.Message);
+            messageBuilder.AppendLine();
+
+            foreach (OptimizationResult result
+                     in report.Results)
+            {
+                messageBuilder.AppendLine(
+                    result.IsSuccessful
+                        ? $"✓ {result.Message}"
+                        : $"⚠ {result.Message}");
+            }
+
+            if (!recycleBinRequested)
+            {
+                messageBuilder.AppendLine(
+                    "• Coșul de reciclare nu a fost golit.");
+            }
+
+            messageBuilder.AppendLine();
+
+            messageBuilder.AppendLine(
+                $"Elemente eliminate: " +
+                $"{report.TotalDeletedFiles}");
+
+            messageBuilder.AppendLine(
+                $"Spațiu eliberat: " +
+                $"{report.RecoveredSpaceText}");
+
+            messageBuilder.AppendLine(
+                $"Durată: {report.DurationText}");
+
+            return messageBuilder.ToString();
         }
     }
 }
