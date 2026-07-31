@@ -25,6 +25,9 @@ namespace WinBoost.App.ViewModels
         private double _ramUsageValue;
         private double _diskUsageValue;
 
+        private int _healthScore;
+        private string _healthStatus = "Calculating...";
+
         public DashboardViewModel()
         {
             _systemMonitorService = new SystemMonitorService();
@@ -46,7 +49,9 @@ namespace WinBoost.App.ViewModels
             set
             {
                 if (Math.Abs(_cpuUsageValue - value) < 0.01)
+                {
                     return;
+                }
 
                 _cpuUsageValue = value;
                 OnPropertyChanged();
@@ -60,7 +65,9 @@ namespace WinBoost.App.ViewModels
             set
             {
                 if (Math.Abs(_ramUsageValue - value) < 0.01)
+                {
                     return;
+                }
 
                 _ramUsageValue = value;
                 OnPropertyChanged();
@@ -74,9 +81,43 @@ namespace WinBoost.App.ViewModels
             set
             {
                 if (Math.Abs(_diskUsageValue - value) < 0.01)
+                {
                     return;
+                }
 
                 _diskUsageValue = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int HealthScore
+        {
+            get => _healthScore;
+
+            set
+            {
+                if (_healthScore == value)
+                {
+                    return;
+                }
+
+                _healthScore = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string HealthStatus
+        {
+            get => _healthStatus;
+
+            set
+            {
+                if (_healthStatus == value)
+                {
+                    return;
+                }
+
+                _healthStatus = value;
                 OnPropertyChanged();
             }
         }
@@ -88,7 +129,9 @@ namespace WinBoost.App.ViewModels
             set
             {
                 if (_cpuStatus == value)
+                {
                     return;
+                }
 
                 _cpuStatus = value;
                 OnPropertyChanged();
@@ -102,7 +145,9 @@ namespace WinBoost.App.ViewModels
             set
             {
                 if (_cpuUsage == value)
+                {
                     return;
+                }
 
                 _cpuUsage = value;
                 OnPropertyChanged();
@@ -116,7 +161,9 @@ namespace WinBoost.App.ViewModels
             set
             {
                 if (_ramUsage == value)
+                {
                     return;
+                }
 
                 _ramUsage = value;
                 OnPropertyChanged();
@@ -130,7 +177,9 @@ namespace WinBoost.App.ViewModels
             set
             {
                 if (_ramDetails == value)
+                {
                     return;
+                }
 
                 _ramDetails = value;
                 OnPropertyChanged();
@@ -144,7 +193,9 @@ namespace WinBoost.App.ViewModels
             set
             {
                 if (_diskUsage == value)
+                {
                     return;
+                }
 
                 _diskUsage = value;
                 OnPropertyChanged();
@@ -158,7 +209,9 @@ namespace WinBoost.App.ViewModels
             set
             {
                 if (_uptime == value)
+                {
                     return;
+                }
 
                 _uptime = value;
                 OnPropertyChanged();
@@ -168,7 +221,9 @@ namespace WinBoost.App.ViewModels
         public void StartMonitoring()
         {
             if (_refreshTimer.IsEnabled)
+            {
                 return;
+            }
 
             _refreshTimer.Start();
             _ = UpdateSystemInfoAsync();
@@ -189,7 +244,9 @@ namespace WinBoost.App.ViewModels
         private async Task UpdateSystemInfoAsync()
         {
             if (_isRefreshingSystemInfo)
+            {
                 return;
+            }
 
             try
             {
@@ -208,10 +265,13 @@ namespace WinBoost.App.ViewModels
                 RamUsage = $"{metrics.RamUsage:F0} %";
 
                 RamDetails =
-                    $"{metrics.UsedRamGB:F1} GB / {metrics.TotalRamGB:F1} GB";
+                    $"{metrics.UsedRamGB:F1} GB / " +
+                    $"{metrics.TotalRamGB:F1} GB";
 
                 DiskUsage = $"{metrics.DiskUsage:F0} %";
                 Uptime = metrics.Uptime;
+
+                UpdateHealthScore();
             }
             catch
             {
@@ -223,13 +283,63 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        private void UpdateHealthScore()
+        {
+            var score = 100;
+
+            if (CpuUsageValue > 80)
+            {
+                score -= 15;
+            }
+            else if (CpuUsageValue > 60)
+            {
+                score -= 8;
+            }
+
+            if (RamUsageValue > 90)
+            {
+                score -= 25;
+            }
+            else if (RamUsageValue > 75)
+            {
+                score -= 15;
+            }
+            else if (RamUsageValue > 60)
+            {
+                score -= 8;
+            }
+
+            if (DiskUsageValue > 90)
+            {
+                score -= 20;
+            }
+            else if (DiskUsageValue > 80)
+            {
+                score -= 10;
+            }
+
+            HealthScore = Math.Clamp(score, 0, 100);
+
+            HealthStatus = HealthScore switch
+            {
+                >= 90 => "Excellent",
+                >= 75 => "Good",
+                >= 60 => "Needs attention",
+                _ => "Critical"
+            };
+        }
+
         private static string GetUsageStatus(double usage)
         {
             if (usage >= 85)
+            {
                 return "Critic";
+            }
 
             if (usage >= 60)
+            {
                 return "Ridicat";
+            }
 
             return "Normal";
         }
