@@ -105,6 +105,11 @@ namespace WinBoost.App
             object sender,
             RoutedEventArgs e)
         {
+            NavigateToStartup();
+        }
+
+        public void NavigateToStartup()
+        {
             _startupView ??= new StartupView();
 
             MainContent.Content = _startupView;

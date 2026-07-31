@@ -5,136 +5,95 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="clr-namespace:WinBoost.App.Controls"
              mc:Ignorable="d"
-             d:DesignHeight="600"
+             d:DesignHeight="800"
              d:DesignWidth="900">
 
-	<Grid Background="#1E1E1E">
+	<ScrollViewer
+        VerticalScrollBarVisibility="Auto"
+        HorizontalScrollBarVisibility="Disabled">
 
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
-		</Grid.RowDefinitions>
+		<Grid
+            Margin="0,0,0,30"
+            Background="#1E1E1E">
 
-		<!-- Titlu -->
-		<TextBlock
-            Grid.Row="0"
-            Text="Dashboard"
-            FontSize="32"
-            FontWeight="Bold"
-            Foreground="White"
-            Margin="40,20,40,0"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Top"/>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
 
-		<!-- System Health -->
-		<Border
-            Grid.Row="1"
-            Margin="50,25,50,5"
-            Padding="22,16"
-            Background="#2D3035"
-            CornerRadius="14">
+			<!-- TITLU -->
 
-			<Grid>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="Auto"/>
-				</Grid.ColumnDefinitions>
+			<TextBlock
+                Grid.Row="0"
+                Text="Dashboard"
+                FontSize="32"
+                FontWeight="Bold"
+                Foreground="White"
+                Margin="40,20,40,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"/>
 
-				<!-- Partea stângă -->
-				<StackPanel
-                    Grid.Column="0"
-                    VerticalAlignment="Center">
+			<!-- SYSTEM HEALTH -->
 
-					<TextBlock
-                        Text="Overall System Health"
-                        FontSize="18"
-                        FontWeight="SemiBold"
-                        Foreground="White"/>
+			<controls:HealthCard
+                Grid.Row="1"
+                Margin="50,25,50,5"/>
 
-					<TextBlock
-                        Text="{Binding HealthStatus}"
-                        Margin="0,5,0,0"
-                        FontSize="14"
-                        Foreground="#B8BCC4"/>
+			<!-- CARDURI SISTEM -->
 
-					<ProgressBar
-                        Value="{Binding HealthScore}"
-                        Maximum="100"
-                        Height="8"
-                        Margin="0,14,30,0"
-                        Background="#505257"
-                        Foreground="#00C853"/>
-				</StackPanel>
+			<UniformGrid
+                Grid.Row="2"
+                Rows="2"
+                Columns="2"
+                Margin="40,10,40,10">
 
-				<!-- Scorul -->
-				<StackPanel
-                    Grid.Column="1"
-                    Margin="20,0,5,0"
-                    HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
+				<controls:MetricCard
+                    IconKind="Cpu64Bit"
+                    Title="CPU Usage"
+                    Value="{Binding CpuUsage}"
+                    Status="{Binding CpuStatus}"
+                    ProgressValue="{Binding CpuUsageValue}"
+                    Margin="10"/>
 
-					<TextBlock
-                        Text="{Binding HealthScore}"
-                        FontSize="38"
-                        FontWeight="Bold"
-                        Foreground="#00D66B"
-                        HorizontalAlignment="Center"/>
+				<controls:MetricCard
+                    IconKind="Memory"
+                    Title="RAM Usage"
+                    Value="{Binding RamUsage}"
+                    Subtitle="{Binding RamDetails}"
+                    Status=""
+                    ProgressValue="{Binding RamUsageValue}"
+                    Margin="10"/>
 
-					<TextBlock
-                        Text="/ 100"
-                        Margin="0,-5,0,0"
-                        FontSize="14"
-                        Foreground="#B8BCC4"
-                        HorizontalAlignment="Center"/>
-				</StackPanel>
-			</Grid>
-		</Border>
+				<controls:MetricCard
+                    IconKind="Harddisk"
+                    Title="Disk Usage"
+                    Value="{Binding DiskUsage}"
+                    Status=""
+                    ProgressValue="{Binding DiskUsageValue}"
+                    Margin="10"/>
 
-		<!-- Cardurile cu valori -->
-		<UniformGrid
-            Grid.Row="2"
-            Rows="2"
-            Columns="2"
-            Margin="40,10,40,30">
+				<controls:MetricCard
+                    IconKind="ClockOutline"
+                    Title="Windows Uptime"
+                    Value="{Binding Uptime}"
+                    Subtitle=""
+                    Status=""
+                    ProgressValue="0"
+                    ShowProgressBar="False"
+                    Margin="10"/>
 
-			<controls:MetricCard
-                IconKind="Cpu64Bit"
-                Title="CPU Usage"
-                Value="{Binding CpuUsage}"
-                Status="{Binding CpuStatus}"
-                ProgressValue="{Binding CpuUsageValue}"
-                Margin="10"/>
+			</UniformGrid>
 
-			<controls:MetricCard
-                IconKind="Memory"
-                Title="RAM Usage"
-                Value="{Binding RamUsage}"
-                Subtitle="{Binding RamDetails}"
-                Status=""
-                ProgressValue="{Binding RamUsageValue}"
-                Margin="10"/>
+			<!-- QUICK ACTIONS -->
 
-			<controls:MetricCard
-                IconKind="Harddisk"
-                Title="Disk Usage"
-                Value="{Binding DiskUsage}"
-                Status=""
-                ProgressValue="{Binding DiskUsageValue}"
-                Margin="10"/>
+			<controls:QuickActionsControl
+                Grid.Row="3"
+                Margin="50,15,50,0"/>
 
-			<controls:MetricCard
-                IconKind="ClockOutline"
-                Title="Windows Uptime"
-                Value="{Binding Uptime}"
-                Subtitle=""
-                Status=""
-                ProgressValue="0"
-                ShowProgressBar="False"
-                Margin="10"/>
+		</Grid>
 
-		</UniformGrid>
-
-	</Grid>
+	</ScrollViewer>
 
 </UserControl>
