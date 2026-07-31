@@ -26,7 +26,7 @@
                     Foreground="{StaticResource TextBrush}"/>
 
 				<TextBlock
-                    Text="Verifică aplicațiile care pornesc automat împreună cu Windows."
+                    Text="Verifică și administrează aplicațiile care pornesc automat împreună cu Windows."
                     Margin="0,6,0,0"
                     FontSize="14"
                     TextWrapping="Wrap"
@@ -66,7 +66,7 @@
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
-                            Text="Scanarea este informativă și nu modifică aplicațiile care pornesc cu Windows."
+                            Text="Poți activa sau dezactiva în siguranță aplicațiile găsite."
                             Margin="0,6,20,0"
                             FontSize="13"
                             TextWrapping="Wrap"
@@ -125,7 +125,7 @@
                         Foreground="{StaticResource TextBrush}"/>
 
 					<TextBlock
-                        Text="Aici vor apărea aplicațiile configurate să pornească împreună cu Windows."
+                        Text="Aplicațiile active și cele dezactivate de WinBoost vor apărea în această listă."
                         Margin="0,5,0,18"
                         TextWrapping="Wrap"
                         Foreground="{StaticResource SecondaryTextBrush}"/>
@@ -138,10 +138,12 @@
 							<ColumnDefinition Width="1.5*"/>
 							<ColumnDefinition Width="1.2*"/>
 							<ColumnDefinition Width="1*"/>
-							<ColumnDefinition Width="3*"/>
+							<ColumnDefinition Width="2.5*"/>
+							<ColumnDefinition Width="1.2*"/>
 						</Grid.ColumnDefinitions>
 
 						<TextBlock
+                            Grid.Column="0"
                             Text="Aplicație"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
@@ -161,6 +163,13 @@
 						<TextBlock
                             Grid.Column="3"
                             Text="Comandă"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource SecondaryTextBrush}"/>
+
+						<TextBlock
+                            Grid.Column="4"
+                            Text="Acțiune"
+                            HorizontalAlignment="Center"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
@@ -192,10 +201,12 @@
 											<ColumnDefinition Width="1.5*"/>
 											<ColumnDefinition Width="1.2*"/>
 											<ColumnDefinition Width="1*"/>
-											<ColumnDefinition Width="3*"/>
+											<ColumnDefinition Width="2.5*"/>
+											<ColumnDefinition Width="1.2*"/>
 										</Grid.ColumnDefinitions>
 
 										<TextBlock
+                                            Grid.Column="0"
                                             Text="{Binding Name}"
                                             FontWeight="SemiBold"
                                             VerticalAlignment="Center"
@@ -218,9 +229,22 @@
 										<TextBlock
                                             Grid.Column="3"
                                             Text="{Binding Command}"
+                                            Margin="0,0,12,0"
                                             VerticalAlignment="Center"
                                             TextWrapping="Wrap"
                                             Foreground="{StaticResource SecondaryTextBrush}"/>
+
+										<Button
+                                            Grid.Column="4"
+                                            Content="{Binding ActionText}"
+                                            Command="{Binding DataContext.ToggleStartupCommand,
+                                                              RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                            CommandParameter="{Binding}"
+                                            Width="115"
+                                            Height="34"
+                                            Margin="12,0,0,0"
+                                            HorizontalAlignment="Center"
+                                            VerticalAlignment="Center"/>
 
 									</Grid>
 

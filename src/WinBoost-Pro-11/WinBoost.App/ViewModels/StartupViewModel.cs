@@ -14,8 +14,10 @@ namespace WinBoost.App.ViewModels
     public class StartupViewModel : INotifyPropertyChanged
     {
         private readonly StartupAppsScanner _startupAppsScanner;
+        private readonly StartupAppsManager _startupAppsManager;
 
         private bool _isScanning;
+        private bool _isChangingStartupState;
 
         private string _scanStatus =
             "Apasă Scan Startup pentru a verifica aplicațiile care pornesc cu Windows.";
@@ -30,6 +32,11 @@ namespace WinBoost.App.ViewModels
         }
 
         public ICommand ScanStartupCommand
+        {
+            get;
+        }
+
+        public ICommand ToggleStartupCommand
         {
             get;
         }
@@ -94,6 +101,23 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        public bool IsChangingStartupState
+        {
+            get => _isChangingStartupState;
+
+            private set
+            {
+                if (_isChangingStartupState == value)
+                    return;
+
+                _isChangingStartupState = value;
+
+                OnPropertyChanged();
+
+                CommandManager.InvalidateRequerySuggested();
+            }
+        }
+
         public string ScanButtonText =>
             IsScanning
                 ? "Scanning..."
@@ -104,21 +128,37 @@ namespace WinBoost.App.ViewModels
             _startupAppsScanner =
                 new StartupAppsScanner();
 
+            _startupAppsManager =
+                new StartupAppsManager();
+
             StartupApplications =
                 new ObservableCollection<StartupAppInfo>();
 
             ScanStartupCommand =
                 new RelayCommand(
                     async _ => await ScanStartupAsync(),
-                    _ => !IsScanning);
+                    _ =>
+                        !IsScanning &&
+                        !IsChangingStartupState);
+
+            ToggleStartupCommand =
+                new RelayCommand(
+                    async parameter =>
+                        await ToggleStartupApplicationAsync(
+                            parameter as StartupAppInfo),
+                    parameter =>
+                        parameter is StartupAppInfo &&
+                        !IsScanning &&
+                        !IsChangingStartupState);
         }
 
         private async Task ScanStartupAsync()
         {
-            if (IsScanning)
+            if (IsScanning || IsChangingStartupState)
                 return;
 
             IsScanning = true;
+
             ScanStatus =
                 "Se verifică aplicațiile care pornesc cu Windows...";
 
@@ -159,7 +199,59 @@ namespace WinBoost.App.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        private async Task ToggleStartupApplicationAsync(
+            StartupAppInfo? application)
+        {
+            if (application == null ||
+                IsScanning ||
+                IsChangingStartupState)
+            {
+                return;
+            }
+
+            bool enableApplication =
+                !application.IsEnabled;
+
+            IsChangingStartupState = true;
+
+            ScanBadgeText = "Se modifică";
+            ScanBadgeBrush = Brushes.Orange;
+
+            ScanStatus =
+                enableApplication
+                    ? $"Se activează aplicația „{application.Name}”..."
+                    : $"Se dezactivează aplicația „{application.Name}”...";
+
+            try
+            {
+                await _startupAppsManager.SetEnabledAsync(
+                    application,
+                    enableApplication);
+
+                ScanStatus =
+                    enableApplication
+                        ? $"Aplicația „{application.Name}” a fost activată."
+                        : $"Aplicația „{application.Name}” a fost dezactivată.";
+
+                ScanBadgeText = "Modificat";
+                ScanBadgeBrush = Brushes.LimeGreen;
+            }
+            catch (Exception ex)
+            {
+                ScanStatus =
+                    $"Operația nu a putut fi finalizată: {ex.Message}";
+
+                ScanBadgeText = "Eroare";
+                ScanBadgeBrush = Brushes.OrangeRed;
+            }
+            finally
+            {
+                IsChangingStartupState = false;
+            }
+        }
+
+        public event PropertyChangedEventHandler?
+            PropertyChanged;
 
         protected void OnPropertyChanged(
             [CallerMemberName] string? propertyName = null)

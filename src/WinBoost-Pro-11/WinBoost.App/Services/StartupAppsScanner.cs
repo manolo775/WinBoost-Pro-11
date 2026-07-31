@@ -9,22 +9,27 @@ namespace WinBoost.App.Services
 {
     public class StartupAppsScanner
     {
-        private static readonly (RegistryHive Hive, string Path, string Source)[]
+        private static readonly StartupRegistryLocation[]
             RegistryLocations =
             {
-                (
+                new(
                     RegistryHive.CurrentUser,
                     @"Software\Microsoft\Windows\CurrentVersion\Run",
+                    @"Software\WinBoost\WinBoostDisabledStartup\CurrentUser",
                     "Utilizator curent"
                 ),
-                (
+
+                new(
                     RegistryHive.LocalMachine,
                     @"Software\Microsoft\Windows\CurrentVersion\Run",
+                    @"Software\WinBoost\WinBoostDisabledStartup\LocalMachine",
                     "Toți utilizatorii"
                 ),
-                (
+
+                new(
                     RegistryHive.LocalMachine,
                     @"Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run",
+                    @"Software\WinBoost\WinBoostDisabledStartup\LocalMachine32",
                     "Toți utilizatorii (32-bit)"
                 )
             };
@@ -36,41 +41,58 @@ namespace WinBoost.App.Services
                 var applications =
                     new List<StartupAppInfo>();
 
-                foreach (var location in RegistryLocations)
+                foreach (StartupRegistryLocation location
+                         in RegistryLocations)
                 {
+                    // Citește aplicațiile active.
                     ScanRegistryLocation(
-                        location.Hive,
-                        location.Path,
-                        location.Source,
+                        location,
+                        location.ActivePath,
+                        isEnabled: true,
+                        applications);
+
+                    // Citește aplicațiile dezactivate de WinBoost.
+                    ScanRegistryLocation(
+                        location,
+                        location.DisabledPath,
+                        isEnabled: false,
                         applications);
                 }
 
                 return applications
                     .GroupBy(
                         application =>
-                            $"{application.Name}|{application.Command}",
+                            $"{application.RegistryHive}|" +
+                            $"{application.RegistryPath}|" +
+                            $"{application.RegistryValueName}",
                         StringComparer.OrdinalIgnoreCase)
-                    .Select(group => group.First())
-                    .OrderBy(application => application.Name)
+                    .Select(group =>
+                        group
+                            .OrderByDescending(
+                                application =>
+                                    application.IsEnabled)
+                            .First())
+                    .OrderBy(application =>
+                        application.Name)
                     .ToList();
             });
         }
 
         private static void ScanRegistryLocation(
-            RegistryHive hive,
-            string registryPath,
-            string source,
+            StartupRegistryLocation location,
+            string pathToScan,
+            bool isEnabled,
             List<StartupAppInfo> applications)
         {
             try
             {
                 using RegistryKey baseKey =
                     RegistryKey.OpenBaseKey(
-                        hive,
+                        location.Hive,
                         RegistryView.Default);
 
                 using RegistryKey? registryKey =
-                    baseKey.OpenSubKey(registryPath);
+                    baseKey.OpenSubKey(pathToScan);
 
                 if (registryKey == null)
                     return;
@@ -80,7 +102,11 @@ namespace WinBoost.App.Services
                 {
                     string command =
                         Convert.ToString(
-                            registryKey.GetValue(valueName))
+                            registryKey.GetValue(
+                                valueName,
+                                null,
+                                RegistryValueOptions
+                                    .DoNotExpandEnvironmentNames))
                         ?? string.Empty;
 
                     if (string.IsNullOrWhiteSpace(command))
@@ -89,21 +115,64 @@ namespace WinBoost.App.Services
                     applications.Add(
                         new StartupAppInfo
                         {
-                            Name = string.IsNullOrWhiteSpace(valueName)
-                                ? "Aplicație necunoscută"
-                                : valueName,
+                            Name =
+                                string.IsNullOrWhiteSpace(valueName)
+                                    ? "Aplicație necunoscută"
+                                    : valueName,
 
                             Command = command,
-                            Source = source,
-                            IsEnabled = true
+
+                            Source = location.Source,
+
+                            RegistryHive = location.Hive,
+
+                            // Păstrăm locația originală,
+                            // inclusiv pentru aplicațiile dezactivate.
+                            RegistryPath = location.ActivePath,
+
+                            RegistryValueName = valueName,
+
+                            IsEnabled = isEnabled
                         });
                 }
             }
-            catch
+            catch (UnauthorizedAccessException)
             {
-                // Unele locații pot necesita drepturi suplimentare.
+                // Unele chei din HKEY_LOCAL_MACHINE
+                // pot necesita drepturi de administrator.
+            }
+            catch (System.Security.SecurityException)
+            {
                 // Scanarea continuă cu celelalte locații.
             }
+            catch
+            {
+                // O eroare într-o locație nu trebuie
+                // să oprească întreaga scanare.
+            }
+        }
+
+        private sealed class StartupRegistryLocation
+        {
+            public StartupRegistryLocation(
+                RegistryHive hive,
+                string activePath,
+                string disabledPath,
+                string source)
+            {
+                Hive = hive;
+                ActivePath = activePath;
+                DisabledPath = disabledPath;
+                Source = source;
+            }
+
+            public RegistryHive Hive { get; }
+
+            public string ActivePath { get; }
+
+            public string DisabledPath { get; }
+
+            public string Source { get; }
         }
     }
 }
