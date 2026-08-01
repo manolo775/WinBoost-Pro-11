@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
+using System.Windows.Threading;
 using WinBoost.App.Commands;
 using WinBoost.App.Models;
 using WinBoost.App.Services.ServicesManager;
@@ -12,18 +15,45 @@ namespace WinBoost.App.ViewModels
 {
     public class ServicesViewModel : INotifyPropertyChanged
     {
-        private readonly WindowsServiceScanner _serviceScanner;
+        private readonly WindowsServiceManager
+            _windowsServiceManager;
+
+        private readonly List<WindowsServiceInfo>
+            _allServices;
+
+        private readonly DispatcherTimer
+            _searchDelayTimer;
 
         private bool _isScanning;
-        private string _scanStatus = "Neverificat";
+
+        private string _scanStatus =
+            "Neverificat";
+
         private string _scanMessage =
             "Apasă Scan Services pentru verificare.";
 
+        private string _searchText =
+            string.Empty;
+
+        private string _selectedFilter =
+            "Toate";
+
         public ObservableCollection<WindowsServiceInfo>
             Services
-        { get; }
+        {
+            get;
+        }
 
-        public ICommand ScanServicesCommand { get; }
+        public ObservableCollection<string>
+            AvailableFilters
+        {
+            get;
+        }
+
+        public ICommand ScanServicesCommand
+        {
+            get;
+        }
 
         public bool IsScanning
         {
@@ -32,7 +62,9 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_isScanning == value)
+                {
                     return;
+                }
 
                 _isScanning = value;
 
@@ -50,7 +82,9 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_scanStatus == value)
+                {
                     return;
+                }
 
                 _scanStatus = value;
                 OnPropertyChanged();
@@ -64,10 +98,48 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_scanMessage == value)
+                {
                     return;
+                }
 
                 _scanMessage = value;
                 OnPropertyChanged();
+            }
+        }
+
+        public string SearchText
+        {
+            get => _searchText;
+
+            set
+            {
+                if (_searchText == value)
+                {
+                    return;
+                }
+
+                _searchText = value;
+                OnPropertyChanged();
+
+                RestartSearchDelay();
+            }
+        }
+
+        public string SelectedFilter
+        {
+            get => _selectedFilter;
+
+            set
+            {
+                if (_selectedFilter == value)
+                {
+                    return;
+                }
+
+                _selectedFilter = value;
+                OnPropertyChanged();
+
+                ApplyFilter();
             }
         }
 
@@ -78,11 +150,36 @@ namespace WinBoost.App.ViewModels
 
         public ServicesViewModel()
         {
-            _serviceScanner =
-                new WindowsServiceScanner();
+            _windowsServiceManager =
+                new WindowsServiceManager();
+
+            _allServices =
+                new List<WindowsServiceInfo>();
 
             Services =
                 new ObservableCollection<WindowsServiceInfo>();
+
+            AvailableFilters =
+                new ObservableCollection<string>
+                {
+                    "Toate",
+                    "Active",
+                    "Oprite",
+                    "Automatic",
+                    "Automatic (Delayed)",
+                    "Manual",
+                    "Disabled"
+                };
+
+            _searchDelayTimer =
+                new DispatcherTimer
+                {
+                    Interval =
+                        TimeSpan.FromMilliseconds(300)
+                };
+
+            _searchDelayTimer.Tick +=
+                SearchDelayTimer_Tick;
 
             ScanServicesCommand =
                 new RelayCommand(
@@ -90,45 +187,147 @@ namespace WinBoost.App.ViewModels
                     _ => !IsScanning);
         }
 
+        private void RestartSearchDelay()
+        {
+            _searchDelayTimer.Stop();
+            _searchDelayTimer.Start();
+        }
+
+        private void SearchDelayTimer_Tick(
+            object? sender,
+            EventArgs e)
+        {
+            _searchDelayTimer.Stop();
+
+            ApplyFilter();
+        }
+
         private async Task ScanServicesAsync()
         {
             if (IsScanning)
+            {
                 return;
+            }
 
             IsScanning = true;
-            ScanStatus = "Se verifică";
+
+            ScanStatus =
+                "Se verifică";
+
             ScanMessage =
                 "Se analizează serviciile Windows...";
 
             try
             {
                 var services =
-                    await _serviceScanner.ScanAsync();
+                    await _windowsServiceManager
+                        .GetServicesAsync();
 
-                Services.Clear();
+                _allServices.Clear();
+                _allServices.AddRange(services);
 
-                foreach (WindowsServiceInfo service
-                         in services)
-                {
-                    Services.Add(service);
-                }
+                ApplyFilter();
 
-                ScanStatus = "Verificat";
+                ScanStatus =
+                    "Verificat";
 
-                ScanMessage = services.Count == 0
-                    ? "Nu au fost găsite serviciile monitorizate."
-                    : $"Scanare finalizată: {services.Count} servicii analizate.";
+                ScanMessage =
+                    services.Count == 0
+                        ? "Nu au fost găsite servicii Windows."
+                        : $"Scanare finalizată: " +
+                          $"{services.Count} servicii analizate.";
             }
             catch (Exception ex)
             {
-                ScanStatus = "Eroare";
+                ScanStatus =
+                    "Eroare";
 
                 ScanMessage =
-                    $"Scanarea nu a putut fi finalizată: {ex.Message}";
+                    "Scanarea nu a putut fi finalizată: " +
+                    ex.Message;
             }
             finally
             {
                 IsScanning = false;
+            }
+        }
+
+        private void ApplyFilter()
+        {
+            IEnumerable<WindowsServiceInfo> filteredServices =
+                _allServices;
+
+            if (!string.IsNullOrWhiteSpace(SearchText))
+            {
+                string searchValue =
+                    SearchText.Trim();
+
+                filteredServices =
+                    filteredServices.Where(
+                        service =>
+                            service.DisplayName.Contains(
+                                searchValue,
+                                StringComparison.OrdinalIgnoreCase) ||
+                            service.ServiceName.Contains(
+                                searchValue,
+                                StringComparison.OrdinalIgnoreCase));
+            }
+
+            filteredServices =
+                SelectedFilter switch
+                {
+                    "Active" =>
+                        filteredServices.Where(
+                            service =>
+                                service.Status.Equals(
+                                    "Running",
+                                    StringComparison.OrdinalIgnoreCase)),
+
+                    "Oprite" =>
+                        filteredServices.Where(
+                            service =>
+                                !service.Status.Equals(
+                                    "Running",
+                                    StringComparison.OrdinalIgnoreCase)),
+
+                    "Automatic" =>
+                        filteredServices.Where(
+                            service =>
+                                service.StartType.Equals(
+                                    "Automatic",
+                                    StringComparison.OrdinalIgnoreCase)),
+
+                    "Automatic (Delayed)" =>
+                        filteredServices.Where(
+                            service =>
+                                service.StartType.Equals(
+                                    "Automatic (Delayed)",
+                                    StringComparison.OrdinalIgnoreCase)),
+
+                    "Manual" =>
+                        filteredServices.Where(
+                            service =>
+                                service.StartType.Equals(
+                                    "Manual",
+                                    StringComparison.OrdinalIgnoreCase)),
+
+                    "Disabled" =>
+                        filteredServices.Where(
+                            service =>
+                                service.StartType.Equals(
+                                    "Disabled",
+                                    StringComparison.OrdinalIgnoreCase)),
+
+                    _ =>
+                        filteredServices
+                };
+
+            Services.Clear();
+
+            foreach (WindowsServiceInfo service
+                     in filteredServices)
+            {
+                Services.Add(service);
             }
         }
 
