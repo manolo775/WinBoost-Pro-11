@@ -38,29 +38,47 @@ namespace WinBoost.App.Services.ServicesManager
                 {
                     try
                     {
+                        string serviceName =
+                            service.ServiceName;
+
                         services.Add(
                             new WindowsServiceInfo
                             {
                                 DisplayName =
                                     string.IsNullOrWhiteSpace(
                                         service.DisplayName)
-                                        ? service.ServiceName
+                                        ? serviceName
                                         : service.DisplayName,
 
                                 ServiceName =
-                                    service.ServiceName,
+                                    serviceName,
 
                                 Status =
                                     service.Status.ToString(),
 
                                 StartType =
                                     GetStartType(
-                                        service.ServiceName),
+                                        serviceName),
 
                                 Recommendation =
                                     _recommendationEngine
                                         .GetRecommendation(
-                                            service.ServiceName),
+                                            serviceName),
+
+                                IsCritical =
+                                    _recommendationEngine
+                                        .IsCritical(
+                                            serviceName),
+
+                                RiskLevel =
+                                    _recommendationEngine
+                                        .GetRiskLevel(
+                                            serviceName),
+
+                                CanBeStoppedSafely =
+                                    _recommendationEngine
+                                        .CanBeStoppedSafely(
+                                            serviceName),
 
                                 StatusBrush =
                                     GetStatusBrush(
@@ -117,11 +135,14 @@ namespace WinBoost.App.Services.ServicesManager
                 {
                     0 => "Boot",
                     1 => "System",
+
                     2 when delayedAutomatic =>
                         "Automatic (Delayed)",
+
                     2 => "Automatic",
                     3 => "Manual",
                     4 => "Disabled",
+
                     _ => "Unknown"
                 };
             }

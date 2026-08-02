@@ -274,6 +274,7 @@
 							<ColumnDefinition Width="*"/>
 							<ColumnDefinition Width="*"/>
 							<ColumnDefinition Width="2*"/>
+							<ColumnDefinition Width="215"/>
 						</Grid.ColumnDefinitions>
 
 						<TextBlock
@@ -300,6 +301,11 @@
                             FontWeight="SemiBold"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
+						<TextBlock
+                             Grid.Column="4"
+                             Text="Acțiuni"
+                             FontWeight="SemiBold"
+                             Foreground="{StaticResource SecondaryTextBrush}"/>
 					</Grid>
 
 					<Border
@@ -330,6 +336,7 @@
 											<ColumnDefinition Width="*"/>
 											<ColumnDefinition Width="*"/>
 											<ColumnDefinition Width="2*"/>
+											<ColumnDefinition Width="215"/>
 										</Grid.ColumnDefinitions>
 
 										<StackPanel Grid.Column="0">
@@ -367,6 +374,334 @@
                                             TextWrapping="Wrap"
                                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
+										<StackPanel
+				Grid.Column="4"
+				Orientation="Horizontal"
+				HorizontalAlignment="Center"
+				VerticalAlignment="Center">
+
+											<!-- START -->
+
+											<Button
+												Width="62"
+												Height="34"
+												Margin="2"
+												Padding="0"
+												Foreground="White"
+												BorderBrush="#2E9B43"
+												BorderThickness="1"
+												Command="{Binding DataContext.StartServiceCommand,
+                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+												CommandParameter="{Binding}"
+												IsEnabled="{Binding CanStart}">
+
+												<Button.Style>
+
+													<Style TargetType="Button">
+
+														<Setter
+															Property="Background"
+															Value="#1E5E2B"/>
+
+														<Setter
+															Property="Template">
+
+															<Setter.Value>
+
+																<ControlTemplate TargetType="Button">
+
+																	<Border
+																		x:Name="StartBorder"
+																		Background="{TemplateBinding Background}"
+																		BorderBrush="{TemplateBinding BorderBrush}"
+																		BorderThickness="{TemplateBinding BorderThickness}"
+																		CornerRadius="5">
+
+																		<ContentPresenter
+																			HorizontalAlignment="Center"
+																			VerticalAlignment="Center"/>
+
+																	</Border>
+
+																	<ControlTemplate.Triggers>
+
+																		<Trigger
+																			Property="IsMouseOver"
+																			Value="True">
+
+																			<Setter
+																				TargetName="StartBorder"
+																				Property="Background"
+																				Value="#287A39"/>
+
+																		</Trigger>
+
+																		<Trigger
+																			Property="IsPressed"
+																			Value="True">
+
+																			<Setter
+																				TargetName="StartBorder"
+																				Property="Background"
+																				Value="#174A22"/>
+
+																		</Trigger>
+
+																		<Trigger
+																			Property="IsEnabled"
+																			Value="False">
+
+																			<Setter
+																				TargetName="StartBorder"
+																				Property="Opacity"
+																				Value="0.35"/>
+
+																		</Trigger>
+
+																	</ControlTemplate.Triggers>
+
+																</ControlTemplate>
+
+															</Setter.Value>
+
+														</Setter>
+
+													</Style>
+
+												</Button.Style>
+
+												<StackPanel
+													Orientation="Horizontal"
+													HorizontalAlignment="Center">
+
+													<TextBlock
+														Text="▶"
+														Margin="0,0,5,0"
+														VerticalAlignment="Center"/>
+
+													<TextBlock
+														Text="Start"
+														VerticalAlignment="Center"/>
+
+												</StackPanel>
+
+											</Button>
+
+											<!-- STOP -->
+
+											<Button
+												Width="62"
+												Height="34"
+												Margin="2"
+												Padding="0"
+												Foreground="White"
+												BorderBrush="#B13A3A"
+												BorderThickness="1"
+												Command="{Binding DataContext.StopServiceCommand,
+                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+												CommandParameter="{Binding}"
+												IsEnabled="{Binding CanStop}">
+
+												<Button.Style>
+
+													<Style TargetType="Button">
+
+														<Setter
+															Property="Background"
+															Value="#5F2222"/>
+
+														<Setter
+															Property="Template">
+
+															<Setter.Value>
+
+																<ControlTemplate TargetType="Button">
+
+																	<Border
+																		x:Name="StopBorder"
+																		Background="{TemplateBinding Background}"
+																		BorderBrush="{TemplateBinding BorderBrush}"
+																		BorderThickness="{TemplateBinding BorderThickness}"
+																		CornerRadius="5">
+
+																		<ContentPresenter
+																			HorizontalAlignment="Center"
+																			VerticalAlignment="Center"/>
+
+																	</Border>
+
+																	<ControlTemplate.Triggers>
+
+																		<Trigger
+																			Property="IsMouseOver"
+																			Value="True">
+
+																			<Setter
+																				TargetName="StopBorder"
+																				Property="Background"
+																				Value="#7A2B2B"/>
+
+																		</Trigger>
+
+																		<Trigger
+																			Property="IsPressed"
+																			Value="True">
+
+																			<Setter
+																				TargetName="StopBorder"
+																				Property="Background"
+																				Value="#481919"/>
+
+																		</Trigger>
+
+																		<Trigger
+																			Property="IsEnabled"
+																			Value="False">
+
+																			<Setter
+																				TargetName="StopBorder"
+																				Property="Opacity"
+																				Value="0.35"/>
+
+																		</Trigger>
+
+																	</ControlTemplate.Triggers>
+
+																</ControlTemplate>
+
+															</Setter.Value>
+
+														</Setter>
+
+													</Style>
+
+												</Button.Style>
+
+												<StackPanel
+													Orientation="Horizontal"
+													HorizontalAlignment="Center">
+
+													<TextBlock
+														Text="■"
+														Margin="0,0,5,0"
+														VerticalAlignment="Center"/>
+
+													<TextBlock
+														Text="Stop"
+														VerticalAlignment="Center"/>
+
+												</StackPanel>
+
+											</Button>
+
+											<!-- RESTART -->
+
+											<Button
+												Width="76"
+												Height="34"
+												Margin="2"
+												Padding="0"
+												Foreground="White"
+												BorderBrush="#3577A8"
+												BorderThickness="1"
+												Command="{Binding DataContext.RestartServiceCommand,
+                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+												CommandParameter="{Binding}"
+												IsEnabled="{Binding CanRestart}">
+
+												<Button.Style>
+
+													<Style TargetType="Button">
+
+														<Setter
+															Property="Background"
+															Value="#234B68"/>
+
+														<Setter
+															Property="Template">
+
+															<Setter.Value>
+
+																<ControlTemplate TargetType="Button">
+
+																	<Border
+																		x:Name="RestartBorder"
+																		Background="{TemplateBinding Background}"
+																		BorderBrush="{TemplateBinding BorderBrush}"
+																		BorderThickness="{TemplateBinding BorderThickness}"
+																		CornerRadius="5">
+
+																		<ContentPresenter
+																			HorizontalAlignment="Center"
+																			VerticalAlignment="Center"/>
+
+																	</Border>
+
+																	<ControlTemplate.Triggers>
+
+																		<Trigger
+																			Property="IsMouseOver"
+																			Value="True">
+
+																			<Setter
+																				TargetName="RestartBorder"
+																				Property="Background"
+																				Value="#2F668E"/>
+
+																		</Trigger>
+
+																		<Trigger
+																			Property="IsPressed"
+																			Value="True">
+
+																			<Setter
+																				TargetName="RestartBorder"
+																				Property="Background"
+																				Value="#18364C"/>
+
+																		</Trigger>
+
+																		<Trigger
+																			Property="IsEnabled"
+																			Value="False">
+
+																			<Setter
+																				TargetName="RestartBorder"
+																				Property="Opacity"
+																				Value="0.35"/>
+
+																		</Trigger>
+
+																	</ControlTemplate.Triggers>
+
+																</ControlTemplate>
+
+															</Setter.Value>
+
+														</Setter>
+
+													</Style>
+
+												</Button.Style>
+
+												<StackPanel
+													Orientation="Horizontal"
+													HorizontalAlignment="Center">
+
+													<TextBlock
+														Text="↻"
+														Margin="0,0,5,0"
+														VerticalAlignment="Center"/>
+
+													<TextBlock
+														Text="Restart"
+														VerticalAlignment="Center"/>
+
+												</StackPanel>
+
+											</Button>
+
+										</StackPanel>
 									</Grid>
 
 								</Border>

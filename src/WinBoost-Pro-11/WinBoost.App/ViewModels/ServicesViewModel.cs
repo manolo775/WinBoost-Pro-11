@@ -5,7 +5,9 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
 using WinBoost.App.Commands;
 using WinBoost.App.Models;
@@ -17,6 +19,9 @@ namespace WinBoost.App.ViewModels
     {
         private readonly WindowsServiceManager
             _windowsServiceManager;
+
+        private readonly WindowsServiceController
+            _windowsServiceController;
 
         private readonly List<WindowsServiceInfo>
             _allServices;
@@ -51,6 +56,21 @@ namespace WinBoost.App.ViewModels
         }
 
         public ICommand ScanServicesCommand
+        {
+            get;
+        }
+
+        public ICommand StartServiceCommand
+        {
+            get;
+        }
+
+        public ICommand StopServiceCommand
+        {
+            get;
+        }
+
+        public ICommand RestartServiceCommand
         {
             get;
         }
@@ -153,6 +173,9 @@ namespace WinBoost.App.ViewModels
             _windowsServiceManager =
                 new WindowsServiceManager();
 
+            _windowsServiceController =
+                new WindowsServiceController();
+
             _allServices =
                 new List<WindowsServiceInfo>();
 
@@ -185,6 +208,36 @@ namespace WinBoost.App.ViewModels
                 new RelayCommand(
                     async _ => await ScanServicesAsync(),
                     _ => !IsScanning);
+
+            StartServiceCommand =
+                new RelayCommand(
+                    async parameter =>
+                        await StartServiceAsync(
+                            parameter as WindowsServiceInfo),
+                    parameter =>
+                        parameter is WindowsServiceInfo service &&
+                        service.CanStart &&
+                        !IsScanning);
+
+            StopServiceCommand =
+                new RelayCommand(
+                    async parameter =>
+                        await StopServiceAsync(
+                            parameter as WindowsServiceInfo),
+                    parameter =>
+                        parameter is WindowsServiceInfo service &&
+                        service.CanStop &&
+                        !IsScanning);
+
+            RestartServiceCommand =
+                new RelayCommand(
+                    async parameter =>
+                        await RestartServiceAsync(
+                            parameter as WindowsServiceInfo),
+                    parameter =>
+                        parameter is WindowsServiceInfo service &&
+                        service.CanRestart &&
+                        !IsScanning);
         }
 
         private void RestartSearchDelay()
@@ -250,6 +303,216 @@ namespace WinBoost.App.ViewModels
             {
                 IsScanning = false;
             }
+        }
+
+        private async Task StartServiceAsync(
+            WindowsServiceInfo? service)
+        {
+            if (service == null ||
+                service.IsBusy)
+            {
+                return;
+            }
+
+            MessageBoxResult confirmation =
+                MessageBox.Show(
+                    $"Dorești să pornești serviciul:\n\n" +
+                    $"{service.DisplayName}\n" +
+                    $"({service.ServiceName})?",
+                    "Pornire serviciu",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+            if (confirmation != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            service.IsBusy = true;
+
+            try
+            {
+                ServiceOperationResult result =
+                    await _windowsServiceController
+                        .StartServiceAsync(
+                            service.ServiceName);
+
+                if (result.IsSuccessful)
+                {
+                    UpdateServiceStatus(
+                             service,
+                               string.IsNullOrWhiteSpace(result.CurrentStatus)
+                                ? "Running"
+                                : result.CurrentStatus);
+
+                    ScanMessage =
+                        $"{service.DisplayName}: " +
+                        result.Message;
+                }
+                else
+                {
+                    ShowOperationError(
+                        result.Message);
+                }
+            }
+            finally
+            {
+                service.IsBusy = false;
+
+                CommandManager
+                    .InvalidateRequerySuggested();
+            }
+        }
+
+        private async Task StopServiceAsync(
+            WindowsServiceInfo? service)
+        {
+            if (service == null ||
+                service.IsBusy)
+            {
+                return;
+            }
+
+            MessageBoxResult confirmation =
+                MessageBox.Show(
+                    $"Dorești să oprești serviciul:\n\n" +
+                    $"{service.DisplayName}\n" +
+                    $"({service.ServiceName})?\n\n" +
+                    $"Oprirea unui serviciu poate afecta " +
+                    $"funcționarea Windows sau a unor aplicații.",
+                    "Oprire serviciu",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+            if (confirmation != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            service.IsBusy = true;
+
+            try
+            {
+                ServiceOperationResult result =
+                    await _windowsServiceController
+                        .StopServiceAsync(
+                            service.ServiceName);
+
+                if (result.IsSuccessful)
+                {
+                    UpdateServiceStatus(
+                        service,
+                        string.IsNullOrWhiteSpace(result.CurrentStatus)
+                            ? "Stopped"
+                            : result.CurrentStatus);
+
+                    ScanMessage =
+                        $"{service.DisplayName}: " +
+                        result.Message;
+                }
+                else
+                {
+                    ShowOperationError(
+                        result.Message);
+                }
+            }
+            finally
+            {
+                service.IsBusy = false;
+
+                CommandManager
+                    .InvalidateRequerySuggested();
+            }
+        }
+
+        private async Task RestartServiceAsync(
+            WindowsServiceInfo? service)
+        {
+            if (service == null ||
+                service.IsBusy)
+            {
+                return;
+            }
+
+            MessageBoxResult confirmation =
+                MessageBox.Show(
+                    $"Dorești să repornești serviciul:\n\n" +
+                    $"{service.DisplayName}\n" +
+                    $"({service.ServiceName})?",
+                    "Repornire serviciu",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+            if (confirmation != MessageBoxResult.Yes)
+            {
+                return;
+            }
+
+            service.IsBusy = true;
+
+            try
+            {
+                ServiceOperationResult result =
+                    await _windowsServiceController
+                        .RestartServiceAsync(
+                            service.ServiceName);
+
+                if (result.IsSuccessful)
+                {
+                    UpdateServiceStatus(
+                        service,
+                        string.IsNullOrWhiteSpace(result.CurrentStatus)
+                            ? "Running"
+                            : result.CurrentStatus);
+
+                    ScanMessage =
+                        $"{service.DisplayName}: " +
+                        "Serviciul a fost repornit.";
+                }
+                else
+                {
+                    ShowOperationError(
+                        result.Message);
+                }
+            }
+            finally
+            {
+                service.IsBusy = false;
+
+                CommandManager
+                    .InvalidateRequerySuggested();
+            }
+        }
+
+        private void UpdateServiceStatus(
+            WindowsServiceInfo service,
+            string status)
+        {
+            service.Status = status;
+
+            service.StatusBrush =
+                status.Equals(
+                    "Running",
+                    StringComparison.OrdinalIgnoreCase)
+                    ? Brushes.LimeGreen
+                    : Brushes.Orange;
+
+            CommandManager
+                .InvalidateRequerySuggested();
+
+            // Dacă este selectat filtrul Active/Oprite,
+            // serviciul trebuie mutat sau ascuns corespunzător.
+            ApplyFilter();
+        }
+
+        private static void ShowOperationError(
+            string message)
+        {
+            MessageBox.Show(
+                message,
+                "Operația nu a putut fi executată",
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
         }
 
         private void ApplyFilter()

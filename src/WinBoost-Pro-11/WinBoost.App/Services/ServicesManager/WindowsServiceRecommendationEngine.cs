@@ -11,6 +11,7 @@ namespace WinBoost.App.Services.ServicesManager
                 StringComparer.OrdinalIgnoreCase)
             {
                 "RpcSs",
+                "RpcEptMapper",
                 "DcomLaunch",
                 "PlugPlay",
                 "Power",
@@ -20,7 +21,15 @@ namespace WinBoost.App.Services.ServicesManager
                 "Dnscache",
                 "NlaSvc",
                 "LanmanWorkstation",
-                "W32Time",
+                "ProfSvc",
+                "UserManager",
+                "SamSs",
+                "LSM",
+                "BFE",
+                "mpssvc",
+                "gpsvc",
+                "Schedule",
+                "CryptSvc",
                 "WinDefend",
                 "SecurityHealthService",
                 "wscsvc"
@@ -33,13 +42,13 @@ namespace WinBoost.App.Services.ServicesManager
             {
                 "BITS",
                 "wuauserv",
-                "CryptSvc",
                 "UsoSvc",
-                "Schedule",
+                "W32Time",
                 "AudioSrv",
                 "AudioEndpointBuilder",
-                "ProfSvc",
-                "UserManager"
+                "Themes",
+                "Appinfo",
+                "ShellHWDetection"
             };
 
         private static readonly HashSet<string>
@@ -51,7 +60,10 @@ namespace WinBoost.App.Services.ServicesManager
                 "bthserv",
                 "TabletInputService",
                 "WSearch",
-                "MapsBroker"
+                "MapsBroker",
+                "PhoneSvc",
+                "SensorService",
+                "WalletService"
             };
 
         private static readonly HashSet<string>
@@ -65,8 +77,9 @@ namespace WinBoost.App.Services.ServicesManager
                 "XblGameSave",
                 "XboxGipSvc",
                 "XboxNetApiSvc",
-                "SharedAccess",
-                "lfsvc"
+                "lfsvc",
+                "RetailDemo",
+                "WMPNetworkSvc"
             };
 
         public string GetRecommendation(
@@ -77,9 +90,9 @@ namespace WinBoost.App.Services.ServicesManager
                 return "Review";
             }
 
-            if (CriticalServices.Contains(serviceName))
+            if (IsCritical(serviceName))
             {
-                return "Critical";
+                return "Critical - do not stop";
             }
 
             if (KeepEnabledServices.Contains(serviceName))
@@ -99,6 +112,79 @@ namespace WinBoost.App.Services.ServicesManager
             }
 
             return "Review";
+        }
+
+        public bool IsCritical(
+            string serviceName)
+        {
+            if (string.IsNullOrWhiteSpace(serviceName))
+            {
+                return false;
+            }
+
+            return CriticalServices.Contains(serviceName);
+        }
+
+        public string GetRiskLevel(
+            string serviceName)
+        {
+            if (string.IsNullOrWhiteSpace(serviceName))
+            {
+                return "Unknown";
+            }
+
+            if (CriticalServices.Contains(serviceName))
+            {
+                return "Critical";
+            }
+
+            if (KeepEnabledServices.Contains(serviceName))
+            {
+                return "High";
+            }
+
+            if (OptionalServices.Contains(serviceName))
+            {
+                return "Medium";
+            }
+
+            if (SafeToDisableIfUnusedServices.Contains(
+                    serviceName))
+            {
+                return "Low";
+            }
+
+            return "Unknown";
+        }
+
+        public bool CanBeStoppedSafely(
+            string serviceName)
+        {
+            if (string.IsNullOrWhiteSpace(serviceName))
+            {
+                return false;
+            }
+
+            /*
+             * WinBoost blochează doar serviciile cunoscute
+             * ca fiind critice.
+             *
+             * Pentru serviciile necunoscute, utilizatorul va
+             * primi în continuare un avertisment înainte de oprire.
+             */
+            return !CriticalServices.Contains(serviceName);
+        }
+
+        public bool IsRecommendedForOptimization(
+            string serviceName)
+        {
+            if (string.IsNullOrWhiteSpace(serviceName))
+            {
+                return false;
+            }
+
+            return SafeToDisableIfUnusedServices.Contains(
+                serviceName);
         }
     }
 }
