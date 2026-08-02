@@ -274,6 +274,7 @@
 							<ColumnDefinition Width="*"/>
 							<ColumnDefinition Width="*"/>
 							<ColumnDefinition Width="2*"/>
+							<ColumnDefinition Width="90"/>
 							<ColumnDefinition Width="215"/>
 						</Grid.ColumnDefinitions>
 
@@ -301,8 +302,35 @@
                             FontWeight="SemiBold"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
+						<Border
+    Grid.Column="4"
+    Width="62"
+    Height="32"
+    HorizontalAlignment="Center"
+    VerticalAlignment="Center"
+    CornerRadius="16"
+    Background="#252525"
+    BorderBrush="{Binding HealthScoreBrush}"
+    BorderThickness="1">
+
+							<TextBlock
+								Text="{Binding HealthScoreText}"
+								HorizontalAlignment="Center"
+								VerticalAlignment="Center"
+								FontWeight="SemiBold"
+								Foreground="{Binding HealthScoreBrush}"/>
+
+						</Border>
+						
 						<TextBlock
                              Grid.Column="4"
+                             Text="Health"
+                             FontWeight="SemiBold"
+                             HorizontalAlignment="Center"
+                             Foreground="{StaticResource SecondaryTextBrush}"/>
+						
+						<TextBlock
+                             Grid.Column="5"
                              Text="Acțiuni"
                              FontWeight="SemiBold"
                              Foreground="{StaticResource SecondaryTextBrush}"/>
@@ -324,10 +352,10 @@
 							<DataTemplate>
 
 								<Border
-                                    Margin="0,5"
-                                    Padding="12"
-                                    CornerRadius="6"
-                                    Background="#303030">
+									Margin="0,5"
+									Padding="12"
+									CornerRadius="6"
+									Background="#303030">
 
 									<Grid>
 
@@ -336,49 +364,100 @@
 											<ColumnDefinition Width="*"/>
 											<ColumnDefinition Width="*"/>
 											<ColumnDefinition Width="2*"/>
+											<ColumnDefinition Width="90"/>
 											<ColumnDefinition Width="215"/>
 										</Grid.ColumnDefinitions>
+
+										<!-- SERVICIU -->
 
 										<StackPanel Grid.Column="0">
 
 											<TextBlock
-                                                Text="{Binding DisplayName}"
-                                                FontWeight="SemiBold"
-                                                TextWrapping="Wrap"
-                                                Foreground="{StaticResource TextBrush}"/>
+												Text="{Binding DisplayName}"
+												FontWeight="SemiBold"
+												TextWrapping="Wrap"
+												Foreground="{StaticResource TextBrush}"/>
 
 											<TextBlock
-                                                Text="{Binding ServiceName}"
-                                                Margin="0,3,0,0"
-                                                FontSize="12"
-                                                Foreground="{StaticResource SecondaryTextBrush}"/>
+												Text="{Binding ServiceName}"
+												Margin="0,3,0,0"
+												FontSize="12"
+												TextWrapping="Wrap"
+												Foreground="{StaticResource SecondaryTextBrush}"/>
 
 										</StackPanel>
 
-										<TextBlock
-                                            Grid.Column="1"
-                                            Text="{Binding Status}"
-                                            VerticalAlignment="Center"
-                                            Foreground="{Binding StatusBrush}"/>
+										<!-- STARE -->
 
 										<TextBlock
-                                            Grid.Column="2"
-                                            Text="{Binding StartType}"
-                                            VerticalAlignment="Center"
-                                            Foreground="{StaticResource SecondaryTextBrush}"/>
+											Grid.Column="1"
+											Text="{Binding Status}"
+											Margin="6,0"
+											VerticalAlignment="Center"
+											TextWrapping="Wrap"
+											Foreground="{Binding StatusBrush}"/>
+
+										<!-- TIP PORNIRE -->
 
 										<TextBlock
-                                            Grid.Column="3"
-                                            Text="{Binding Recommendation}"
-                                            VerticalAlignment="Center"
-                                            TextWrapping="Wrap"
-                                            Foreground="{StaticResource SecondaryTextBrush}"/>
+											Grid.Column="2"
+											Text="{Binding StartType}"
+											Margin="6,0"
+											VerticalAlignment="Center"
+											TextWrapping="Wrap"
+											Foreground="{StaticResource SecondaryTextBrush}"/>
+
+										<!-- RECOMANDARE -->
+
+										<Border
+											Grid.Column="3"
+											Margin="6,0"
+											Padding="10,5"
+											HorizontalAlignment="Left"
+											VerticalAlignment="Center"
+											CornerRadius="6"
+											Background="#252525"
+											BorderBrush="{Binding RecommendationBrush}"
+											BorderThickness="1">
+
+											<TextBlock
+												Text="{Binding Recommendation}"
+												Foreground="{Binding RecommendationBrush}"
+												FontWeight="SemiBold"
+												TextWrapping="Wrap"/>
+
+										</Border>
+
+										<!-- HEALTH SCORE -->
+
+										<Border
+											Grid.Column="4"
+											Width="62"
+											Height="30"
+											Margin="4,0"
+											HorizontalAlignment="Center"
+											VerticalAlignment="Center"
+											CornerRadius="15"
+											Background="#252525"
+											BorderBrush="{Binding HealthScoreBrush}"
+											BorderThickness="1">
+
+											<TextBlock
+												Text="{Binding HealthScoreText}"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"
+												FontWeight="SemiBold"
+												Foreground="{Binding HealthScoreBrush}"/>
+
+										</Border>
+
+										<!-- ACȚIUNI -->
 
 										<StackPanel
-				Grid.Column="4"
-				Orientation="Horizontal"
-				HorizontalAlignment="Center"
-				VerticalAlignment="Center">
+											Grid.Column="5"
+											Orientation="Horizontal"
+											HorizontalAlignment="Center"
+											VerticalAlignment="Center">
 
 											<!-- START -->
 
@@ -391,7 +470,7 @@
 												BorderBrush="#2E9B43"
 												BorderThickness="1"
 												Command="{Binding DataContext.StartServiceCommand,
-                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
 												CommandParameter="{Binding}"
 												IsEnabled="{Binding CanStart}">
 
@@ -403,8 +482,7 @@
 															Property="Background"
 															Value="#1E5E2B"/>
 
-														<Setter
-															Property="Template">
+														<Setter Property="Template">
 
 															<Setter.Value>
 
@@ -498,7 +576,7 @@
 												BorderBrush="#B13A3A"
 												BorderThickness="1"
 												Command="{Binding DataContext.StopServiceCommand,
-                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
 												CommandParameter="{Binding}"
 												IsEnabled="{Binding CanStop}">
 
@@ -510,8 +588,7 @@
 															Property="Background"
 															Value="#5F2222"/>
 
-														<Setter
-															Property="Template">
+														<Setter Property="Template">
 
 															<Setter.Value>
 
@@ -605,7 +682,7 @@
 												BorderBrush="#3577A8"
 												BorderThickness="1"
 												Command="{Binding DataContext.RestartServiceCommand,
-                          RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                      RelativeSource={RelativeSource AncestorType=UserControl}}"
 												CommandParameter="{Binding}"
 												IsEnabled="{Binding CanRestart}">
 
@@ -617,8 +694,7 @@
 															Property="Background"
 															Value="#234B68"/>
 
-														<Setter
-															Property="Template">
+														<Setter Property="Template">
 
 															<Setter.Value>
 
@@ -702,6 +778,7 @@
 											</Button>
 
 										</StackPanel>
+
 									</Grid>
 
 								</Border>

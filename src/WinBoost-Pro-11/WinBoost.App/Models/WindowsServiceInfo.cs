@@ -219,6 +219,76 @@ namespace WinBoost.App.Models
                 _ => Brushes.LightGray
             };
 
+        public Brush RecommendationBrush
+        {
+            get
+            {
+                if (Recommendation.StartsWith(
+                        "Critical",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return Brushes.OrangeRed;
+                }
+
+                if (Recommendation.Equals(
+                        "Keep enabled",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return Brushes.LimeGreen;
+                }
+
+                if (Recommendation.Equals(
+                        "Optional",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return Brushes.Gold;
+                }
+
+                if (Recommendation.Equals(
+                        "Safe to disable if unused",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return Brushes.DeepSkyBlue;
+                }
+
+                if (Recommendation.Equals(
+                        "Review",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return Brushes.Silver;
+                }
+
+                return Brushes.LightGray;
+            }
+        }
+
+        public int HealthScore
+        {
+            get
+            {
+                return RiskLevel switch
+                {
+                    "Critical" => 100,
+                    "High" => 90,
+                    "Medium" => 75,
+                    "Low" => 60,
+                    _ => 70
+                };
+            }
+        }
+
+        public Brush HealthScoreBrush =>
+            HealthScore switch
+            {
+                >= 90 => Brushes.LimeGreen,
+                >= 75 => Brushes.Gold,
+                >= 60 => Brushes.Orange,
+                _ => Brushes.OrangeRed
+            };
+
+        public string HealthScoreText =>
+            $"{HealthScore}%";
+
         public bool CanStart =>
             !IsBusy &&
             !Status.Equals(
