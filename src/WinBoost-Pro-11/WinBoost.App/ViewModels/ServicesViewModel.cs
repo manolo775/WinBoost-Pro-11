@@ -23,6 +23,9 @@ namespace WinBoost.App.ViewModels
         private readonly WindowsServiceController
             _windowsServiceController;
 
+        private readonly ServiceStartupTypeViewModel
+            _startupTypeViewModel;
+
         private readonly List<WindowsServiceInfo>
             _allServices;
 
@@ -71,6 +74,11 @@ namespace WinBoost.App.ViewModels
         }
 
         public ICommand RestartServiceCommand
+        {
+            get;
+        }
+
+        public ICommand ChangeStartupTypeCommand
         {
             get;
         }
@@ -176,6 +184,9 @@ namespace WinBoost.App.ViewModels
             _windowsServiceController =
                 new WindowsServiceController();
 
+            _startupTypeViewModel =
+                new ServiceStartupTypeViewModel();
+
             _allServices =
                 new List<WindowsServiceInfo>();
 
@@ -206,8 +217,10 @@ namespace WinBoost.App.ViewModels
 
             ScanServicesCommand =
                 new RelayCommand(
-                    async _ => await ScanServicesAsync(),
-                    _ => !IsScanning);
+                    async _ =>
+                        await ScanServicesAsync(),
+                    _ =>
+                        !IsScanning);
 
             StartServiceCommand =
                 new RelayCommand(
@@ -237,6 +250,39 @@ namespace WinBoost.App.ViewModels
                     parameter =>
                         parameter is WindowsServiceInfo service &&
                         service.CanRestart &&
+                        !IsScanning);
+
+            ChangeStartupTypeCommand =
+                new RelayCommand(
+                    async parameter =>
+                    {
+                        if (parameter is not
+                            WindowsServiceInfo service)
+                        {
+                            return;
+                        }
+
+                        bool wasApplied =
+                            await _startupTypeViewModel
+                                .ApplyStartupTypeAsync(service);
+
+                        if (wasApplied)
+                        {
+                            ScanMessage =
+                                $"{service.DisplayName}: " +
+                                $"tipul de pornire este acum " +
+                                $"{service.StartType}.";
+
+                            ApplyFilter();
+                        }
+
+                        CommandManager
+                            .InvalidateRequerySuggested();
+                    },
+                    parameter =>
+                        parameter is WindowsServiceInfo service &&
+                        service.CanChangeStartupType &&
+                        service.HasStartupTypeChanged &&
                         !IsScanning);
         }
 
@@ -340,10 +386,11 @@ namespace WinBoost.App.ViewModels
                 if (result.IsSuccessful)
                 {
                     UpdateServiceStatus(
-                             service,
-                               string.IsNullOrWhiteSpace(result.CurrentStatus)
-                                ? "Running"
-                                : result.CurrentStatus);
+                        service,
+                        string.IsNullOrWhiteSpace(
+                            result.CurrentStatus)
+                            ? "Running"
+                            : result.CurrentStatus);
 
                     ScanMessage =
                         $"{service.DisplayName}: " +
@@ -378,8 +425,8 @@ namespace WinBoost.App.ViewModels
                     $"Dorești să oprești serviciul:\n\n" +
                     $"{service.DisplayName}\n" +
                     $"({service.ServiceName})?\n\n" +
-                    $"Oprirea unui serviciu poate afecta " +
-                    $"funcționarea Windows sau a unor aplicații.",
+                    "Oprirea unui serviciu poate afecta " +
+                    "funcționarea Windows sau a unor aplicații.",
                     "Oprire serviciu",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
@@ -402,7 +449,8 @@ namespace WinBoost.App.ViewModels
                 {
                     UpdateServiceStatus(
                         service,
-                        string.IsNullOrWhiteSpace(result.CurrentStatus)
+                        string.IsNullOrWhiteSpace(
+                            result.CurrentStatus)
                             ? "Stopped"
                             : result.CurrentStatus);
 
@@ -461,13 +509,14 @@ namespace WinBoost.App.ViewModels
                 {
                     UpdateServiceStatus(
                         service,
-                        string.IsNullOrWhiteSpace(result.CurrentStatus)
+                        string.IsNullOrWhiteSpace(
+                            result.CurrentStatus)
                             ? "Running"
                             : result.CurrentStatus);
 
                     ScanMessage =
                         $"{service.DisplayName}: " +
-                        "Serviciul a fost repornit.";
+                        result.Message;
                 }
                 else
                 {
@@ -500,8 +549,6 @@ namespace WinBoost.App.ViewModels
             CommandManager
                 .InvalidateRequerySuggested();
 
-            // Dacă este selectat filtrul Active/Oprite,
-            // serviciul trebuie mutat sau ascuns corespunzător.
             ApplyFilter();
         }
 
@@ -585,10 +632,13 @@ namespace WinBoost.App.ViewModels
                         filteredServices
                 };
 
+            WindowsServiceInfo[] filteredArray =
+                filteredServices.ToArray();
+
             Services.Clear();
 
             foreach (WindowsServiceInfo service
-                     in filteredServices)
+                     in filteredArray)
             {
                 Services.Add(service);
             }
