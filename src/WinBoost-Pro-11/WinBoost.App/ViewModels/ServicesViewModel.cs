@@ -11,6 +11,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using WinBoost.App.Commands;
 using WinBoost.App.Models;
+using WinBoost.App.Services.Health;
 using WinBoost.App.Services.ServicesManager;
 
 namespace WinBoost.App.ViewModels
@@ -22,6 +23,9 @@ namespace WinBoost.App.ViewModels
 
         private readonly WindowsServiceController
             _windowsServiceController;
+
+        private readonly SystemHealthStateService
+            _healthStateService;
 
         private readonly ServiceStartupTypeViewModel
             _startupTypeViewModel;
@@ -184,6 +188,9 @@ namespace WinBoost.App.ViewModels
             _windowsServiceController =
                 new WindowsServiceController();
 
+            _healthStateService =
+                SystemHealthStateService.Instance;
+
             _startupTypeViewModel =
                 new ServiceStartupTypeViewModel();
 
@@ -270,7 +277,7 @@ namespace WinBoost.App.ViewModels
                         {
                             ScanMessage =
                                 $"{service.DisplayName}: " +
-                                $"tipul de pornire este acum " +
+                                "tipul de pornire este acum " +
                                 $"{service.StartType}.";
 
                             ApplyFilter();
@@ -318,12 +325,15 @@ namespace WinBoost.App.ViewModels
 
             try
             {
-                var services =
+                List<WindowsServiceInfo> services =
                     await _windowsServiceManager
                         .GetServicesAsync();
 
                 _allServices.Clear();
                 _allServices.AddRange(services);
+
+                UpdateServicesHealthScore(
+                    services);
 
                 ApplyFilter();
 
@@ -349,6 +359,37 @@ namespace WinBoost.App.ViewModels
             {
                 IsScanning = false;
             }
+        }
+
+        private void UpdateServicesHealthScore(
+            IReadOnlyCollection<WindowsServiceInfo> services)
+        {
+            int criticalServices =
+                services.Count(
+                    service =>
+                        service.RiskLevel.Equals(
+                            "Critical",
+                            StringComparison.OrdinalIgnoreCase));
+
+            int optionalServices =
+                services.Count(
+                    service =>
+                        service.RiskLevel.Equals(
+                            "Medium",
+                            StringComparison.OrdinalIgnoreCase));
+
+            int lowRiskServices =
+                services.Count(
+                    service =>
+                        service.RiskLevel.Equals(
+                            "Low",
+                            StringComparison.OrdinalIgnoreCase));
+
+            _healthStateService.UpdateServicesData(
+                services.Count,
+                criticalServices,
+                optionalServices,
+                lowRiskServices);
         }
 
         private async Task StartServiceAsync(
@@ -653,7 +694,8 @@ namespace WinBoost.App.ViewModels
         {
             PropertyChanged?.Invoke(
                 this,
-                new PropertyChangedEventArgs(propertyName));
+                new PropertyChangedEventArgs(
+                    propertyName));
         }
     }
 }

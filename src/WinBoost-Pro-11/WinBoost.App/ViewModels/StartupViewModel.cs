@@ -1,20 +1,28 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using System.Windows.Media;
 using WinBoost.App.Commands;
 using WinBoost.App.Models;
+using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Startup;
 
 namespace WinBoost.App.ViewModels
 {
     public class StartupViewModel : INotifyPropertyChanged
     {
-        private readonly StartupAppsScanner _startupAppsScanner;
-        private readonly StartupAppsManager _startupAppsManager;
+        private readonly StartupAppsScanner
+            _startupAppsScanner;
+
+        private readonly StartupAppsManager
+            _startupAppsManager;
+
+        private readonly SystemHealthStateService
+            _healthStateService;
 
         private bool _isScanning;
         private bool _isChangingStartupState;
@@ -22,11 +30,14 @@ namespace WinBoost.App.ViewModels
         private string _scanStatus =
             "Apasă Scan Startup pentru a verifica aplicațiile care pornesc cu Windows.";
 
-        private string _scanBadgeText = "Neverificat";
+        private string _scanBadgeText =
+            "Neverificat";
 
-        private Brush _scanBadgeBrush = Brushes.LightGray;
+        private Brush _scanBadgeBrush =
+            Brushes.LightGray;
 
-        public ObservableCollection<StartupAppInfo> StartupApplications
+        public ObservableCollection<StartupAppInfo>
+            StartupApplications
         {
             get;
         }
@@ -48,7 +59,9 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_scanStatus == value)
+                {
                     return;
+                }
 
                 _scanStatus = value;
                 OnPropertyChanged();
@@ -62,7 +75,9 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_scanBadgeText == value)
+                {
                     return;
+                }
 
                 _scanBadgeText = value;
                 OnPropertyChanged();
@@ -76,7 +91,9 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_scanBadgeBrush == value)
+                {
                     return;
+                }
 
                 _scanBadgeBrush = value;
                 OnPropertyChanged();
@@ -90,7 +107,9 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_isScanning == value)
+                {
                     return;
+                }
 
                 _isScanning = value;
 
@@ -108,7 +127,9 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_isChangingStartupState == value)
+                {
                     return;
+                }
 
                 _isChangingStartupState = value;
 
@@ -131,12 +152,16 @@ namespace WinBoost.App.ViewModels
             _startupAppsManager =
                 new StartupAppsManager();
 
+            _healthStateService =
+                SystemHealthStateService.Instance;
+
             StartupApplications =
                 new ObservableCollection<StartupAppInfo>();
 
             ScanStartupCommand =
                 new RelayCommand(
-                    async _ => await ScanStartupAsync(),
+                    async _ =>
+                        await ScanStartupAsync(),
                     _ =>
                         !IsScanning &&
                         !IsChangingStartupState);
@@ -154,44 +179,63 @@ namespace WinBoost.App.ViewModels
 
         private async Task ScanStartupAsync()
         {
-            if (IsScanning || IsChangingStartupState)
+            if (IsScanning ||
+                IsChangingStartupState)
+            {
                 return;
+            }
 
             IsScanning = true;
 
             ScanStatus =
                 "Se verifică aplicațiile care pornesc cu Windows...";
 
-            ScanBadgeText = "Se verifică";
-            ScanBadgeBrush = Brushes.Orange;
+            ScanBadgeText =
+                "Se verifică";
+
+            ScanBadgeBrush =
+                Brushes.Orange;
 
             try
             {
                 var applications =
-                    await _startupAppsScanner.ScanAsync();
+                    await _startupAppsScanner
+                        .ScanAsync();
 
                 StartupApplications.Clear();
 
-                foreach (StartupAppInfo application in applications)
+                foreach (StartupAppInfo application
+                         in applications)
                 {
-                    StartupApplications.Add(application);
+                    StartupApplications.Add(
+                        application);
                 }
+
+                UpdateStartupHealthScore();
 
                 ScanStatus =
                     StartupApplications.Count == 0
                         ? "Scanare finalizată: nu au fost găsite aplicații configurate pentru pornire automată."
-                        : $"Scanare finalizată: {StartupApplications.Count} aplicații găsite.";
+                        : $"Scanare finalizată: " +
+                          $"{StartupApplications.Count} aplicații găsite.";
 
-                ScanBadgeText = "Verificat";
-                ScanBadgeBrush = Brushes.LimeGreen;
+                ScanBadgeText =
+                    "Verificat";
+
+                ScanBadgeBrush =
+                    Brushes.LimeGreen;
             }
             catch (Exception ex)
             {
                 ScanStatus =
-                    $"Scanarea nu a putut fi finalizată: {ex.Message}";
+                    $"Scanarea nu a putut fi finalizată: " +
+                    $"{ex.Message}";
 
-                ScanBadgeText = "Eroare";
-                ScanBadgeBrush = Brushes.OrangeRed;
+                ScanBadgeText =
+                    "Eroare";
+
+                ScanBadgeBrush =
+                    Brushes.OrangeRed;
             }
             finally
             {
@@ -214,8 +258,11 @@ namespace WinBoost.App.ViewModels
 
             IsChangingStartupState = true;
 
-            ScanBadgeText = "Se modifică";
-            ScanBadgeBrush = Brushes.Orange;
+            ScanBadgeText =
+                "Se modifică";
+
+            ScanBadgeBrush =
+                Brushes.Orange;
 
             ScanStatus =
                 enableApplication
@@ -224,25 +271,38 @@ namespace WinBoost.App.ViewModels
 
             try
             {
-                await _startupAppsManager.SetEnabledAsync(
-                    application,
-                    enableApplication);
+                await _startupAppsManager
+                    .SetEnabledAsync(
+                        application,
+                        enableApplication);
+
+                application.IsEnabled =
+                    enableApplication;
+
+                UpdateStartupHealthScore();
 
                 ScanStatus =
                     enableApplication
                         ? $"Aplicația „{application.Name}” a fost activată."
                         : $"Aplicația „{application.Name}” a fost dezactivată.";
 
-                ScanBadgeText = "Modificat";
-                ScanBadgeBrush = Brushes.LimeGreen;
+                ScanBadgeText =
+                    "Modificat";
+
+                ScanBadgeBrush =
+                    Brushes.LimeGreen;
             }
             catch (Exception ex)
             {
                 ScanStatus =
-                    $"Operația nu a putut fi finalizată: {ex.Message}";
+                    $"Operația nu a putut fi finalizată: " +
+                    $"{ex.Message}";
 
-                ScanBadgeText = "Eroare";
-                ScanBadgeBrush = Brushes.OrangeRed;
+                ScanBadgeText =
+                    "Eroare";
+
+                ScanBadgeBrush =
+                    Brushes.OrangeRed;
             }
             finally
             {
@@ -250,15 +310,32 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        private void UpdateStartupHealthScore()
+        {
+            int totalStartupApps =
+                StartupApplications.Count;
+
+            int enabledStartupApps =
+                StartupApplications.Count(
+                    application =>
+                        application.IsEnabled);
+
+            _healthStateService.UpdateStartupData(
+                totalStartupApps,
+                enabledStartupApps);
+        }
+
         public event PropertyChangedEventHandler?
             PropertyChanged;
 
         protected void OnPropertyChanged(
-            [CallerMemberName] string? propertyName = null)
+            [CallerMemberName]
+            string? propertyName = null)
         {
             PropertyChanged?.Invoke(
                 this,
-                new PropertyChangedEventArgs(propertyName));
+                new PropertyChangedEventArgs(
+                    propertyName));
         }
     }
 }

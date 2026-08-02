@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using WinBoost.App.Models;
+using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Monitoring;
 
 namespace WinBoost.App.ViewModels
@@ -12,6 +13,12 @@ namespace WinBoost.App.ViewModels
     {
         private readonly SystemMonitorService
             _systemMonitorService;
+
+        private readonly SystemHealthCalculator
+            _systemHealthCalculator;
+
+        private readonly SystemHealthStateService
+            _healthStateService;
 
         private readonly DispatcherTimer
             _refreshTimer;
@@ -34,15 +41,17 @@ namespace WinBoost.App.ViewModels
             _systemMonitorService =
                 new SystemMonitorService();
 
+            _systemHealthCalculator =
+                new SystemHealthCalculator();
+
+            _healthStateService =
+                SystemHealthStateService.Instance;
+
             HealthSummary =
-                new SystemHealthSummary
-                {
-                    PerformanceScore = 80,
-                    ServicesScore = 80,
-                    StartupScore = 80,
-                    PrivacyScore = 80,
-                    WindowsUpdateScore = 80
-                };
+                _healthStateService.Summary;
+
+            _healthStateService.HealthChanged +=
+                HealthStateService_HealthChanged;
 
             _refreshTimer =
                 new DispatcherTimer
@@ -298,50 +307,30 @@ namespace WinBoost.App.ViewModels
 
         private void UpdatePerformanceScore()
         {
-            int score = 100;
+            int performanceScore =
+                _systemHealthCalculator
+                    .CalculatePerformanceScore(
+                        CpuUsageValue,
+                        RamUsageValue,
+                        DiskUsageValue);
 
-            if (CpuUsageValue > 80)
-            {
-                score -= 15;
-            }
-            else if (CpuUsageValue > 60)
-            {
-                score -= 8;
-            }
+            _healthStateService
+                .UpdatePerformanceScore(
+                    performanceScore);
+        }
 
-            if (RamUsageValue > 90)
-            {
-                score -= 25;
-            }
-            else if (RamUsageValue > 75)
-            {
-                score -= 15;
-            }
-            else if (RamUsageValue > 60)
-            {
-                score -= 8;
-            }
-
-            if (DiskUsageValue > 90)
-            {
-                score -= 20;
-            }
-            else if (DiskUsageValue > 80)
-            {
-                score -= 10;
-            }
-
-            HealthSummary.PerformanceScore =
-                Math.Clamp(
-                    score,
-                    0,
-                    100);
-
+        private void HealthStateService_HealthChanged(
+            object? sender,
+            EventArgs e)
+        {
             OnPropertyChanged(
                 nameof(HealthScore));
 
             OnPropertyChanged(
                 nameof(HealthStatus));
+
+            OnPropertyChanged(
+                nameof(HealthSummary));
         }
 
         private static string GetUsageStatus(
