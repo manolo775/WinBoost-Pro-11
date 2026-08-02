@@ -4,64 +4,222 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<Border
-        Padding="22,16"
+        Padding="22"
         Background="#2D3035"
         CornerRadius="14">
 
 		<Grid>
 
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="Auto"/>
-			</Grid.ColumnDefinitions>
+			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
+			</Grid.RowDefinitions>
 
-			<StackPanel
-                Grid.Column="0"
-                VerticalAlignment="Center">
+			<!-- SCOR GENERAL -->
 
-				<TextBlock
-                    Text="Overall System Health"
-                    FontSize="18"
-                    FontWeight="SemiBold"
-                    Foreground="White"/>
+			<Grid Grid.Row="0">
 
-				<TextBlock
-                    Text="{Binding HealthStatus}"
-                    Margin="0,5,0,0"
-                    FontSize="14"
-                    Foreground="#B8BCC4"/>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
 
-				<ProgressBar
-                    Value="{Binding HealthScore}"
-                    Maximum="100"
-                    Height="8"
-                    Margin="0,14,30,0"
-                    Background="#505257"
-                    Foreground="#00C853"/>
+				<StackPanel
+                    Grid.Column="0"
+                    VerticalAlignment="Center">
 
-			</StackPanel>
+					<TextBlock
+                        Text="Overall System Health"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Foreground="White"/>
 
-			<StackPanel
-                Grid.Column="1"
-                Margin="20,0,5,0"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center">
+					<TextBlock
+		Text="{Binding HealthSummary.OverallHealthStatus,
+                   Mode=OneWay}"
+		Margin="0,5,0,0"
+		FontSize="14"
+		Foreground="{Binding HealthSummary.OverallHealthBrush,
+                         Mode=OneWay}"/>
 
-				<TextBlock
-                    Text="{Binding HealthScore}"
-                    FontSize="38"
-                    FontWeight="Bold"
-                    Foreground="#00D66B"
-                    HorizontalAlignment="Center"/>
+					<ProgressBar
+						Value="{Binding HealthSummary.OverallHealthScore,
+                    Mode=OneWay}"
+						Maximum="100"
+						Height="8"
+						Margin="0,14,30,0"
+						Background="#505257"
+						Foreground="{Binding HealthSummary.OverallHealthBrush,
+                         Mode=OneWay}"/>
 
-				<TextBlock
-                    Text="/ 100"
-                    Margin="0,-5,0,0"
-                    FontSize="14"
-                    Foreground="#B8BCC4"
-                    HorizontalAlignment="Center"/>
+				</StackPanel>
 
-			</StackPanel>
+				<StackPanel
+                    Grid.Column="1"
+                    Margin="20,0,5,0"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+
+					<TextBlock
+		                    Text="{Binding HealthSummary.OverallHealthText,
+                               Mode=OneWay}"
+		                    FontSize="38"
+		                    FontWeight="Bold"
+		                     Foreground="{Binding HealthSummary.OverallHealthBrush,
+                                      Mode=OneWay}"
+		                     HorizontalAlignment="Center"/>
+
+					<TextBlock
+                        Text="System Score"
+                        Margin="0,-3,0,0"
+                        FontSize="13"
+                        Foreground="#B8BCC4"
+                        HorizontalAlignment="Center"/>
+
+				</StackPanel>
+
+			</Grid>
+
+			<!-- SCORURI MODULE -->
+
+			<UniformGrid
+                Grid.Row="1"
+                Columns="5"
+                Margin="0,22,0,0">
+
+				<Border
+                    Margin="4"
+                    Padding="10"
+                    CornerRadius="8"
+                    Background="#25272B">
+
+					<StackPanel>
+
+						<TextBlock
+                            Text="Performance"
+                            HorizontalAlignment="Center"
+                            Foreground="#B8BCC4"/>
+
+						<TextBlock
+                            Text="{Binding HealthSummary.PerformanceScore,
+                                           StringFormat={}{0}%}"
+                            Margin="0,5,0,0"
+                            HorizontalAlignment="Center"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="White"/>
+
+					</StackPanel>
+
+				</Border>
+
+				<Border
+                    Margin="4"
+                    Padding="10"
+                    CornerRadius="8"
+                    Background="#25272B">
+
+					<StackPanel>
+
+						<TextBlock
+                            Text="Services"
+                            HorizontalAlignment="Center"
+                            Foreground="#B8BCC4"/>
+
+						<TextBlock
+                            Text="{Binding HealthSummary.ServicesScore,
+                                           StringFormat={}{0}%}"
+                            Margin="0,5,0,0"
+                            HorizontalAlignment="Center"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="White"/>
+
+					</StackPanel>
+
+				</Border>
+
+				<Border
+                    Margin="4"
+                    Padding="10"
+                    CornerRadius="8"
+                    Background="#25272B">
+
+					<StackPanel>
+
+						<TextBlock
+                            Text="Startup"
+                            HorizontalAlignment="Center"
+                            Foreground="#B8BCC4"/>
+
+						<TextBlock
+                            Text="{Binding HealthSummary.StartupScore,
+                                           StringFormat={}{0}%}"
+                            Margin="0,5,0,0"
+                            HorizontalAlignment="Center"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="White"/>
+
+					</StackPanel>
+
+				</Border>
+
+				<Border
+                    Margin="4"
+                    Padding="10"
+                    CornerRadius="8"
+                    Background="#25272B">
+
+					<StackPanel>
+
+						<TextBlock
+                            Text="Privacy"
+                            HorizontalAlignment="Center"
+                            Foreground="#B8BCC4"/>
+
+						<TextBlock
+                            Text="{Binding HealthSummary.PrivacyScore,
+                                           StringFormat={}{0}%}"
+                            Margin="0,5,0,0"
+                            HorizontalAlignment="Center"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="White"/>
+
+					</StackPanel>
+
+				</Border>
+
+				<Border
+                    Margin="4"
+                    Padding="10"
+                    CornerRadius="8"
+                    Background="#25272B">
+
+					<StackPanel>
+
+						<TextBlock
+                            Text="Windows Update"
+                            HorizontalAlignment="Center"
+                            TextAlignment="Center"
+                            TextWrapping="Wrap"
+                            Foreground="#B8BCC4"/>
+
+						<TextBlock
+                            Text="{Binding HealthSummary.WindowsUpdateScore,
+                                           StringFormat={}{0}%}"
+                            Margin="0,5,0,0"
+                            HorizontalAlignment="Center"
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="White"/>
+
+					</StackPanel>
+
+				</Border>
+
+			</UniformGrid>
 
 		</Grid>
 

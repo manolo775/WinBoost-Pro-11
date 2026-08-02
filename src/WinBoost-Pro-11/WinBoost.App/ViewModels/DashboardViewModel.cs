@@ -3,14 +3,18 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using WinBoost.App.Models;
 using WinBoost.App.Services.Monitoring;
 
 namespace WinBoost.App.ViewModels
 {
     public class DashboardViewModel : INotifyPropertyChanged
     {
-        private readonly SystemMonitorService _systemMonitorService;
-        private readonly DispatcherTimer _refreshTimer;
+        private readonly SystemMonitorService
+            _systemMonitorService;
+
+        private readonly DispatcherTimer
+            _refreshTimer;
 
         private bool _isRefreshingSystemInfo;
 
@@ -25,21 +29,37 @@ namespace WinBoost.App.ViewModels
         private double _ramUsageValue;
         private double _diskUsageValue;
 
-        private int _healthScore;
-        private string _healthStatus = "Calculating...";
-
         public DashboardViewModel()
         {
-            _systemMonitorService = new SystemMonitorService();
+            _systemMonitorService =
+                new SystemMonitorService();
 
-            _refreshTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromSeconds(2)
-            };
+            HealthSummary =
+                new SystemHealthSummary
+                {
+                    PerformanceScore = 80,
+                    ServicesScore = 80,
+                    StartupScore = 80,
+                    PrivacyScore = 80,
+                    WindowsUpdateScore = 80
+                };
 
-            _refreshTimer.Tick += RefreshTimer_Tick;
+            _refreshTimer =
+                new DispatcherTimer
+                {
+                    Interval =
+                        TimeSpan.FromSeconds(2)
+                };
+
+            _refreshTimer.Tick +=
+                RefreshTimer_Tick;
 
             StartMonitoring();
+        }
+
+        public SystemHealthSummary HealthSummary
+        {
+            get;
         }
 
         public double CpuUsageValue
@@ -48,7 +68,8 @@ namespace WinBoost.App.ViewModels
 
             set
             {
-                if (Math.Abs(_cpuUsageValue - value) < 0.01)
+                if (Math.Abs(
+                        _cpuUsageValue - value) < 0.01)
                 {
                     return;
                 }
@@ -64,7 +85,8 @@ namespace WinBoost.App.ViewModels
 
             set
             {
-                if (Math.Abs(_ramUsageValue - value) < 0.01)
+                if (Math.Abs(
+                        _ramUsageValue - value) < 0.01)
                 {
                     return;
                 }
@@ -80,44 +102,13 @@ namespace WinBoost.App.ViewModels
 
             set
             {
-                if (Math.Abs(_diskUsageValue - value) < 0.01)
+                if (Math.Abs(
+                        _diskUsageValue - value) < 0.01)
                 {
                     return;
                 }
 
                 _diskUsageValue = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public int HealthScore
-        {
-            get => _healthScore;
-
-            set
-            {
-                if (_healthScore == value)
-                {
-                    return;
-                }
-
-                _healthScore = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string HealthStatus
-        {
-            get => _healthStatus;
-
-            set
-            {
-                if (_healthStatus == value)
-                {
-                    return;
-                }
-
-                _healthStatus = value;
                 OnPropertyChanged();
             }
         }
@@ -218,6 +209,12 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        public int HealthScore =>
+            HealthSummary.OverallHealthScore;
+
+        public string HealthStatus =>
+            HealthSummary.OverallHealthStatus;
+
         public void StartMonitoring()
         {
             if (_refreshTimer.IsEnabled)
@@ -226,6 +223,7 @@ namespace WinBoost.App.ViewModels
             }
 
             _refreshTimer.Start();
+
             _ = UpdateSystemInfoAsync();
         }
 
@@ -253,29 +251,44 @@ namespace WinBoost.App.ViewModels
                 _isRefreshingSystemInfo = true;
 
                 var metrics =
-                    await _systemMonitorService.GetSystemMetricsAsync();
+                    await _systemMonitorService
+                        .GetSystemMetricsAsync();
 
-                CpuUsageValue = metrics.CpuUsage;
-                RamUsageValue = metrics.RamUsage;
-                DiskUsageValue = metrics.DiskUsage;
+                CpuUsageValue =
+                    metrics.CpuUsage;
 
-                CpuStatus = GetUsageStatus(metrics.CpuUsage);
+                RamUsageValue =
+                    metrics.RamUsage;
 
-                CpuUsage = $"{metrics.CpuUsage:F1} %";
-                RamUsage = $"{metrics.RamUsage:F0} %";
+                DiskUsageValue =
+                    metrics.DiskUsage;
+
+                CpuStatus =
+                    GetUsageStatus(
+                        metrics.CpuUsage);
+
+                CpuUsage =
+                    $"{metrics.CpuUsage:F1} %";
+
+                RamUsage =
+                    $"{metrics.RamUsage:F0} %";
 
                 RamDetails =
                     $"{metrics.UsedRamGB:F1} GB / " +
                     $"{metrics.TotalRamGB:F1} GB";
 
-                DiskUsage = $"{metrics.DiskUsage:F0} %";
-                Uptime = metrics.Uptime;
+                DiskUsage =
+                    $"{metrics.DiskUsage:F0} %";
 
-                UpdateHealthScore();
+                Uptime =
+                    metrics.Uptime;
+
+                UpdatePerformanceScore();
             }
             catch
             {
-                // Aplicația rămâne funcțională dacă o citire eșuează.
+                // Aplicația rămâne funcțională
+                // dacă o citire eșuează.
             }
             finally
             {
@@ -283,9 +296,9 @@ namespace WinBoost.App.ViewModels
             }
         }
 
-        private void UpdateHealthScore()
+        private void UpdatePerformanceScore()
         {
-            var score = 100;
+            int score = 100;
 
             if (CpuUsageValue > 80)
             {
@@ -318,18 +331,21 @@ namespace WinBoost.App.ViewModels
                 score -= 10;
             }
 
-            HealthScore = Math.Clamp(score, 0, 100);
+            HealthSummary.PerformanceScore =
+                Math.Clamp(
+                    score,
+                    0,
+                    100);
 
-            HealthStatus = HealthScore switch
-            {
-                >= 90 => "Excellent",
-                >= 75 => "Good",
-                >= 60 => "Needs attention",
-                _ => "Critical"
-            };
+            OnPropertyChanged(
+                nameof(HealthScore));
+
+            OnPropertyChanged(
+                nameof(HealthStatus));
         }
 
-        private static string GetUsageStatus(double usage)
+        private static string GetUsageStatus(
+            double usage)
         {
             if (usage >= 85)
             {
@@ -344,14 +360,17 @@ namespace WinBoost.App.ViewModels
             return "Normal";
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler?
+            PropertyChanged;
 
         protected void OnPropertyChanged(
-            [CallerMemberName] string? propertyName = null)
+            [CallerMemberName]
+            string? propertyName = null)
         {
             PropertyChanged?.Invoke(
                 this,
-                new PropertyChangedEventArgs(propertyName));
+                new PropertyChangedEventArgs(
+                    propertyName));
         }
     }
 }
