@@ -248,5 +248,65 @@
 		{0}
 		({1})?
 	</sys:String>
+
+	<!-- DASHBOARD - SYSTEM SUMMARY -->
+
+	<sys:String x:Key="DashboardSummaryTitle">
+		Rezumat sistem
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryDescription">
+		Prezentare rapidă a stării calculatorului.
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryCpuNormal">
+		Procesorul funcționează normal
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryMemoryNormal">
+		Utilizarea memoriei este normală
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryStartupAttention">
+		Aplicațiile de pornire pot fi optimizate
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryWindowsUpdateHealthy">
+		Starea Windows Update este bună
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryRecommendation">
+		Recomandare generală: Calculatorul funcționează bine. Verificarea aplicațiilor de pornire poate îmbunătăți și mai mult timpul de pornire.
+	</sys:String>
+
+	<!-- DASHBOARD - HEALTH CARD -->
+
+	<sys:String x:Key="HealthCardOverallTitle">
+		Starea generală a sistemului
+	</sys:String>
+
+	<sys:String x:Key="HealthCardSystemScore">
+		Scor sistem
+	</sys:String>
+
+	<sys:String x:Key="HealthCardPerformance">
+		Performanță
+	</sys:String>
+
+	<sys:String x:Key="HealthCardServices">
+		Servicii
+	</sys:String>
+
+	<sys:String x:Key="HealthCardStartup">
+		Pornire
+	</sys:String>
+
+	<sys:String x:Key="HealthCardPrivacy">
+		Confidențialitate
+	</sys:String>
+
+	<sys:String x:Key="HealthCardWindowsUpdate">
+		Actualizări Windows
+	</sys:String>
 	
 </ResourceDictionary>

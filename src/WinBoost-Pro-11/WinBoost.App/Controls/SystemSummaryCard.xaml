@@ -1,0 +1,121 @@
+﻿<UserControl
+    x:Class="WinBoost.App.Controls.SystemSummaryCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+
+	<Border
+        Margin="50,10,50,10"
+        Padding="20"
+        CornerRadius="10"
+        Background="#2B2B2B">
+
+		<StackPanel>
+
+			<TextBlock
+                Text="{DynamicResource DashboardSummaryTitle}"
+                FontSize="22"
+                FontWeight="Bold"
+                Foreground="White"/>
+
+			<TextBlock
+                Margin="0,6,0,20"
+                Text="{DynamicResource DashboardSummaryDescription}"
+                Foreground="#BDBDBD"/>
+
+			<!-- CPU -->
+
+			<StackPanel
+                Orientation="Horizontal"
+                Margin="0,5">
+
+				<materialDesign:PackIcon
+                    Kind="{Binding CpuSummaryIcon}"
+                    Width="20"
+                    Height="20"
+                    Foreground="{Binding CpuSummaryBrush}"/>
+
+				<TextBlock
+                    Margin="10,0,0,0"
+                    Text="{Binding CpuSummary}"
+                    Foreground="White"/>
+
+			</StackPanel>
+
+			<!-- RAM -->
+
+			<StackPanel
+                Orientation="Horizontal"
+                Margin="0,5">
+
+				<materialDesign:PackIcon
+                    Kind="{Binding RamSummaryIcon}"
+                    Width="20"
+                    Height="20"
+                    Foreground="{Binding RamSummaryBrush}"/>
+
+				<TextBlock
+                    Margin="10,0,0,0"
+                    Text="{Binding RamSummary}"
+                    Foreground="White"/>
+
+			</StackPanel>
+
+			<!-- DISK -->
+
+			<StackPanel
+                Orientation="Horizontal"
+                Margin="0,5">
+
+				<materialDesign:PackIcon
+                    Kind="{Binding DiskSummaryIcon}"
+                    Width="20"
+                    Height="20"
+                    Foreground="{Binding DiskSummaryBrush}"/>
+
+				<TextBlock
+                    Margin="10,0,0,0"
+                    Text="{Binding DiskSummary}"
+                    Foreground="White"/>
+
+			</StackPanel>
+
+			<!-- SYSTEM HEALTH -->
+
+			<StackPanel
+                Orientation="Horizontal"
+                Margin="0,5">
+
+				<materialDesign:PackIcon
+                    Kind="{Binding HealthSummaryIcon}"
+                    Width="20"
+                    Height="20"
+                    Foreground="{Binding HealthSummaryBrush}"/>
+
+				<TextBlock
+                    Margin="10,0,0,0"
+                    Text="{Binding HealthSummaryText}"
+                    Foreground="White"/>
+
+			</StackPanel>
+
+			<!-- RECOMANDARE -->
+
+			<Border
+                Margin="0,20,0,0"
+                Padding="15"
+                CornerRadius="8"
+                Background="{Binding RecommendationBackground}">
+
+				<TextBlock
+                    Text="{Binding OverallRecommendation}"
+                    TextWrapping="Wrap"
+                    Foreground="White"/>
+
+			</Border>
+
+		</StackPanel>
+
+	</Border>
+
+</UserControl>

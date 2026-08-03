@@ -248,5 +248,65 @@
 		{0}
 		({1})?
 	</sys:String>
+
+	<!-- DASHBOARD - SYSTEM SUMMARY -->
+
+	<sys:String x:Key="DashboardSummaryTitle">
+		System Summary
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryDescription">
+		Quick overview of your computer health.
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryCpuNormal">
+		CPU is running normally
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryMemoryNormal">
+		Memory usage is normal
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryStartupAttention">
+		Startup applications can be optimized
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryWindowsUpdateHealthy">
+		Windows Update status is healthy
+	</sys:String>
+
+	<sys:String x:Key="DashboardSummaryRecommendation">
+		Overall recommendation: Your computer is running well. Reviewing startup applications may further improve boot time.
+	</sys:String>
+
+	<!-- DASHBOARD - HEALTH CARD -->
+
+	<sys:String x:Key="HealthCardOverallTitle">
+		Overall System Health
+	</sys:String>
+
+	<sys:String x:Key="HealthCardSystemScore">
+		System Score
+	</sys:String>
+
+	<sys:String x:Key="HealthCardPerformance">
+		Performance
+	</sys:String>
+
+	<sys:String x:Key="HealthCardServices">
+		Services
+	</sys:String>
+
+	<sys:String x:Key="HealthCardStartup">
+		Startup
+	</sys:String>
+
+	<sys:String x:Key="HealthCardPrivacy">
+		Privacy
+	</sys:String>
+
+	<sys:String x:Key="HealthCardWindowsUpdate">
+		Windows Update
+	</sys:String>
 	
 </ResourceDictionary>

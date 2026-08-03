@@ -1,11 +1,17 @@
-﻿using System;
+﻿using MaterialDesignThemes.Wpf;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Media;
 using System.Windows.Threading;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Monitoring;
+
+
+using WinBoost.App.Localization;
+
 
 namespace WinBoost.App.ViewModels
 {
@@ -218,6 +224,140 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        public string CpuSummary =>
+    CpuUsageValue >= 85
+        ? $"CPU: {CpuUsageValue:F0}% - utilizare critică"
+        : CpuUsageValue >= 60
+            ? $"CPU: {CpuUsageValue:F0}% - utilizare ridicată"
+            : $"CPU: {CpuUsageValue:F0}% - utilizare normală";
+
+        public PackIconKind CpuSummaryIcon =>
+            CpuUsageValue >= 85
+                ? PackIconKind.AlertCircle
+                : CpuUsageValue >= 60
+                    ? PackIconKind.Alert
+                    : PackIconKind.CheckCircle;
+
+        public Brush CpuSummaryBrush =>
+            CpuUsageValue >= 85
+                ? Brushes.OrangeRed
+                : CpuUsageValue >= 60
+                    ? Brushes.Gold
+                    : Brushes.LimeGreen;
+
+        public string RamSummary =>
+            RamUsageValue >= 90
+                ? $"RAM: {RamUsageValue:F0}% - memorie aproape epuizată"
+                : RamUsageValue >= 75
+                    ? $"RAM: {RamUsageValue:F0}% - utilizare ridicată"
+                    : $"RAM: {RamUsageValue:F0}% - utilizare normală";
+
+        public PackIconKind RamSummaryIcon =>
+            RamUsageValue >= 90
+                ? PackIconKind.AlertCircle
+                : RamUsageValue >= 75
+                    ? PackIconKind.Alert
+                    : PackIconKind.CheckCircle;
+
+        public Brush RamSummaryBrush =>
+            RamUsageValue >= 90
+                ? Brushes.OrangeRed
+                : RamUsageValue >= 75
+                    ? Brushes.Gold
+                    : Brushes.LimeGreen;
+
+        public string DiskSummary =>
+            DiskUsageValue >= 90
+                ? $"Disk: {DiskUsageValue:F0}% - spațiu critic"
+                : DiskUsageValue >= 80
+                    ? $"Disk: {DiskUsageValue:F0}% - spațiu redus"
+                    : $"Disk: {DiskUsageValue:F0}% - stare normală";
+
+        public PackIconKind DiskSummaryIcon =>
+            DiskUsageValue >= 90
+                ? PackIconKind.AlertCircle
+                : DiskUsageValue >= 80
+                    ? PackIconKind.Alert
+                    : PackIconKind.CheckCircle;
+
+        public Brush DiskSummaryBrush =>
+            DiskUsageValue >= 90
+                ? Brushes.OrangeRed
+                : DiskUsageValue >= 80
+                    ? Brushes.Gold
+                    : Brushes.LimeGreen;
+
+        public string HealthSummaryText =>
+            HealthScore >= 85
+                ? $"Sănătatea sistemului: {HealthScore}% - foarte bună"
+                : HealthScore >= 65
+                    ? $"Sănătatea sistemului: {HealthScore}% - necesită atenție"
+                    : $"Sănătatea sistemului: {HealthScore}% - stare critică";
+
+        public PackIconKind HealthSummaryIcon =>
+            HealthScore >= 85
+                ? PackIconKind.CheckCircle
+                : HealthScore >= 65
+                    ? PackIconKind.Alert
+                    : PackIconKind.AlertCircle;
+
+        public Brush HealthSummaryBrush =>
+            HealthScore >= 85
+                ? Brushes.LimeGreen
+                : HealthScore >= 65
+                    ? Brushes.Gold
+                    : Brushes.OrangeRed;
+
+        public string OverallRecommendation
+        {
+            get
+            {
+                if (RamUsageValue >= 90)
+                {
+                    return
+                        "Recomandare: memoria RAM este aproape epuizată. " +
+                        "Închide aplicațiile cu consum ridicat și verifică " +
+                        "programele care pornesc automat.";
+                }
+
+                if (CpuUsageValue >= 85)
+                {
+                    return
+                        "Recomandare: procesorul este foarte solicitat. " +
+                        "Verifică procesele care consumă cele mai multe resurse.";
+                }
+
+                if (DiskUsageValue >= 90)
+                {
+                    return
+                        "Recomandare: spațiul disponibil pe disc este critic. " +
+                        "Eliberează fișiere temporare și aplicațiile neutilizate.";
+                }
+
+                if (HealthScore < 65)
+                {
+                    return
+                        "Recomandare: sistemul necesită optimizare. " +
+                        "Verifică modulele marcate cu scor redus.";
+                }
+
+                return
+                    "Recomandare: calculatorul funcționează bine. " +
+                    "Poți verifica aplicațiile Startup și serviciile recomandate " +
+                    "pentru îmbunătățiri suplimentare.";
+            }
+        }
+
+        public Brush RecommendationBackground =>
+            HealthScore >= 85
+                ? new SolidColorBrush(
+                    Color.FromRgb(31, 58, 36))
+                : HealthScore >= 65
+                    ? new SolidColorBrush(
+                        Color.FromRgb(74, 61, 34))
+                    : new SolidColorBrush(
+                        Color.FromRgb(74, 37, 37));
+
         public int HealthScore =>
             HealthSummary.OverallHealthScore;
 
@@ -293,6 +433,7 @@ namespace WinBoost.App.ViewModels
                     metrics.Uptime;
 
                 UpdatePerformanceScore();
+                UpdateSystemSummary();
             }
             catch
             {
@@ -305,6 +446,27 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        private void UpdateSystemSummary()
+        {
+            OnPropertyChanged(nameof(CpuSummary));
+            OnPropertyChanged(nameof(CpuSummaryIcon));
+            OnPropertyChanged(nameof(CpuSummaryBrush));
+
+            OnPropertyChanged(nameof(RamSummary));
+            OnPropertyChanged(nameof(RamSummaryIcon));
+            OnPropertyChanged(nameof(RamSummaryBrush));
+
+            OnPropertyChanged(nameof(DiskSummary));
+            OnPropertyChanged(nameof(DiskSummaryIcon));
+            OnPropertyChanged(nameof(DiskSummaryBrush));
+
+            OnPropertyChanged(nameof(HealthSummaryText));
+            OnPropertyChanged(nameof(HealthSummaryIcon));
+            OnPropertyChanged(nameof(HealthSummaryBrush));
+
+            OnPropertyChanged(nameof(OverallRecommendation));
+            OnPropertyChanged(nameof(RecommendationBackground));
+        }
         private void UpdatePerformanceScore()
         {
             int performanceScore =
@@ -331,6 +493,7 @@ namespace WinBoost.App.ViewModels
 
             OnPropertyChanged(
                 nameof(HealthSummary));
+            UpdateSystemSummary();
         }
 
         private static string GetUsageStatus(

@@ -21,6 +21,7 @@
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 
 			<!-- TITLU -->
@@ -41,10 +42,13 @@
                 Grid.Row="1"
                 Margin="50,25,50,5"/>
 
+			<controls:SystemSummaryCard
+                  Grid.Row="2"/>
+
 			<!-- CARDURI SISTEM -->
 
 			<UniformGrid
-                Grid.Row="2"
+                Grid.Row="3"
                 Rows="2"
                 Columns="2"
                 Margin="40,10,40,10">
@@ -89,7 +93,7 @@
 			<!-- QUICK ACTIONS -->
 
 			<controls:QuickActionsControl
-                Grid.Row="3"
+                Grid.Row="4"
                 Margin="50,15,50,0"/>
 
 		</Grid>
