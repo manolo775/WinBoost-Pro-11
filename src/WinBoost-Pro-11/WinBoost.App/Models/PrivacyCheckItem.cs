@@ -1,17 +1,22 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
 namespace WinBoost.App.Models
 {
     public class PrivacyCheckItem : INotifyPropertyChanged
     {
-        private string _status = "Neverificat";
+        private string _status =
+            "Neverificat";
 
-        public string Id { get; init; } = string.Empty;
+        public string Id { get; init; } =
+            string.Empty;
 
-        public string Title { get; init; } = string.Empty;
+        public string Title { get; init; } =
+            string.Empty;
 
-        public string Description { get; init; } = string.Empty;
+        public string Description { get; init; } =
+            string.Empty;
 
         public string Status
         {
@@ -20,7 +25,9 @@ namespace WinBoost.App.Models
             set
             {
                 if (_status == value)
+                {
                     return;
+                }
 
                 _status = value;
 
@@ -29,27 +36,55 @@ namespace WinBoost.App.Models
             }
         }
 
-        public string StatusLevel =>
-            Status switch
+        public string StatusLevel
+        {
+            get
             {
-                "Dezactivat" => "Good",
-                "Date obligatorii" => "Good",
+                if (Status.Equals(
+                        "Dezactivat",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return "Good";
+                }
 
-                "Activat" => "Attention",
-                "Date opționale" => "Attention",
-                "Date îmbunătățite" => "Attention",
+                if (Status.Equals(
+                        "Date minime",
+                        StringComparison.OrdinalIgnoreCase) ||
+                    Status.Equals(
+                        "Date necesare",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return "Good";
+                }
 
-                _ => "Neutral"
-            };
+                if (Status.Equals(
+                        "Activat",
+                        StringComparison.OrdinalIgnoreCase) ||
+                    Status.Equals(
+                        "Date îmbunătățite",
+                        StringComparison.OrdinalIgnoreCase) ||
+                    Status.Equals(
+                        "Date opționale",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return "Attention";
+                }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+                return "Neutral";
+            }
+        }
+
+        public event PropertyChangedEventHandler?
+            PropertyChanged;
 
         protected void OnPropertyChanged(
-            [CallerMemberName] string? propertyName = null)
+            [CallerMemberName]
+            string? propertyName = null)
         {
             PropertyChanged?.Invoke(
                 this,
-                new PropertyChangedEventArgs(propertyName));
+                new PropertyChangedEventArgs(
+                    propertyName));
         }
     }
 }

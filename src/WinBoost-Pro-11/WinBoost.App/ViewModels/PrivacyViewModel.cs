@@ -1,28 +1,52 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using WinBoost.App.Commands;
 using WinBoost.App.Models;
+using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Privacy;
 
 namespace WinBoost.App.ViewModels
 {
     public sealed class PrivacyViewModel : INotifyPropertyChanged
     {
-        private readonly PrivacyScanService _privacyScanService;
+        private readonly PrivacyScanService
+            _privacyScanService;
+
+        private readonly PrivacyRecommendationEngine
+            _privacyRecommendationEngine;
+
+        private readonly SystemHealthStateService
+            _healthStateService;
 
         private bool _isScanning;
+
         private string _scanStatus =
             "Pornește o scanare pentru a verifica setările de confidențialitate.";
 
-        private string _overallStatus = "Neverificat";
+        private string _overallStatus =
+            "Neverificat";
 
-        public ObservableCollection<PrivacyCheckItem> PrivacyItems { get; }
+        public ObservableCollection<PrivacyCheckItem>
+            PrivacyItems
+        {
+            get;
+        }
 
-        public ICommand ScanPrivacyCommand { get; }
+        public ObservableCollection<HealthRecommendation>
+            Recommendations
+        {
+            get;
+        }
+
+        public ICommand ScanPrivacyCommand
+        {
+            get;
+        }
 
         public string ScanStatus
         {
@@ -31,7 +55,9 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_scanStatus == value)
+                {
                     return;
+                }
 
                 _scanStatus = value;
                 OnPropertyChanged();
@@ -45,7 +71,9 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_overallStatus == value)
+                {
                     return;
+                }
 
                 _overallStatus = value;
                 OnPropertyChanged();
@@ -59,7 +87,9 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_isScanning == value)
+                {
                     return;
+                }
 
                 _isScanning = value;
 
@@ -70,85 +100,141 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        public int RecommendationCount =>
+            Recommendations.Count(
+                recommendation =>
+                    recommendation.PotentialGain > 0);
+
+        public int PotentialGain =>
+            Recommendations.Sum(
+                recommendation =>
+                    recommendation.PotentialGain);
+
         public string ScanButtonText =>
             IsScanning
-                ? "Scanning..."
+                ? "Se scanează..."
                 : "Scan Privacy";
 
         public PrivacyViewModel()
         {
-            _privacyScanService = new PrivacyScanService();
+            _privacyScanService =
+                new PrivacyScanService();
 
-            PrivacyItems = new ObservableCollection<PrivacyCheckItem>
-            {
-                new PrivacyCheckItem
+            _privacyRecommendationEngine =
+                new PrivacyRecommendationEngine();
+
+            _healthStateService =
+                SystemHealthStateService.Instance;
+
+            PrivacyItems =
+                new ObservableCollection<PrivacyCheckItem>
                 {
-                    Id = "diagnostics",
-                    Title = "Diagnostic și telemetrie",
-                    Description =
-                        "Verifică nivelul datelor de diagnostic trimise către Microsoft."
-                },
+                    new PrivacyCheckItem
+                    {
+                        Id = "diagnostic-data",
 
-                new PrivacyCheckItem
-                {
-                    Id = "advertising-id",
-                    Title = "Advertising ID",
-                    Description =
-                        "Verifică utilizarea identificatorului pentru reclame personalizate."
-                },
+                        Title =
+                            "Diagnostic și telemetrie",
 
-                new PrivacyCheckItem
-                {
-                    Id = "activity-history",
-                    Title = "Activity History",
-                    Description =
-                        "Verifică dacă Windows salvează istoricul activităților."
-                },
+                        Description =
+                            "Verifică nivelul datelor de diagnostic " +
+                            "trimise către Microsoft."
+                    },
 
-                new PrivacyCheckItem
-                {
-                    Id = "location-services",
-                    Title = "Location Services",
-                    Description =
-                        "Verifică accesul aplicațiilor la locația dispozitivului."
-                }
-            };
+                    new PrivacyCheckItem
+                    {
+                        Id = "advertising-id",
 
-            ScanPrivacyCommand = new RelayCommand(
-                async _ => await ScanPrivacyAsync(),
-                _ => !IsScanning);
+                        Title =
+                            "Advertising ID",
+
+                        Description =
+                            "Verifică utilizarea identificatorului " +
+                            "pentru reclame personalizate."
+                    },
+
+                    new PrivacyCheckItem
+                    {
+                        Id = "activity-history",
+
+                        Title =
+                            "Activity History",
+
+                        Description =
+                            "Verifică dacă Windows salvează " +
+                            "istoricul activităților."
+                    },
+
+                    new PrivacyCheckItem
+                    {
+                        Id = "location-services",
+
+                        Title =
+                            "Location Services",
+
+                        Description =
+                            "Verifică accesul aplicațiilor la " +
+                            "locația dispozitivului."
+                    }
+                };
+
+            Recommendations =
+                new ObservableCollection<HealthRecommendation>();
+
+            ScanPrivacyCommand =
+                new RelayCommand(
+                    async _ =>
+                        await ScanPrivacyAsync(),
+                    _ =>
+                        !IsScanning);
         }
 
         private async Task ScanPrivacyAsync()
         {
             if (IsScanning)
+            {
                 return;
+            }
 
             IsScanning = true;
-            OverallStatus = "Se verifică";
-            ScanStatus = "Verific setările de confidențialitate...";
+
+            OverallStatus =
+                "Se verifică";
+
+            ScanStatus =
+                "Se verifică setările de confidențialitate...";
 
             try
             {
-                var results = await Task.Run(
-                    () => _privacyScanService.Scan());
+                IReadOnlyList<PrivacyCheckItem> results =
+                    await Task.Run(
+                        () =>
+                            _privacyScanService.Scan());
 
                 PrivacyItems.Clear();
 
-                foreach (PrivacyCheckItem item in results)
+                foreach (PrivacyCheckItem item
+                         in results)
                 {
                     PrivacyItems.Add(item);
                 }
 
-                OverallStatus = "Verificat";
-                ScanStatus =
-                    "Scanare finalizată: setările au fost verificate. Nu s-a modificat nimic în Windows.";
+                BuildRecommendations();
+                UpdatePrivacyHealthScore();
+
+                OverallStatus =
+                    "Verificat";
+
+                UpdateScanStatusMessage();
             }
             catch (Exception ex)
             {
-                OverallStatus = "Eroare";
+                OverallStatus =
+                    "Eroare";
+
                 ScanStatus =
-                    $"Scanarea nu a putut fi finalizată: {ex.Message}";
+                    "Scanarea nu a putut fi finalizată: " +
+                    ex.Message;
             }
             finally
             {
@@ -156,14 +242,101 @@ namespace WinBoost.App.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        private void BuildRecommendations()
+        {
+            Recommendations.Clear();
+
+            IReadOnlyList<HealthRecommendation>
+                recommendations =
+                    _privacyRecommendationEngine
+                        .BuildRecommendations(
+                            PrivacyItems);
+
+            foreach (HealthRecommendation recommendation
+                     in recommendations)
+            {
+                Recommendations.Add(
+                    recommendation);
+            }
+
+            OnPropertyChanged(
+                nameof(RecommendationCount));
+
+            OnPropertyChanged(
+                nameof(PotentialGain));
+        }
+
+        private void UpdateScanStatusMessage()
+        {
+            if (RecommendationCount == 0)
+            {
+                ScanStatus =
+                    "🟢 Nu au fost găsite probleme de " +
+                    "confidențialitate. PC-ul tău este " +
+                    "configurat corespunzător.";
+
+                return;
+            }
+
+            if (RecommendationCount == 1)
+            {
+                ScanStatus =
+                    "🟢 A fost găsită o recomandare pentru " +
+                    "îmbunătățirea confidențialității.";
+
+                return;
+            }
+
+            ScanStatus =
+                $"🟢 Au fost găsite {RecommendationCount} " +
+                "recomandări pentru îmbunătățirea " +
+                "confidențialității.";
+        }
+
+        private void UpdatePrivacyHealthScore()
+        {
+            if (PrivacyItems.Count == 0)
+            {
+                _healthStateService.UpdatePrivacyData(
+                    0,
+                    0);
+
+                return;
+            }
+
+            double totalPoints =
+                PrivacyItems.Sum(
+                    item =>
+                        item.StatusLevel switch
+                        {
+                            "Good" => 100,
+                            "Neutral" => 70,
+                            "Attention" => 40,
+                            "Critical" => 0,
+                            _ => 70
+                        });
+
+            int weightedScore =
+                (int)Math.Round(
+                    totalPoints /
+                    PrivacyItems.Count);
+
+            _healthStateService.UpdatePrivacyData(
+                100,
+                weightedScore);
+        }
+
+        public event PropertyChangedEventHandler?
+            PropertyChanged;
 
         private void OnPropertyChanged(
-            [CallerMemberName] string? propertyName = null)
+            [CallerMemberName]
+            string? propertyName = null)
         {
             PropertyChanged?.Invoke(
                 this,
-                new PropertyChangedEventArgs(propertyName));
+                new PropertyChangedEventArgs(
+                    propertyName));
         }
     }
 }

@@ -56,6 +56,18 @@ namespace WinBoost.App.ViewModels
             get;
         }
 
+        public ServicesHealthSummary ServicesHealth
+        {
+            get;
+        }
+
+        public string HealthInsight
+        {
+            get;
+            private set;
+        } =
+    "Scanează serviciile pentru a primi recomandări inteligente.";
+
         public ObservableCollection<string>
             AvailableFilters
         {
@@ -199,6 +211,9 @@ namespace WinBoost.App.ViewModels
 
             Services =
                 new ObservableCollection<WindowsServiceInfo>();
+
+            ServicesHealth =
+                new ServicesHealthSummary();
 
             AvailableFilters =
                 new ObservableCollection<string>
@@ -364,6 +379,13 @@ namespace WinBoost.App.ViewModels
         private void UpdateServicesHealthScore(
             IReadOnlyCollection<WindowsServiceInfo> services)
         {
+            int runningServices =
+                services.Count(
+                    service =>
+                        service.Status.Equals(
+                            "Running",
+                            StringComparison.OrdinalIgnoreCase));
+
             int criticalServices =
                 services.Count(
                     service =>
@@ -371,25 +393,50 @@ namespace WinBoost.App.ViewModels
                             "Critical",
                             StringComparison.OrdinalIgnoreCase));
 
-            int optionalServices =
+            int recommendedServices =
                 services.Count(
                     service =>
                         service.RiskLevel.Equals(
                             "Medium",
                             StringComparison.OrdinalIgnoreCase));
 
-            int lowRiskServices =
+            int safeToOptimizeServices =
                 services.Count(
                     service =>
                         service.RiskLevel.Equals(
                             "Low",
                             StringComparison.OrdinalIgnoreCase));
 
+            ServicesHealth.TotalServices =
+                services.Count;
+
+            ServicesHealth.RunningServices =
+                runningServices;
+
+            ServicesHealth.CriticalServices =
+                criticalServices;
+
+            ServicesHealth.RecommendedServices =
+                recommendedServices;
+
+            ServicesHealth.SafeToOptimizeServices =
+                safeToOptimizeServices;
+
+            ServicesHealth.EstimatedHealthGain =
+                Math.Min(
+                    25,
+                    recommendedServices +
+                    safeToOptimizeServices);
+
+              UpdateHealthInsight(
+                 recommendedServices,
+                 safeToOptimizeServices);
+
             _healthStateService.UpdateServicesData(
                 services.Count,
                 criticalServices,
-                optionalServices,
-                lowRiskServices);
+                recommendedServices,
+                safeToOptimizeServices);
         }
 
         private async Task StartServiceAsync(
@@ -590,6 +637,9 @@ namespace WinBoost.App.ViewModels
             CommandManager
                 .InvalidateRequerySuggested();
 
+            UpdateServicesHealthScore(
+                _allServices);
+
             ApplyFilter();
         }
 
@@ -683,6 +733,39 @@ namespace WinBoost.App.ViewModels
             {
                 Services.Add(service);
             }
+        }
+
+        private void UpdateHealthInsight(
+    int recommendedServices,
+    int safeToOptimizeServices)
+        {
+            int optimizableServices =
+                recommendedServices +
+                safeToOptimizeServices;
+
+            if (optimizableServices == 0)
+            {
+                HealthInsight =
+                    "Sistemul rulează normal. Nu au fost identificate " +
+                    "servicii care necesită optimizare imediată.";
+            }
+            else if (optimizableServices == 1)
+            {
+                HealthInsight =
+                    "A fost identificat un serviciu care poate fi " +
+                    "optimizat în siguranță. Revizuirea acestuia poate " +
+                    "îmbunătăți performanța sistemului.";
+            }
+            else
+            {
+                HealthInsight =
+                    $"Au fost identificate {optimizableServices} servicii " +
+                    "care pot fi optimizate în siguranță. Revizuirea " +
+                    "acestora poate îmbunătăți performanța sistemului.";
+            }
+
+            OnPropertyChanged(
+                nameof(HealthInsight));
         }
 
         public event PropertyChangedEventHandler?

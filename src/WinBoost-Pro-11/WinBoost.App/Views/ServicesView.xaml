@@ -10,9 +10,15 @@
 		<Grid Margin="30">
 
 			<Grid.RowDefinitions>
+
 				<RowDefinition Height="Auto"/>
+
 				<RowDefinition Height="Auto"/>
+
 				<RowDefinition Height="Auto"/>
+
+				<RowDefinition Height="Auto"/>
+
 			</Grid.RowDefinitions>
 
 			<!-- TITLU -->
@@ -202,10 +208,234 @@
 
 			</Border>
 
+			<!-- SERVICES HEALTH -->
+
+			<Border
+				Grid.Row="2"
+				Margin="0,25,0,0"
+				Padding="22"
+				CornerRadius="10"
+				Background="{StaticResource CardBrush}">
+
+				<StackPanel>
+
+					<TextBlock
+						Text="Services Health"
+						FontSize="20"
+						FontWeight="SemiBold"
+						Foreground="{StaticResource TextBrush}"/>
+
+					<TextBlock
+						Text="Rezumatul serviciilor Windows identificate în urma scanării."
+						Margin="0,6,0,18"
+						TextWrapping="Wrap"
+						Foreground="{StaticResource SecondaryTextBrush}"/>
+
+					<UniformGrid Columns="6">
+
+						<Border
+							Margin="4"
+							Padding="14"
+							CornerRadius="8"
+							Background="#303030">
+
+							<StackPanel>
+
+								<TextBlock
+									Text="Total"
+									HorizontalAlignment="Center"
+									Foreground="{StaticResource SecondaryTextBrush}"/>
+
+								<TextBlock
+									Text="{Binding ServicesHealth.TotalServices,
+                                       Mode=OneWay}"
+									Margin="0,6,0,0"
+									HorizontalAlignment="Center"
+									FontSize="22"
+									FontWeight="Bold"
+									Foreground="White"/>
+
+							</StackPanel>
+
+						</Border>
+
+						<Border
+							Margin="4"
+							Padding="14"
+							CornerRadius="8"
+							Background="#303030">
+
+							<StackPanel>
+
+								<TextBlock
+									Text="Active"
+									HorizontalAlignment="Center"
+									Foreground="{StaticResource SecondaryTextBrush}"/>
+
+								<TextBlock
+									Text="{Binding ServicesHealth.RunningServices,
+                                       Mode=OneWay}"
+									Margin="0,6,0,0"
+									HorizontalAlignment="Center"
+									FontSize="22"
+									FontWeight="Bold"
+									Foreground="#00C853"/>
+
+							</StackPanel>
+
+						</Border>
+
+						<Border
+							Margin="4"
+							Padding="14"
+							CornerRadius="8"
+							Background="#303030">
+
+							<StackPanel>
+
+								<TextBlock
+									Text="Critice"
+									HorizontalAlignment="Center"
+									Foreground="{StaticResource SecondaryTextBrush}"/>
+
+								<TextBlock
+									Text="{Binding ServicesHealth.CriticalServices,
+                                       Mode=OneWay}"
+									Margin="0,6,0,0"
+									HorizontalAlignment="Center"
+									FontSize="22"
+									FontWeight="Bold"
+									Foreground="#FF5252"/>
+
+							</StackPanel>
+
+						</Border>
+
+						<Border
+							Margin="4"
+							Padding="14"
+							CornerRadius="8"
+							Background="#303030">
+
+							<StackPanel>
+
+								<TextBlock
+									Text="Recomandate"
+									HorizontalAlignment="Center"
+									Foreground="{StaticResource SecondaryTextBrush}"/>
+
+								<TextBlock
+									Text="{Binding ServicesHealth.RecommendedServices,
+                                       Mode=OneWay}"
+									Margin="0,6,0,0"
+									HorizontalAlignment="Center"
+									FontSize="22"
+									FontWeight="Bold"
+									Foreground="#FFB300"/>
+
+							</StackPanel>
+
+						</Border>
+
+						<Border
+							Margin="4"
+							Padding="14"
+							CornerRadius="8"
+							Background="#303030">
+
+							<StackPanel>
+
+								<TextBlock
+									Text="Sigure"
+									HorizontalAlignment="Center"
+									Foreground="{StaticResource SecondaryTextBrush}"/>
+
+								<TextBlock
+									Text="{Binding ServicesHealth.SafeToOptimizeServices,
+                                       Mode=OneWay}"
+									Margin="0,6,0,0"
+									HorizontalAlignment="Center"
+									FontSize="22"
+									FontWeight="Bold"
+									Foreground="#35C759"/>
+
+							</StackPanel>
+
+						</Border>
+
+						<Border
+							Margin="4"
+							Padding="14"
+							CornerRadius="8"
+							Background="#303030">
+
+							<StackPanel>
+
+								<TextBlock
+									Text="Câștig estimat"
+									HorizontalAlignment="Center"
+									TextAlignment="Center"
+									Foreground="{StaticResource SecondaryTextBrush}"/>
+
+								<TextBlock
+									Text="{Binding ServicesHealth.EstimatedHealthGainText,
+                                       Mode=OneWay}"
+									Margin="0,6,0,0"
+									HorizontalAlignment="Center"
+									TextAlignment="Center"
+									FontSize="18"
+									FontWeight="Bold"
+									Foreground="#35C759"/>
+
+							</StackPanel>
+
+						</Border>
+
+					</UniformGrid>
+
+					<Border
+    Margin="4,18,4,0"
+    Padding="18"
+    CornerRadius="8"
+    Background="#315A39"
+    BorderBrush="#3F7249"
+    BorderThickness="1">
+
+						<Grid>
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+
+							<TextBlock
+								Grid.Column="0"
+								Text="⚡"
+								Margin="0,0,14,0"
+								FontSize="22"
+								VerticalAlignment="Center"/>
+
+							<TextBlock
+								Grid.Column="1"
+								Text="{Binding HealthInsight}"
+								FontSize="15"
+								FontWeight="SemiBold"
+								LineHeight="22"
+								TextWrapping="Wrap"
+								VerticalAlignment="Center"
+								Foreground="White"/>
+
+						</Grid>
+
+					</Border>
+
+				</StackPanel>
+
+			</Border>
 			<!-- LISTA SERVICIILOR -->
 
 			<Border
-                Grid.Row="2"
+                Grid.Row="3"
                 Margin="0,25,0,0"
                 Padding="22"
                 CornerRadius="10"
