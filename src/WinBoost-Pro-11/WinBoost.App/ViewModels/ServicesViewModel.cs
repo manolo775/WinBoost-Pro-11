@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using WinBoost.App.Commands;
+using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Health;
 using WinBoost.App.Services.ServicesManager;
@@ -18,6 +19,15 @@ namespace WinBoost.App.ViewModels
 {
     public class ServicesViewModel : INotifyPropertyChanged
     {
+        private const string FilterAll = "All";
+        private const string FilterRunning = "Running";
+        private const string FilterStopped = "Stopped";
+        private const string FilterAutomatic = "Automatic";
+        private const string FilterAutomaticDelayed =
+            "AutomaticDelayed";
+        private const string FilterManual = "Manual";
+        private const string FilterDisabled = "Disabled";
+
         private readonly WindowsServiceManager
             _windowsServiceManager;
 
@@ -37,160 +47,17 @@ namespace WinBoost.App.ViewModels
             _searchDelayTimer;
 
         private bool _isScanning;
+        private string _scanStatusCode = "Unchecked";
+        private string _scanStatus;
+        private string _scanMessage;
+        private string _healthInsight;
+        private string _searchText = string.Empty;
+        private string _selectedFilterKey = FilterAll;
+        private string _selectedFilter = string.Empty;
 
-        private string _scanStatus =
-            "Neverificat";
-
-        private string _scanMessage =
-            "Apasă Scan Services pentru verificare.";
-
-        private string _searchText =
-            string.Empty;
-
-        private string _selectedFilter =
-            "Toate";
-
-        public ObservableCollection<WindowsServiceInfo>
-            Services
-        {
-            get;
-        }
-
-        public ServicesHealthSummary ServicesHealth
-        {
-            get;
-        }
-
-        public string HealthInsight
-        {
-            get;
-            private set;
-        } =
-    "Scanează serviciile pentru a primi recomandări inteligente.";
-
-        public ObservableCollection<string>
-            AvailableFilters
-        {
-            get;
-        }
-
-        public ICommand ScanServicesCommand
-        {
-            get;
-        }
-
-        public ICommand StartServiceCommand
-        {
-            get;
-        }
-
-        public ICommand StopServiceCommand
-        {
-            get;
-        }
-
-        public ICommand RestartServiceCommand
-        {
-            get;
-        }
-
-        public ICommand ChangeStartupTypeCommand
-        {
-            get;
-        }
-
-        public bool IsScanning
-        {
-            get => _isScanning;
-
-            private set
-            {
-                if (_isScanning == value)
-                {
-                    return;
-                }
-
-                _isScanning = value;
-
-                OnPropertyChanged();
-                OnPropertyChanged(nameof(ScanButtonText));
-
-                CommandManager.InvalidateRequerySuggested();
-            }
-        }
-
-        public string ScanStatus
-        {
-            get => _scanStatus;
-
-            private set
-            {
-                if (_scanStatus == value)
-                {
-                    return;
-                }
-
-                _scanStatus = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string ScanMessage
-        {
-            get => _scanMessage;
-
-            private set
-            {
-                if (_scanMessage == value)
-                {
-                    return;
-                }
-
-                _scanMessage = value;
-                OnPropertyChanged();
-            }
-        }
-
-        public string SearchText
-        {
-            get => _searchText;
-
-            set
-            {
-                if (_searchText == value)
-                {
-                    return;
-                }
-
-                _searchText = value;
-                OnPropertyChanged();
-
-                RestartSearchDelay();
-            }
-        }
-
-        public string SelectedFilter
-        {
-            get => _selectedFilter;
-
-            set
-            {
-                if (_selectedFilter == value)
-                {
-                    return;
-                }
-
-                _selectedFilter = value;
-                OnPropertyChanged();
-
-                ApplyFilter();
-            }
-        }
-
-        public string ScanButtonText =>
-            IsScanning
-                ? "Se scanează..."
-                : "Scan Services";
+        private int _lastRecommendedServices;
+        private int _lastSafeToOptimizeServices;
+        private bool _hasScanResult;
 
         public ServicesViewModel()
         {
@@ -216,16 +83,21 @@ namespace WinBoost.App.ViewModels
                 new ServicesHealthSummary();
 
             AvailableFilters =
-                new ObservableCollection<string>
-                {
-                    "Toate",
-                    "Active",
-                    "Oprite",
-                    "Automatic",
-                    "Automatic (Delayed)",
-                    "Manual",
-                    "Disabled"
-                };
+                new ObservableCollection<string>();
+
+            _scanStatus =
+                LocalizationHelper.Get(
+                    "ServicesStatusUnchecked");
+
+            _scanMessage =
+                LocalizationHelper.Get(
+                    "ServicesInitialMessage");
+
+            _healthInsight =
+                LocalizationHelper.Get(
+                    "ServicesInsightInitial");
+
+            RebuildFilters();
 
             _searchDelayTimer =
                 new DispatcherTimer
@@ -291,9 +163,10 @@ namespace WinBoost.App.ViewModels
                         if (wasApplied)
                         {
                             ScanMessage =
-                                $"{service.DisplayName}: " +
-                                "tipul de pornire este acum " +
-                                $"{service.StartType}.";
+                                LocalizationHelper.Format(
+                                    "ServicesStartupTypeChanged",
+                                    service.DisplayName,
+                                    service.StartType);
 
                             ApplyFilter();
                         }
@@ -306,22 +179,184 @@ namespace WinBoost.App.ViewModels
                         service.CanChangeStartupType &&
                         service.HasStartupTypeChanged &&
                         !IsScanning);
+
+            LanguageManager.Instance.LanguageChanged +=
+                LanguageManager_LanguageChanged;
         }
 
-        private void RestartSearchDelay()
+        public ObservableCollection<WindowsServiceInfo>
+            Services
         {
-            _searchDelayTimer.Stop();
-            _searchDelayTimer.Start();
+            get;
         }
 
-        private void SearchDelayTimer_Tick(
-            object? sender,
-            EventArgs e)
+        public ServicesHealthSummary ServicesHealth
         {
-            _searchDelayTimer.Stop();
-
-            ApplyFilter();
+            get;
         }
+
+        public ObservableCollection<string>
+            AvailableFilters
+        {
+            get;
+        }
+
+        public ICommand ScanServicesCommand
+        {
+            get;
+        }
+
+        public ICommand StartServiceCommand
+        {
+            get;
+        }
+
+        public ICommand StopServiceCommand
+        {
+            get;
+        }
+
+        public ICommand RestartServiceCommand
+        {
+            get;
+        }
+
+        public ICommand ChangeStartupTypeCommand
+        {
+            get;
+        }
+
+        public bool IsScanning
+        {
+            get => _isScanning;
+
+            private set
+            {
+                if (_isScanning == value)
+                {
+                    return;
+                }
+
+                _isScanning = value;
+
+                OnPropertyChanged();
+                OnPropertyChanged(
+                    nameof(ScanButtonText));
+
+                CommandManager
+                    .InvalidateRequerySuggested();
+            }
+        }
+
+        public string ScanStatusCode
+        {
+            get => _scanStatusCode;
+
+            private set
+            {
+                if (_scanStatusCode == value)
+                {
+                    return;
+                }
+
+                _scanStatusCode = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ScanStatus
+        {
+            get => _scanStatus;
+
+            private set
+            {
+                if (_scanStatus == value)
+                {
+                    return;
+                }
+
+                _scanStatus = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string ScanMessage
+        {
+            get => _scanMessage;
+
+            private set
+            {
+                if (_scanMessage == value)
+                {
+                    return;
+                }
+
+                _scanMessage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string HealthInsight
+        {
+            get => _healthInsight;
+
+            private set
+            {
+                if (_healthInsight == value)
+                {
+                    return;
+                }
+
+                _healthInsight = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string SearchText
+        {
+            get => _searchText;
+
+            set
+            {
+                if (_searchText == value)
+                {
+                    return;
+                }
+
+                _searchText = value;
+                OnPropertyChanged();
+
+                RestartSearchDelay();
+            }
+        }
+
+        public string SelectedFilter
+        {
+            get => _selectedFilter;
+
+            set
+            {
+                if (_selectedFilter == value ||
+                    string.IsNullOrWhiteSpace(value))
+                {
+                    return;
+                }
+
+                _selectedFilter = value;
+                _selectedFilterKey =
+                    ResolveFilterKey(value);
+
+                OnPropertyChanged();
+                ApplyFilter();
+            }
+        }
+
+        public string ScanButtonText =>
+            IsScanning
+                ? LocalizationHelper.Get(
+                    "ServicesScanButtonBusy")
+                : LocalizationHelper.Get(
+                    "ServicesScanButtonIdle");
 
         private async Task ScanServicesAsync()
         {
@@ -332,11 +367,13 @@ namespace WinBoost.App.ViewModels
 
             IsScanning = true;
 
-            ScanStatus =
-                "Se verifică";
+            SetScanState(
+                "Checking",
+                "ServicesStatusChecking");
 
             ScanMessage =
-                "Se analizează serviciile Windows...";
+                LocalizationHelper.Get(
+                    "ServicesScanningMessage");
 
             try
             {
@@ -352,23 +389,28 @@ namespace WinBoost.App.ViewModels
 
                 ApplyFilter();
 
-                ScanStatus =
-                    "Verificat";
+                SetScanState(
+                    "Verified",
+                    "ServicesStatusVerified");
 
                 ScanMessage =
                     services.Count == 0
-                        ? "Nu au fost găsite servicii Windows."
-                        : $"Scanare finalizată: " +
-                          $"{services.Count} servicii analizate.";
+                        ? LocalizationHelper.Get(
+                            "ServicesNoServicesFound")
+                        : LocalizationHelper.Format(
+                            "ServicesScanCompleted",
+                            services.Count);
             }
             catch (Exception ex)
             {
-                ScanStatus =
-                    "Eroare";
+                SetScanState(
+                    "Error",
+                    "ServicesStatusError");
 
                 ScanMessage =
-                    "Scanarea nu a putut fi finalizată: " +
-                    ex.Message;
+                    LocalizationHelper.Format(
+                        "ServicesScanFailed",
+                        ex.Message);
             }
             finally
             {
@@ -428,9 +470,15 @@ namespace WinBoost.App.ViewModels
                     recommendedServices +
                     safeToOptimizeServices);
 
-              UpdateHealthInsight(
-                 recommendedServices,
-                 safeToOptimizeServices);
+            _lastRecommendedServices =
+                recommendedServices;
+
+            _lastSafeToOptimizeServices =
+                safeToOptimizeServices;
+
+            _hasScanResult = true;
+
+            UpdateHealthInsight();
 
             _healthStateService.UpdateServicesData(
                 services.Count,
@@ -450,14 +498,17 @@ namespace WinBoost.App.ViewModels
 
             MessageBoxResult confirmation =
                 MessageBox.Show(
-                    $"Dorești să pornești serviciul:\n\n" +
-                    $"{service.DisplayName}\n" +
-                    $"({service.ServiceName})?",
-                    "Pornire serviciu",
+                    LocalizationHelper.Format(
+                        "ServicesStartConfirmation",
+                        service.DisplayName,
+                        service.ServiceName),
+                    LocalizationHelper.Get(
+                        "ServicesStartDialogTitle"),
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Question);
 
-            if (confirmation != MessageBoxResult.Yes)
+            if (confirmation !=
+                MessageBoxResult.Yes)
             {
                 return;
             }
@@ -471,31 +522,14 @@ namespace WinBoost.App.ViewModels
                         .StartServiceAsync(
                             service.ServiceName);
 
-                if (result.IsSuccessful)
-                {
-                    UpdateServiceStatus(
-                        service,
-                        string.IsNullOrWhiteSpace(
-                            result.CurrentStatus)
-                            ? "Running"
-                            : result.CurrentStatus);
-
-                    ScanMessage =
-                        $"{service.DisplayName}: " +
-                        result.Message;
-                }
-                else
-                {
-                    ShowOperationError(
-                        result.Message);
-                }
+                HandleOperationResult(
+                    service,
+                    result,
+                    "Running");
             }
             finally
             {
-                service.IsBusy = false;
-
-                CommandManager
-                    .InvalidateRequerySuggested();
+                FinishServiceOperation(service);
             }
         }
 
@@ -510,16 +544,17 @@ namespace WinBoost.App.ViewModels
 
             MessageBoxResult confirmation =
                 MessageBox.Show(
-                    $"Dorești să oprești serviciul:\n\n" +
-                    $"{service.DisplayName}\n" +
-                    $"({service.ServiceName})?\n\n" +
-                    "Oprirea unui serviciu poate afecta " +
-                    "funcționarea Windows sau a unor aplicații.",
-                    "Oprire serviciu",
+                    LocalizationHelper.Format(
+                        "ServicesStopConfirmation",
+                        service.DisplayName,
+                        service.ServiceName),
+                    LocalizationHelper.Get(
+                        "ServicesStopDialogTitle"),
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
 
-            if (confirmation != MessageBoxResult.Yes)
+            if (confirmation !=
+                MessageBoxResult.Yes)
             {
                 return;
             }
@@ -533,31 +568,14 @@ namespace WinBoost.App.ViewModels
                         .StopServiceAsync(
                             service.ServiceName);
 
-                if (result.IsSuccessful)
-                {
-                    UpdateServiceStatus(
-                        service,
-                        string.IsNullOrWhiteSpace(
-                            result.CurrentStatus)
-                            ? "Stopped"
-                            : result.CurrentStatus);
-
-                    ScanMessage =
-                        $"{service.DisplayName}: " +
-                        result.Message;
-                }
-                else
-                {
-                    ShowOperationError(
-                        result.Message);
-                }
+                HandleOperationResult(
+                    service,
+                    result,
+                    "Stopped");
             }
             finally
             {
-                service.IsBusy = false;
-
-                CommandManager
-                    .InvalidateRequerySuggested();
+                FinishServiceOperation(service);
             }
         }
 
@@ -572,14 +590,17 @@ namespace WinBoost.App.ViewModels
 
             MessageBoxResult confirmation =
                 MessageBox.Show(
-                    $"Dorești să repornești serviciul:\n\n" +
-                    $"{service.DisplayName}\n" +
-                    $"({service.ServiceName})?",
-                    "Repornire serviciu",
+                    LocalizationHelper.Format(
+                        "ServicesRestartConfirmation",
+                        service.DisplayName,
+                        service.ServiceName),
+                    LocalizationHelper.Get(
+                        "ServicesRestartDialogTitle"),
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Question);
 
-            if (confirmation != MessageBoxResult.Yes)
+            if (confirmation !=
+                MessageBoxResult.Yes)
             {
                 return;
             }
@@ -593,32 +614,51 @@ namespace WinBoost.App.ViewModels
                         .RestartServiceAsync(
                             service.ServiceName);
 
-                if (result.IsSuccessful)
-                {
-                    UpdateServiceStatus(
-                        service,
-                        string.IsNullOrWhiteSpace(
-                            result.CurrentStatus)
-                            ? "Running"
-                            : result.CurrentStatus);
-
-                    ScanMessage =
-                        $"{service.DisplayName}: " +
-                        result.Message;
-                }
-                else
-                {
-                    ShowOperationError(
-                        result.Message);
-                }
+                HandleOperationResult(
+                    service,
+                    result,
+                    "Running");
             }
             finally
             {
-                service.IsBusy = false;
-
-                CommandManager
-                    .InvalidateRequerySuggested();
+                FinishServiceOperation(service);
             }
+        }
+
+        private void HandleOperationResult(
+            WindowsServiceInfo service,
+            ServiceOperationResult result,
+            string fallbackStatus)
+        {
+            if (!result.IsSuccessful)
+            {
+                ShowOperationError(
+                    result.Message);
+
+                return;
+            }
+
+            UpdateServiceStatus(
+                service,
+                string.IsNullOrWhiteSpace(
+                    result.CurrentStatus)
+                    ? fallbackStatus
+                    : result.CurrentStatus);
+
+            ScanMessage =
+                LocalizationHelper.Format(
+                    "ServicesOperationCompleted",
+                    service.DisplayName,
+                    result.Message);
+        }
+
+        private static void FinishServiceOperation(
+            WindowsServiceInfo service)
+        {
+            service.IsBusy = false;
+
+            CommandManager
+                .InvalidateRequerySuggested();
         }
 
         private void UpdateServiceStatus(
@@ -648,17 +688,34 @@ namespace WinBoost.App.ViewModels
         {
             MessageBox.Show(
                 message,
-                "Operația nu a putut fi executată",
+                LocalizationHelper.Get(
+                    "ServicesOperationErrorTitle"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
         }
 
+        private void RestartSearchDelay()
+        {
+            _searchDelayTimer.Stop();
+            _searchDelayTimer.Start();
+        }
+
+        private void SearchDelayTimer_Tick(
+            object? sender,
+            EventArgs e)
+        {
+            _searchDelayTimer.Stop();
+            ApplyFilter();
+        }
+
         private void ApplyFilter()
         {
-            IEnumerable<WindowsServiceInfo> filteredServices =
-                _allServices;
+            IEnumerable<WindowsServiceInfo>
+                filteredServices =
+                    _allServices;
 
-            if (!string.IsNullOrWhiteSpace(SearchText))
+            if (!string.IsNullOrWhiteSpace(
+                    SearchText))
             {
                 string searchValue =
                     SearchText.Trim();
@@ -675,44 +732,44 @@ namespace WinBoost.App.ViewModels
             }
 
             filteredServices =
-                SelectedFilter switch
+                _selectedFilterKey switch
                 {
-                    "Active" =>
+                    FilterRunning =>
                         filteredServices.Where(
                             service =>
                                 service.Status.Equals(
                                     "Running",
                                     StringComparison.OrdinalIgnoreCase)),
 
-                    "Oprite" =>
+                    FilterStopped =>
                         filteredServices.Where(
                             service =>
                                 !service.Status.Equals(
                                     "Running",
                                     StringComparison.OrdinalIgnoreCase)),
 
-                    "Automatic" =>
+                    FilterAutomatic =>
                         filteredServices.Where(
                             service =>
                                 service.StartType.Equals(
                                     "Automatic",
                                     StringComparison.OrdinalIgnoreCase)),
 
-                    "Automatic (Delayed)" =>
+                    FilterAutomaticDelayed =>
                         filteredServices.Where(
                             service =>
                                 service.StartType.Equals(
                                     "Automatic (Delayed)",
                                     StringComparison.OrdinalIgnoreCase)),
 
-                    "Manual" =>
+                    FilterManual =>
                         filteredServices.Where(
                             service =>
                                 service.StartType.Equals(
                                     "Manual",
                                     StringComparison.OrdinalIgnoreCase)),
 
-                    "Disabled" =>
+                    FilterDisabled =>
                         filteredServices.Where(
                             service =>
                                 service.StartType.Equals(
@@ -735,37 +792,220 @@ namespace WinBoost.App.ViewModels
             }
         }
 
-        private void UpdateHealthInsight(
-    int recommendedServices,
-    int safeToOptimizeServices)
+        private void UpdateHealthInsight()
         {
-            int optimizableServices =
-                recommendedServices +
-                safeToOptimizeServices;
+            if (!_hasScanResult)
+            {
+                HealthInsight =
+                    LocalizationHelper.Get(
+                        "ServicesInsightInitial");
 
-            if (optimizableServices == 0)
-            {
-                HealthInsight =
-                    "Sistemul rulează normal. Nu au fost identificate " +
-                    "servicii care necesită optimizare imediată.";
+                return;
             }
-            else if (optimizableServices == 1)
-            {
-                HealthInsight =
-                    "A fost identificat un serviciu care poate fi " +
-                    "optimizat în siguranță. Revizuirea acestuia poate " +
-                    "îmbunătăți performanța sistemului.";
-            }
-            else
-            {
-                HealthInsight =
-                    $"Au fost identificate {optimizableServices} servicii " +
-                    "care pot fi optimizate în siguranță. Revizuirea " +
-                    "acestora poate îmbunătăți performanța sistemului.";
-            }
+
+            int optimizableServices =
+                _lastRecommendedServices +
+                _lastSafeToOptimizeServices;
+
+            HealthInsight =
+                optimizableServices switch
+                {
+                    0 =>
+                        LocalizationHelper.Get(
+                            "ServicesInsightGood"),
+
+                    1 =>
+                        LocalizationHelper.Get(
+                            "ServicesInsightSingle"),
+
+                    _ =>
+                        LocalizationHelper.Format(
+                            "ServicesInsightMultiple",
+                            optimizableServices)
+                };
+        }
+
+        private void SetScanState(
+            string statusCode,
+            string resourceKey)
+        {
+            ScanStatusCode =
+                statusCode;
+
+            ScanStatus =
+                LocalizationHelper.Get(
+                    resourceKey);
+        }
+
+        private void RebuildFilters()
+        {
+            string selectedKey =
+                _selectedFilterKey;
+
+            AvailableFilters.Clear();
+
+            AvailableFilters.Add(
+                LocalizationHelper.Get(
+                    "ServicesFilterAll"));
+
+            AvailableFilters.Add(
+                LocalizationHelper.Get(
+                    "ServicesFilterRunning"));
+
+            AvailableFilters.Add(
+                LocalizationHelper.Get(
+                    "ServicesFilterStopped"));
+
+            AvailableFilters.Add(
+                LocalizationHelper.Get(
+                    "ServicesFilterAutomatic"));
+
+            AvailableFilters.Add(
+                LocalizationHelper.Get(
+                    "ServicesFilterAutomaticDelayed"));
+
+            AvailableFilters.Add(
+                LocalizationHelper.Get(
+                    "ServicesFilterManual"));
+
+            AvailableFilters.Add(
+                LocalizationHelper.Get(
+                    "ServicesFilterDisabled"));
+
+            _selectedFilter =
+                GetFilterDisplayText(
+                    selectedKey);
 
             OnPropertyChanged(
-                nameof(HealthInsight));
+                nameof(SelectedFilter));
+        }
+
+        private string ResolveFilterKey(
+            string displayText)
+        {
+            if (displayText ==
+                LocalizationHelper.Get(
+                    "ServicesFilterRunning"))
+            {
+                return FilterRunning;
+            }
+
+            if (displayText ==
+                LocalizationHelper.Get(
+                    "ServicesFilterStopped"))
+            {
+                return FilterStopped;
+            }
+
+            if (displayText ==
+                LocalizationHelper.Get(
+                    "ServicesFilterAutomatic"))
+            {
+                return FilterAutomatic;
+            }
+
+            if (displayText ==
+                LocalizationHelper.Get(
+                    "ServicesFilterAutomaticDelayed"))
+            {
+                return FilterAutomaticDelayed;
+            }
+
+            if (displayText ==
+                LocalizationHelper.Get(
+                    "ServicesFilterManual"))
+            {
+                return FilterManual;
+            }
+
+            if (displayText ==
+                LocalizationHelper.Get(
+                    "ServicesFilterDisabled"))
+            {
+                return FilterDisabled;
+            }
+
+            return FilterAll;
+        }
+
+        private string GetFilterDisplayText(
+            string filterKey)
+        {
+            return filterKey switch
+            {
+                FilterRunning =>
+                    LocalizationHelper.Get(
+                        "ServicesFilterRunning"),
+
+                FilterStopped =>
+                    LocalizationHelper.Get(
+                        "ServicesFilterStopped"),
+
+                FilterAutomatic =>
+                    LocalizationHelper.Get(
+                        "ServicesFilterAutomatic"),
+
+                FilterAutomaticDelayed =>
+                    LocalizationHelper.Get(
+                        "ServicesFilterAutomaticDelayed"),
+
+                FilterManual =>
+                    LocalizationHelper.Get(
+                        "ServicesFilterManual"),
+
+                FilterDisabled =>
+                    LocalizationHelper.Get(
+                        "ServicesFilterDisabled"),
+
+                _ =>
+                    LocalizationHelper.Get(
+                        "ServicesFilterAll")
+            };
+        }
+
+        private void LanguageManager_LanguageChanged(
+            object? sender,
+            EventArgs e)
+        {
+            ScanStatus =
+                LocalizationHelper.Get(
+                    ScanStatusCode switch
+                    {
+                        "Checking" =>
+                            "ServicesStatusChecking",
+
+                        "Verified" =>
+                            "ServicesStatusVerified",
+
+                        "Error" =>
+                            "ServicesStatusError",
+
+                        _ =>
+                            "ServicesStatusUnchecked"
+                    });
+
+            if (!_hasScanResult &&
+                !IsScanning)
+            {
+                ScanMessage =
+                    LocalizationHelper.Get(
+                        "ServicesInitialMessage");
+            }
+            else if (IsScanning)
+            {
+                ScanMessage =
+                    LocalizationHelper.Get(
+                        "ServicesScanningMessage");
+            }
+
+            RebuildFilters();
+            UpdateHealthInsight();
+            ServicesHealth.RefreshLocalizedText();
+
+            OnPropertyChanged(
+                nameof(ScanButtonText));
+
+            ApplyFilter();
         }
 
         public event PropertyChangedEventHandler?

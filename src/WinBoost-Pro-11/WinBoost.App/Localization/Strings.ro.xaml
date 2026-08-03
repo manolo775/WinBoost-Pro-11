@@ -139,4 +139,114 @@
 		Repornește
 	</sys:String>
 
+	<!-- SERVICES - MESAJE DINAMICE -->
+
+	<sys:String x:Key="ServicesStatusUnchecked">
+		Neverificat
+	</sys:String>
+
+	<sys:String x:Key="ServicesStatusChecking">
+		Se verifică
+	</sys:String>
+
+	<sys:String x:Key="ServicesStatusVerified">
+		Verificat
+	</sys:String>
+
+	<sys:String x:Key="ServicesStatusError">
+		Eroare
+	</sys:String>
+
+	<sys:String x:Key="ServicesInitialMessage">
+		Apasă Scanează serviciile pentru verificare.
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanningMessage">
+		Se analizează serviciile Windows...
+	</sys:String>
+
+	<sys:String x:Key="ServicesNoServicesFound">
+		Nu au fost găsite servicii Windows.
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanCompleted">
+		Scanare finalizată: {0} servicii analizate.
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanFailed">
+		Scanarea nu a putut fi finalizată: {0}
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanButtonIdle">
+		Scanează serviciile
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanButtonBusy">
+		Se scanează...
+	</sys:String>
+
+	<sys:String x:Key="ServicesInsightInitial">
+		Scanează serviciile pentru a primi recomandări inteligente.
+	</sys:String>
+
+	<sys:String x:Key="ServicesInsightGood">
+		Sistemul rulează normal. Nu au fost identificate servicii care necesită optimizare imediată.
+	</sys:String>
+
+	<sys:String x:Key="ServicesInsightSingle">
+		A fost identificat un serviciu care poate fi optimizat în siguranță. Revizuirea acestuia poate îmbunătăți performanța sistemului.
+	</sys:String>
+
+	<sys:String x:Key="ServicesInsightMultiple">
+		Au fost identificate {0} servicii care pot fi optimizate în siguranță. Revizuirea acestora poate îmbunătăți performanța sistemului.
+	</sys:String>
+
+	<sys:String x:Key="ServicesEstimatedGainValue">
+		+{0} Health
+	</sys:String>
+
+	<sys:String x:Key="ServicesNoEstimatedGain">
+		Fără câștig disponibil
+	</sys:String>
+
+	<!-- SERVICES - FILTRE ȘI DIALOGURI -->
+
+	<sys:String x:Key="ServicesFilterAll">Toate</sys:String>
+	<sys:String x:Key="ServicesFilterRunning">Active</sys:String>
+	<sys:String x:Key="ServicesFilterStopped">Oprite</sys:String>
+	<sys:String x:Key="ServicesFilterAutomatic">Automat</sys:String>
+	<sys:String x:Key="ServicesFilterAutomaticDelayed">Automat (întârziat)</sys:String>
+	<sys:String x:Key="ServicesFilterManual">Manual</sys:String>
+	<sys:String x:Key="ServicesFilterDisabled">Dezactivat</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeChanged">{0}: tipul de pornire este acum {1}.</sys:String>
+	<sys:String x:Key="ServicesStartDialogTitle">Pornire serviciu</sys:String>
+	<sys:String x:Key="ServicesStopDialogTitle">Oprire serviciu</sys:String>
+	<sys:String x:Key="ServicesRestartDialogTitle">Repornire serviciu</sys:String>
+	<sys:String x:Key="ServicesOperationErrorTitle">Operația nu a putut fi executată</sys:String>
+	<sys:String x:Key="ServicesOperationCompleted">{0}: {1}</sys:String>
+
+	<sys:String x:Key="ServicesStartConfirmation">
+		Dorești să pornești serviciul:
+
+		{0}
+		({1})?
+	</sys:String>
+
+	<sys:String x:Key="ServicesStopConfirmation">
+		Dorești să oprești serviciul:
+
+		{0}
+		({1})?
+
+		Oprirea unui serviciu poate afecta funcționarea Windows sau a unor aplicații.
+	</sys:String>
+
+	<sys:String x:Key="ServicesRestartConfirmation">
+		Dorești să repornești serviciul:
+
+		{0}
+		({1})?
+	</sys:String>
+	
 </ResourceDictionary>

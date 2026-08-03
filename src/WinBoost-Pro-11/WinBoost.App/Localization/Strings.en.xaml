@@ -139,4 +139,114 @@
 		Restart
 	</sys:String>
 
+	<!-- SERVICES - DYNAMIC MESSAGES -->
+
+	<sys:String x:Key="ServicesStatusUnchecked">
+		Not checked
+	</sys:String>
+
+	<sys:String x:Key="ServicesStatusChecking">
+		Checking
+	</sys:String>
+
+	<sys:String x:Key="ServicesStatusVerified">
+		Verified
+	</sys:String>
+
+	<sys:String x:Key="ServicesStatusError">
+		Error
+	</sys:String>
+
+	<sys:String x:Key="ServicesInitialMessage">
+		Press Scan Services to begin.
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanningMessage">
+		Analyzing Windows services...
+	</sys:String>
+
+	<sys:String x:Key="ServicesNoServicesFound">
+		No Windows services were found.
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanCompleted">
+		Scan completed: {0} services analyzed.
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanFailed">
+		The scan could not be completed: {0}
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanButtonIdle">
+		Scan Services
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanButtonBusy">
+		Scanning...
+	</sys:String>
+
+	<sys:String x:Key="ServicesInsightInitial">
+		Scan the services to receive intelligent recommendations.
+	</sys:String>
+
+	<sys:String x:Key="ServicesInsightGood">
+		The system is running normally. No services requiring immediate optimization were identified.
+	</sys:String>
+
+	<sys:String x:Key="ServicesInsightSingle">
+		One service was identified that can be safely optimized. Reviewing it may improve system performance.
+	</sys:String>
+
+	<sys:String x:Key="ServicesInsightMultiple">
+		{0} services were identified that can be safely optimized. Reviewing them may improve system performance.
+	</sys:String>
+
+	<sys:String x:Key="ServicesEstimatedGainValue">
+		+{0} Health
+	</sys:String>
+
+	<sys:String x:Key="ServicesNoEstimatedGain">
+		No gain available
+	</sys:String>
+
+	<!-- SERVICES - FILTERS AND DIALOGS -->
+
+	<sys:String x:Key="ServicesFilterAll">All</sys:String>
+	<sys:String x:Key="ServicesFilterRunning">Running</sys:String>
+	<sys:String x:Key="ServicesFilterStopped">Stopped</sys:String>
+	<sys:String x:Key="ServicesFilterAutomatic">Automatic</sys:String>
+	<sys:String x:Key="ServicesFilterAutomaticDelayed">Automatic (Delayed)</sys:String>
+	<sys:String x:Key="ServicesFilterManual">Manual</sys:String>
+	<sys:String x:Key="ServicesFilterDisabled">Disabled</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeChanged">{0}: the startup type is now {1}.</sys:String>
+	<sys:String x:Key="ServicesStartDialogTitle">Start service</sys:String>
+	<sys:String x:Key="ServicesStopDialogTitle">Stop service</sys:String>
+	<sys:String x:Key="ServicesRestartDialogTitle">Restart service</sys:String>
+	<sys:String x:Key="ServicesOperationErrorTitle">The operation could not be completed</sys:String>
+	<sys:String x:Key="ServicesOperationCompleted">{0}: {1}</sys:String>
+
+	<sys:String x:Key="ServicesStartConfirmation">
+		Do you want to start this service?
+
+		{0}
+		({1})?
+	</sys:String>
+
+	<sys:String x:Key="ServicesStopConfirmation">
+		Do you want to stop this service?
+
+		{0}
+		({1})?
+
+		Stopping a service may affect Windows or some applications.
+	</sys:String>
+
+	<sys:String x:Key="ServicesRestartConfirmation">
+		Do you want to restart this service?
+
+		{0}
+		({1})?
+	</sys:String>
+	
 </ResourceDictionary>

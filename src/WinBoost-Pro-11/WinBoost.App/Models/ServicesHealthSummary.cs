@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using WinBoost.App.Localization;
 
 namespace WinBoost.App.Models
 {
@@ -12,84 +13,40 @@ namespace WinBoost.App.Models
         private int _safeToOptimizeServices;
         private int _estimatedHealthGain;
 
+        public ServicesHealthSummary()
+        {
+            LanguageManager.Instance.LanguageChanged +=
+                LanguageManager_LanguageChanged;
+        }
+
         public int TotalServices
         {
             get => _totalServices;
-
-            set
-            {
-                if (_totalServices == value)
-                {
-                    return;
-                }
-
-                _totalServices = value;
-                OnPropertyChanged();
-            }
+            set => SetField(ref _totalServices, value);
         }
 
         public int RunningServices
         {
             get => _runningServices;
-
-            set
-            {
-                if (_runningServices == value)
-                {
-                    return;
-                }
-
-                _runningServices = value;
-                OnPropertyChanged();
-            }
+            set => SetField(ref _runningServices, value);
         }
 
         public int CriticalServices
         {
             get => _criticalServices;
-
-            set
-            {
-                if (_criticalServices == value)
-                {
-                    return;
-                }
-
-                _criticalServices = value;
-                OnPropertyChanged();
-            }
+            set => SetField(ref _criticalServices, value);
         }
 
         public int RecommendedServices
         {
             get => _recommendedServices;
-
-            set
-            {
-                if (_recommendedServices == value)
-                {
-                    return;
-                }
-
-                _recommendedServices = value;
-                OnPropertyChanged();
-            }
+            set => SetField(ref _recommendedServices, value);
         }
 
         public int SafeToOptimizeServices
         {
             get => _safeToOptimizeServices;
-
-            set
-            {
-                if (_safeToOptimizeServices == value)
-                {
-                    return;
-                }
-
-                _safeToOptimizeServices = value;
-                OnPropertyChanged();
-            }
+            set => SetField(ref _safeToOptimizeServices, value);
         }
 
         public int EstimatedHealthGain
@@ -109,15 +66,48 @@ namespace WinBoost.App.Models
                 }
 
                 _estimatedHealthGain = normalizedValue;
+
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(EstimatedHealthGainText));
+                OnPropertyChanged(
+                    nameof(EstimatedHealthGainText));
             }
         }
 
         public string EstimatedHealthGainText =>
             EstimatedHealthGain > 0
-                ? $"+{EstimatedHealthGain} Health"
-                : "Fără câștig disponibil";
+                ? LocalizationHelper.Format(
+                    "ServicesEstimatedGainValue",
+                    EstimatedHealthGain)
+                : LocalizationHelper.Get(
+                    "ServicesNoEstimatedGain");
+
+        public void RefreshLocalizedText()
+        {
+            OnPropertyChanged(
+                nameof(EstimatedHealthGainText));
+        }
+
+        private void LanguageManager_LanguageChanged(
+            object? sender,
+            System.EventArgs e)
+        {
+            RefreshLocalizedText();
+        }
+
+        private void SetField(
+            ref int field,
+            int value,
+            [CallerMemberName]
+            string? propertyName = null)
+        {
+            if (field == value)
+            {
+                return;
+            }
+
+            field = value;
+            OnPropertyChanged(propertyName);
+        }
 
         public event PropertyChangedEventHandler?
             PropertyChanged;
