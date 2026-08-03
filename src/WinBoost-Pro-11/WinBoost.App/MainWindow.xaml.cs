@@ -3,6 +3,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using WinBoost.App.Views;
+using WinBoost.App.Localization;
+using AppLanguage = WinBoost.App.Localization.Language;
+
 
 namespace WinBoost.App
 {
@@ -16,6 +19,29 @@ namespace WinBoost.App
         private WindowsUpdateView? _windowsUpdateView;
         private AppsView? _appsView;
         private StartupView? _startupView;
+
+        private void LanguageComboBox_SelectionChanged(
+     object sender,
+     SelectionChangedEventArgs e)
+        {
+            if (sender is not ComboBox comboBox)
+            {
+                return;
+            }
+
+            if (comboBox.SelectedIndex < 0)
+            {
+                return;
+            }
+
+            AppLanguage selectedLanguage =
+                comboBox.SelectedIndex == 1
+                    ? AppLanguage.English
+                    : AppLanguage.Romanian;
+
+            LanguageManager.Instance.SetLanguage(
+                selectedLanguage);
+        }
 
         public MainWindow()
         {

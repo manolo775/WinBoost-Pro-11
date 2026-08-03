@@ -26,13 +26,13 @@
 			<StackPanel Grid.Row="0">
 
 				<TextBlock
-                    Text="Services"
+                    Text="{DynamicResource ServicesPageTitle}"
                     FontSize="30"
                     FontWeight="SemiBold"
                     Foreground="{StaticResource TextBrush}"/>
 
 				<TextBlock
-                    Text="Verifică serviciile Windows și identifică serviciile care pot afecta performanța."
+                    Text="{DynamicResource ServicesPageDescription}"
                     Margin="0,6,0,0"
                     FontSize="14"
                     TextWrapping="Wrap"
@@ -59,7 +59,7 @@
 					<StackPanel>
 
 						<TextBlock
-                            Text="Windows Services Check"
+                            Text="{DynamicResource ServicesCheckTitle}"
                             FontSize="20"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource TextBrush}"/>
@@ -72,7 +72,7 @@
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
-                            Text="Scanarea este doar informativă și nu modifică serviciile Windows."
+                            Text="{DynamicResource ServicesScanInformation}"
                             Margin="0,6,20,0"
                             FontSize="13"
                             TextWrapping="Wrap"
@@ -195,8 +195,7 @@
 						<!-- BUTON SCANARE -->
 
 						<Button
-                            Content="{Binding ScanButtonText,
-                                              FallbackValue='Scan Services'}"
+                            Content="{DynamicResource ServicesScanButton}"
                             Command="{Binding ScanServicesCommand}"
                             Width="150"
                             Height="42"

@@ -1,0 +1,142 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+	<!-- MENIU PRINCIPAL -->
+
+	<sys:String x:Key="MenuDashboard">
+		Dashboard
+	</sys:String>
+
+	<sys:String x:Key="MenuPerformance">
+		Performanță
+	</sys:String>
+
+	<sys:String x:Key="MenuPrivacy">
+		Confidențialitate
+	</sys:String>
+
+	<sys:String x:Key="MenuServices">
+		Servicii
+	</sys:String>
+
+	<sys:String x:Key="MenuWindowsUpdate">
+		Actualizări Windows
+	</sys:String>
+
+	<sys:String x:Key="MenuApps">
+		Aplicații
+	</sys:String>
+
+	<sys:String x:Key="MenuStartupManager">
+		Manager pornire
+	</sys:String>
+
+	<!-- PAGINA SERVICII -->
+
+	<sys:String x:Key="ServicesPageTitle">
+		Servicii
+	</sys:String>
+
+	<sys:String x:Key="ServicesPageDescription">
+		Verifică serviciile Windows și identifică serviciile care pot afecta performanța.
+	</sys:String>
+
+	<sys:String x:Key="ServicesCheckTitle">
+		Verificarea serviciilor Windows
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanFallback">
+		Apasă Scanează serviciile pentru a începe verificarea.
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanInformation">
+		Scanarea este doar informativă și nu modifică serviciile Windows.
+	</sys:String>
+
+	<sys:String x:Key="ServicesScanButton">
+		Scanează serviciile
+	</sys:String>
+
+	<sys:String x:Key="ServicesHealthTitle">
+		Starea serviciilor
+	</sys:String>
+
+	<sys:String x:Key="ServicesHealthDescription">
+		Rezumatul serviciilor Windows identificate în urma scanării.
+	</sys:String>
+
+	<sys:String x:Key="ServicesHealthTotal">
+		Total
+	</sys:String>
+
+	<sys:String x:Key="ServicesHealthRunning">
+		Active
+	</sys:String>
+
+	<sys:String x:Key="ServicesHealthCritical">
+		Critice
+	</sys:String>
+
+	<sys:String x:Key="ServicesHealthRecommended">
+		Recomandate
+	</sys:String>
+
+	<sys:String x:Key="ServicesHealthSafe">
+		Sigure
+	</sys:String>
+
+	<sys:String x:Key="ServicesHealthEstimatedGain">
+		Câștig estimat
+	</sys:String>
+
+	<sys:String x:Key="ServicesAnalyzedTitle">
+		Servicii analizate
+	</sys:String>
+
+	<sys:String x:Key="ServicesAnalyzedDescription">
+		Aici vor apărea serviciile identificate în urma scanării.
+	</sys:String>
+
+	<sys:String x:Key="ServicesSearchToolTip">
+		Caută după numele serviciului sau după numele intern.
+	</sys:String>
+
+	<sys:String x:Key="ServicesColumnService">
+		Serviciu
+	</sys:String>
+
+	<sys:String x:Key="ServicesColumnStatus">
+		Stare
+	</sys:String>
+
+	<sys:String x:Key="ServicesColumnStartup">
+		Pornire
+	</sys:String>
+
+	<sys:String x:Key="ServicesColumnRecommendation">
+		Recomandare
+	</sys:String>
+
+	<sys:String x:Key="ServicesColumnHealth">
+		Health
+	</sys:String>
+
+	<sys:String x:Key="ServicesColumnActions">
+		Acțiuni
+	</sys:String>
+
+	<sys:String x:Key="ServicesActionStart">
+		Pornește
+	</sys:String>
+
+	<sys:String x:Key="ServicesActionStop">
+		Oprește
+	</sys:String>
+
+	<sys:String x:Key="ServicesActionRestart">
+		Repornește
+	</sys:String>
+
+</ResourceDictionary>
