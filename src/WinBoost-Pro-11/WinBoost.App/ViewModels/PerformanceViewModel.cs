@@ -13,6 +13,8 @@ using WinBoost.App.Services.Monitoring;
 using WinBoost.App.Services.Optimization;
 using MaterialDesignThemes.Wpf;
 using System.Windows.Media;
+using WinBoost.App.Services.Startup;
+
 
 namespace WinBoost.App.ViewModels
 {
@@ -21,6 +23,8 @@ namespace WinBoost.App.ViewModels
         private readonly ProcessMonitorService _processMonitorService;
         private readonly TempFileService _tempFileService;
         private readonly DispatcherTimer _processRefreshTimer;
+        private readonly StartupAppsScanner
+                         _startupAppsScanner;
 
         private bool _isRefreshingProcesses;
         private bool _isAnalyzing;
@@ -111,6 +115,9 @@ namespace WinBoost.App.ViewModels
             _tempFileService =
                 new TempFileService();
 
+            _startupAppsScanner =
+                 new StartupAppsScanner();
+
             TopProcesses =
                 new ObservableCollection<ProcessInfo>();
 
@@ -120,8 +127,7 @@ namespace WinBoost.App.ViewModels
             RecommendationItems =
                 new ObservableCollection<RecommendationItem>();
 
-            RecommendationItems =
-                new ObservableCollection<RecommendationItem>();
+
 
             OptimizeCommand =
                 new RelayCommand(
@@ -243,6 +249,8 @@ namespace WinBoost.App.ViewModels
                 var messages =
                     new List<string>();
 
+                // FIȘIERE TEMPORARE
+
                 var tempResult =
                     await _tempFileService
                         .AnalyzeAsync();
@@ -260,14 +268,14 @@ namespace WinBoost.App.ViewModels
                             ActionId = "temp-cleanup",
 
                             Title =
-        LocalizationHelper.Get(
-            "PerformanceTempCleanupTitle"),
+                                LocalizationHelper.Get(
+                                    "PerformanceTempCleanupTitle"),
 
                             Description =
-        LocalizationHelper.Format(
-            "PerformanceTempCleanupDescription",
-            tempResult.FileCount,
-            space),
+                                LocalizationHelper.Format(
+                                    "PerformanceTempCleanupDescription",
+                                    tempResult.FileCount,
+                                    space),
 
                             RequiresAdministrator = false,
                             IsActionable = true,
@@ -275,91 +283,174 @@ namespace WinBoost.App.ViewModels
                             IsSelected = true
                         });
 
-                    RecommendationItems.Add(
-                          new RecommendationItem
-                           {
-                                 Icon = PackIconKind.CheckCircle,
-                                  IconBrush = Brushes.LimeGreen,
-                                 Text = LocalizationHelper.Format(
-                                 "PerformanceTempCleanupMessage",
-                                space)
-                           });
-
-                    messages.Add(
+                    string cleanupMessage =
                         LocalizationHelper.Format(
                             "PerformanceTempCleanupMessage",
-                            space));
+                            space);
+
+                    RecommendationItems.Add(
+                        new RecommendationItem
+                        {
+                            Icon =
+                                PackIconKind.CheckCircle,
+
+                            IconBrush =
+                                Brushes.LimeGreen,
+
+                            Text =
+                                cleanupMessage
+                        });
+
+                    messages.Add(
+                        cleanupMessage);
                 }
+
+                // APLICAȚII STARTUP
+
+                var startupApplications =
+                    await _startupAppsScanner
+                        .ScanAsync();
+
+                int enabledStartupApps =
+                    startupApplications.Count(
+                        application =>
+                            application.IsEnabled);
+
+                if (enabledStartupApps >= 5)
+                {
+                    string startupMessage =
+                        LocalizationHelper.Format(
+                            "PerformanceStartupAppsMessage",
+                            enabledStartupApps);
+
+                    RecommendationItems.Add(
+                        new RecommendationItem
+                        {
+                            Icon =
+                                PackIconKind.RocketLaunch,
+
+                            IconBrush =
+                                Brushes.Gold,
+
+                            Text =
+                                startupMessage
+                        });
+
+                    messages.Add(
+                        startupMessage);
+                }
+
+                // UTILIZARE GENERALĂ CPU
 
                 if (CpuUsageValue >= 80)
                 {
-                    messages.Add(
+                    string cpuMessage =
                         LocalizationHelper.Get(
-                            "PerformanceCpuHighMessage"));
+                            "PerformanceCpuHighMessage");
+
+                    messages.Add(
+                        cpuMessage);
+
+                    RecommendationItems.Add(
+                        new RecommendationItem
+                        {
+                            Icon =
+                                PackIconKind.AlertCircle,
+
+                            IconBrush =
+                                Brushes.Orange,
+
+                            Text =
+                                cpuMessage
+                        });
                 }
 
-   
+                // UTILIZARE RAM
 
                 if (RamUsageValue >= 85)
                 {
-                    messages.Add(
+                    string ramMessage =
                         LocalizationHelper.Get(
-                            "PerformanceRamHighMessage"));
+                            "PerformanceRamHighMessage");
+
+                    messages.Add(
+                        ramMessage);
+
+                    RecommendationItems.Add(
+                        new RecommendationItem
+                        {
+                            Icon =
+                                PackIconKind.Alert,
+
+                            IconBrush =
+                                Brushes.Gold,
+
+                            Text =
+                                ramMessage
+                        });
                 }
 
-                     RecommendationItems.Add(
-                         new RecommendationItem
-                      {
-                            Icon = PackIconKind.Alert,
-                         IconBrush = Brushes.Gold,
-                           Text = LocalizationHelper.Get(
-                            "PerformanceRamHighMessage")
-                            });
+                // PROCES CU UTILIZARE CPU RIDICATĂ
 
-                 await RefreshTopProcessesAsync();
+                await RefreshTopProcessesAsync();
 
                 ProcessInfo? highestCpuProcess =
                     TopProcesses
                         .OrderByDescending(
-                            process => process.CpuUsage)
+                            process =>
+                                process.CpuUsage)
                         .FirstOrDefault();
 
                 if (highestCpuProcess != null &&
                     highestCpuProcess.CpuUsage >= 20)
                 {
-                    messages.Add(
+                    string processMessage =
                         LocalizationHelper.Format(
                             "PerformanceHighCpuProcessMessage",
                             highestCpuProcess.Name,
-                            highestCpuProcess.CpuUsage.ToString("F1")));
+                            highestCpuProcess.CpuUsage
+                                .ToString("F1"));
+
+                    messages.Add(
+                        processMessage);
 
                     RecommendationItems.Add(
                         new RecommendationItem
                         {
-                            Icon = PackIconKind.AlertCircle,
-                            IconBrush = Brushes.Orange,
-                            Text = LocalizationHelper.Format(
-                                "PerformanceHighCpuProcessMessage",
-                                highestCpuProcess.Name,
-                                highestCpuProcess.CpuUsage.ToString("F1"))
+                            Icon =
+                                PackIconKind.AlertCircle,
+
+                            IconBrush =
+                                Brushes.Orange,
+
+                            Text =
+                                processMessage
                         });
                 }
 
-                if (highestCpuProcess != null &&
-                    highestCpuProcess.CpuUsage >= 20)
-                {
-                    messages.Add(
-                        LocalizationHelper.Format(
-                            "PerformanceHighCpuProcessMessage",
-                            highestCpuProcess.Name,
-                            highestCpuProcess.CpuUsage.ToString("F1")));
-                }
+                // UTILIZARE DISC
 
                 if (DiskUsageValue >= 90)
                 {
-                    messages.Add(
+                    string diskMessage =
                         LocalizationHelper.Get(
-                            "PerformanceDiskLowMessage"));
+                            "PerformanceDiskLowMessage");
+
+                    messages.Add(
+                        diskMessage);
+
+                    RecommendationItems.Add(
+                        new RecommendationItem
+                        {
+                            Icon =
+                                PackIconKind.Harddisk,
+
+                            IconBrush =
+                                Brushes.OrangeRed,
+
+                            Text =
+                                diskMessage
+                        });
                 }
 
                 OptimizationStatus =
@@ -371,7 +462,9 @@ namespace WinBoost.App.ViewModels
                             string.Join(
                                 " • ",
                                 messages));
-                CommandManager.InvalidateRequerySuggested();
+
+                CommandManager
+                    .InvalidateRequerySuggested();
             }
             catch (Exception ex)
             {

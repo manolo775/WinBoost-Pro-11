@@ -619,5 +619,9 @@
 	<sys:String x:Key="PerformanceRecommendationsTitle">
 		Recommendations
 	</sys:String>
+
+	<sys:String x:Key="PerformanceStartupAppsMessage">
+		{0} applications are enabled at Windows startup. Reviewing nonessential applications may reduce startup time.
+	</sys:String>
 	
 </ResourceDictionary>
