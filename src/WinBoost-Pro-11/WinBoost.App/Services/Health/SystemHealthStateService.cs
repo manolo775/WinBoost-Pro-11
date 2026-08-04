@@ -54,12 +54,21 @@ namespace WinBoost.App.Services.Health
             HealthChanged;
 
         public void UpdatePerformanceScore(
-            int score)
+     int score)
         {
+            int normalizedScore =
+                NormalizeScore(
+                    score);
+
             lock (_syncRoot)
             {
                 _summary.PerformanceScore =
-                    NormalizeScore(score);
+                    normalizedScore;
+
+                WinBoostHealthScoreService
+                    .Instance
+                    .PerformanceScore =
+                        normalizedScore;
             }
 
             OnHealthChanged();
@@ -91,6 +100,12 @@ namespace WinBoost.App.Services.Health
                         _rawData.Services.CriticalServices,
                         _rawData.Services.OptionalServices,
                         _rawData.Services.LowRiskServices);
+
+                WinBoostHealthScoreService
+                      .Instance
+                      .ServicesScore =
+                       _summary.ServicesScore;
+
             }
 
             OnHealthChanged();
@@ -115,6 +130,12 @@ namespace WinBoost.App.Services.Health
                     _calculator.CalculateStartupScore(
                         _rawData.Startup.TotalStartupApps,
                         _rawData.Startup.EnabledStartupApps);
+
+                WinBoostHealthScoreService
+                          .Instance
+                          .StartupScore =
+                           _summary.StartupScore;
+
             }
 
             OnHealthChanged();
@@ -139,6 +160,11 @@ namespace WinBoost.App.Services.Health
                     _calculator.CalculatePrivacyScore(
                         _rawData.Privacy.TotalChecks,
                         _rawData.Privacy.PassedChecks);
+
+                WinBoostHealthScoreService
+                    .Instance
+                    .PrivacyScore =
+                        _summary.PrivacyScore;
             }
 
             OnHealthChanged();
@@ -160,6 +186,12 @@ namespace WinBoost.App.Services.Health
                     _calculator.CalculateWindowsUpdateScore(
                         _rawData.WindowsUpdate.PendingUpdates,
                         _rawData.WindowsUpdate.RequiresRestart);
+
+                WinBoostHealthScoreService
+                       .Instance
+                       .WindowsUpdateScore =
+                       _summary.WindowsUpdateScore;
+
             }
 
             OnHealthChanged();

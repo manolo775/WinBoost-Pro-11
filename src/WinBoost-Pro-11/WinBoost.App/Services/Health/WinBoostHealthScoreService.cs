@@ -38,10 +38,18 @@
             set;
         } = 100;
 
+        public int WindowsUpdateScore
+        {
+            get;
+            set;
+        } = 100;
+
+
         public int OverallScore =>
             (PerformanceScore +
              PrivacyScore +
              ServicesScore +
-             StartupScore) / 4;
+             StartupScore +
+             WindowsUpdateScore) / 5;
     }
 }
