@@ -11,6 +11,7 @@ using WinBoost.App.Models;
 using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Startup;
 
+
 namespace WinBoost.App.ViewModels
 {
     public class StartupViewModel : INotifyPropertyChanged
@@ -323,6 +324,26 @@ namespace WinBoost.App.ViewModels
             _healthStateService.UpdateStartupData(
                 totalStartupApps,
                 enabledStartupApps);
+            int startupScore = 100;
+
+            if (enabledStartupApps >= 15)
+            {
+                startupScore = 40;
+            }
+            else if (enabledStartupApps >= 10)
+            {
+                startupScore = 60;
+            }
+            else if (enabledStartupApps >= 5)
+            {
+                startupScore = 80;
+            }
+
+            WinBoostHealthScoreService
+                .Instance
+                .StartupScore =
+                    startupScore;
+
         }
 
         public event PropertyChangedEventHandler?

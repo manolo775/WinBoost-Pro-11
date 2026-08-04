@@ -10,6 +10,7 @@ using WinBoost.App.Models;
 using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Privacy;
 
+
 namespace WinBoost.App.ViewModels
 {
     public sealed class PrivacyViewModel : INotifyPropertyChanged
@@ -324,6 +325,12 @@ namespace WinBoost.App.ViewModels
             _healthStateService.UpdatePrivacyData(
                 100,
                 weightedScore);
+
+            WinBoostHealthScoreService
+                .Instance
+                   .PrivacyScore =
+                 weightedScore;
+
         }
 
         public event PropertyChangedEventHandler?

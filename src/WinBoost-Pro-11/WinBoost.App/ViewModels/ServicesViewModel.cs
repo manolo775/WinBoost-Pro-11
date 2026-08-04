@@ -485,6 +485,29 @@ namespace WinBoost.App.ViewModels
                 criticalServices,
                 recommendedServices,
                 safeToOptimizeServices);
+
+            int servicesScore = 100;
+
+            servicesScore -=
+                criticalServices * 20;
+
+            servicesScore -=
+                recommendedServices * 5;
+
+            servicesScore -=
+                safeToOptimizeServices * 2;
+
+            servicesScore =
+                Math.Clamp(
+                    servicesScore,
+                    0,
+                    100);
+
+            WinBoostHealthScoreService
+                .Instance
+                .ServicesScore =
+                    servicesScore;
+
         }
 
         private async Task StartServiceAsync(

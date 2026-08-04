@@ -39,7 +39,7 @@
 
 			<UniformGrid
                 Grid.Row="1"
-                Columns="3"
+                Columns="4"
                 Margin="0,25,0,0">
 
 				<!-- CPU -->
@@ -138,6 +138,61 @@
 
 				</Border>
 
+				<!-- PERFORMANCE SCORE -->
+
+				<Border
+					Margin="12,0,0,0"
+					Padding="20"
+					CornerRadius="10"
+					Background="{StaticResource CardBrush}">
+
+					<StackPanel>
+
+						<TextBlock
+							Text="{DynamicResource PerformanceAnalyzerScoreTitle}"
+							FontSize="16"
+							TextWrapping="Wrap"
+							Foreground="{StaticResource SecondaryTextBrush}"/>
+
+						<StackPanel
+	                        	Margin="0,12,0,0"
+	                        	Orientation="Horizontal">
+
+							<TextBlock
+								Text="{Binding PerformanceAnalyzerScore,
+                                       Mode=OneWay}"
+								FontSize="32"
+								FontWeight="Bold"
+								Foreground="{StaticResource TextBrush}"/>
+
+							<TextBlock
+								Text="/100"
+								Margin="3,9,0,0"
+								FontSize="16"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
+
+						</StackPanel>
+
+						<ProgressBar
+							Value="{Binding PerformanceAnalyzerScore, Mode=OneWay}"
+							Minimum="0"
+							Maximum="100"
+							Height="8"
+							Margin="0,15,0,0"/>
+
+						<TextBlock
+                               Text="{Binding PerformanceAnalyzerStatus,
+                                     Mode=OneWay}"
+                               Margin="0,10,0,0"
+                               FontSize="14"
+                                 FontWeight="SemiBold"
+                               TextWrapping="Wrap"
+                               Foreground="{StaticResource SecondaryTextBrush}"/>
+
+					</StackPanel>
+
+				</Border>
+				
 			</UniformGrid>
 
 			<!-- ZONA DE OPTIMIZARE -->

@@ -622,5 +622,25 @@
 	<sys:String x:Key="PerformanceStartupAppsMessage">
 		Sunt active {0} aplicații la pornirea Windows. Revizuirea aplicațiilor neesențiale poate reduce timpul de pornire.
 	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalyzerScoreTitle">
+		Scor performanță
+	</sys:String>
+
+	<sys:String x:Key="PerformanceScoreExcellent">
+		Excelent
+	</sys:String>
+
+	<sys:String x:Key="PerformanceScoreGood">
+		Bun
+	</sys:String>
+
+	<sys:String x:Key="PerformanceScoreAttention">
+		Necesită atenție
+	</sys:String>
+
+	<sys:String x:Key="PerformanceScoreCritical">
+		Critic
+	</sys:String>
 	
 </ResourceDictionary>

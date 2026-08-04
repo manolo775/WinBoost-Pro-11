@@ -14,7 +14,7 @@ using WinBoost.App.Services.Optimization;
 using MaterialDesignThemes.Wpf;
 using System.Windows.Media;
 using WinBoost.App.Services.Startup;
-
+using WinBoost.App.Services.Health;
 
 namespace WinBoost.App.ViewModels
 {
@@ -32,7 +32,60 @@ namespace WinBoost.App.ViewModels
 
         private string _optimizationStatus =
             LocalizationHelper.Get("PerformanceAnalyzePrompt");
+        private int _performanceAnalyzerScore = 100;
 
+        public int PerformanceAnalyzerScore
+        {
+            get => _performanceAnalyzerScore;
+
+            private set
+            {
+                int normalizedValue =
+                    Math.Clamp(
+                        value,
+                        0,
+                        100);
+
+                if (_performanceAnalyzerScore ==
+                    normalizedValue)
+                {
+                    return;
+                }
+
+                _performanceAnalyzerScore =
+                    normalizedValue;
+
+                WinBoostHealthScoreService
+                          .Instance
+                          .PerformanceScore =
+                           normalizedValue;
+
+                OnPropertyChanged();
+
+                OnPropertyChanged(
+                       nameof(PerformanceAnalyzerStatus));
+            }
+        }
+
+        public string PerformanceAnalyzerStatus =>
+    PerformanceAnalyzerScore switch
+    {
+        >= 90 =>
+            LocalizationHelper.Get(
+                "PerformanceScoreExcellent"),
+
+        >= 75 =>
+            LocalizationHelper.Get(
+                "PerformanceScoreGood"),
+
+        >= 50 =>
+            LocalizationHelper.Get(
+                "PerformanceScoreAttention"),
+
+        _ =>
+            LocalizationHelper.Get(
+                "PerformanceScoreCritical")
+    };
         public ObservableCollection<ProcessInfo> TopProcesses { get; }
 
         public ObservableCollection<OptimizationRecommendation>
@@ -463,6 +516,22 @@ namespace WinBoost.App.ViewModels
                                 " • ",
                                 messages));
 
+                int score = 100;
+
+                if (CpuUsageValue >= 80)
+                    score -= 10;
+
+                if (RamUsageValue >= 85)
+                    score -= 15;
+
+                if (enabledStartupApps >= 5)
+                    score -= 10;
+
+                if (tempResult.FileCount > 0)
+                    score -= 5;
+
+                PerformanceAnalyzerScore = score;
+
                 CommandManager
                     .InvalidateRequerySuggested();
             }
@@ -567,7 +636,7 @@ namespace WinBoost.App.ViewModels
             }
             catch (Exception ex)
             {
-                OptimizationStatus =
+               
                     OptimizationStatus =
                     LocalizationHelper.Format(
                     "PerformanceOptimizationFailed",

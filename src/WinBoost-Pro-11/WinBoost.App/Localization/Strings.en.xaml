@@ -623,5 +623,25 @@
 	<sys:String x:Key="PerformanceStartupAppsMessage">
 		{0} applications are enabled at Windows startup. Reviewing nonessential applications may reduce startup time.
 	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalyzerScoreTitle">
+		Performance Score
+	</sys:String>
+
+	<sys:String x:Key="PerformanceScoreExcellent">
+		Excellent
+	</sys:String>
+
+	<sys:String x:Key="PerformanceScoreGood">
+		Good
+	</sys:String>
+
+	<sys:String x:Key="PerformanceScoreAttention">
+		Needs Attention
+	</sys:String>
+
+	<sys:String x:Key="PerformanceScoreCritical">
+		Critical
+	</sys:String>
 	
 </ResourceDictionary>
