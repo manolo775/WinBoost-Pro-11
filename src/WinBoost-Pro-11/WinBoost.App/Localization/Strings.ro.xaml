@@ -308,5 +308,131 @@
 	<sys:String x:Key="HealthCardWindowsUpdate">
 		Actualizări Windows
 	</sys:String>
+
+	<!-- DASHBOARD - MESAJE DINAMICE -->
+
+	<sys:String x:Key="DashboardCpuCritical">
+		CPU: {0}% - utilizare critică
+	</sys:String>
+
+	<sys:String x:Key="DashboardCpuHigh">
+		CPU: {0}% - utilizare ridicată
+	</sys:String>
+
+	<sys:String x:Key="DashboardCpuNormal">
+		CPU: {0}% - utilizare normală
+	</sys:String>
+
+	<sys:String x:Key="DashboardRamCritical">
+		RAM: {0}% - memorie aproape epuizată
+	</sys:String>
+
+	<sys:String x:Key="DashboardRamHigh">
+		RAM: {0}% - utilizare ridicată
+	</sys:String>
+
+	<sys:String x:Key="DashboardRamNormal">
+		RAM: {0}% - utilizare normală
+	</sys:String>
+
+	<sys:String x:Key="DashboardDiskCritical">
+		Disc: {0}% - spațiu critic
+	</sys:String>
+
+	<sys:String x:Key="DashboardDiskLow">
+		Disc: {0}% - spațiu redus
+	</sys:String>
+
+	<sys:String x:Key="DashboardDiskNormal">
+		Disc: {0}% - stare normală
+	</sys:String>
+
+	<sys:String x:Key="DashboardHealthExcellent">
+		Sănătatea sistemului: {0}% - foarte bună
+	</sys:String>
+
+	<sys:String x:Key="DashboardHealthAttention">
+		Sănătatea sistemului: {0}% - necesită atenție
+	</sys:String>
+
+	<sys:String x:Key="DashboardHealthCritical">
+		Sănătatea sistemului: {0}% - stare critică
+	</sys:String>
+
+	<sys:String x:Key="DashboardRecommendationRam">
+		Recomandare: memoria RAM este aproape epuizată. Închide aplicațiile cu consum ridicat și verifică programele care pornesc automat.
+	</sys:String>
+
+	<sys:String x:Key="DashboardRecommendationCpu">
+		Recomandare: procesorul este foarte solicitat. Verifică procesele care consumă cele mai multe resurse.
+	</sys:String>
+
+	<sys:String x:Key="DashboardRecommendationDisk">
+		Recomandare: spațiul disponibil pe disc este critic. Eliberează fișierele temporare și elimină aplicațiile neutilizate.
+	</sys:String>
+
+	<sys:String x:Key="DashboardRecommendationHealth">
+		Recomandare: sistemul necesită optimizare. Verifică modulele marcate cu scor redus.
+	</sys:String>
+
+	<sys:String x:Key="DashboardRecommendationGood">
+		Recomandare: calculatorul funcționează bine. Poți verifica aplicațiile Startup și serviciile recomandate pentru îmbunătățiri suplimentare.
+	</sys:String>
+
+	<sys:String x:Key="DashboardUsageCritical">
+		Critic
+	</sys:String>
+
+	<sys:String x:Key="DashboardUsageHigh">
+		Ridicat
+	</sys:String>
+
+	<sys:String x:Key="DashboardUsageNormal">
+		Normal
+	</sys:String>
+
+	<!-- DASHBOARD - CARDURI METRICE -->
+
+	<sys:String x:Key="DashboardMetricCpuTitle">
+		Utilizare CPU
+	</sys:String>
+
+	<sys:String x:Key="DashboardMetricRamTitle">
+		Utilizare RAM
+	</sys:String>
+
+	<sys:String x:Key="DashboardMetricDiskTitle">
+		Utilizare disc
+	</sys:String>
+
+	<sys:String x:Key="DashboardMetricUptimeTitle">
+		Timp de funcționare Windows
+	</sys:String>
+
+	<!-- QUICK ACTIONS -->
+
+	<sys:String x:Key="QuickActionsTitle">
+		Acțiuni rapide
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsDescription">
+		Accesează rapid cele mai utilizate instrumente WinBoost.
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsStartup">
+		Manager pornire
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsServices">
+		Manager servicii
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsTempFiles">
+		Curăță fișiere temporare
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimize">
+		Optimizează sistemul
+	</sys:String>
 	
 </ResourceDictionary>

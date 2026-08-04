@@ -308,5 +308,131 @@
 	<sys:String x:Key="HealthCardWindowsUpdate">
 		Windows Update
 	</sys:String>
+
+	<!-- DASHBOARD - DYNAMIC MESSAGES -->
+
+	<sys:String x:Key="DashboardCpuCritical">
+		CPU: {0}% - critical usage
+	</sys:String>
+
+	<sys:String x:Key="DashboardCpuHigh">
+		CPU: {0}% - high usage
+	</sys:String>
+
+	<sys:String x:Key="DashboardCpuNormal">
+		CPU: {0}% - normal usage
+	</sys:String>
+
+	<sys:String x:Key="DashboardRamCritical">
+		RAM: {0}% - memory nearly exhausted
+	</sys:String>
+
+	<sys:String x:Key="DashboardRamHigh">
+		RAM: {0}% - high usage
+	</sys:String>
+
+	<sys:String x:Key="DashboardRamNormal">
+		RAM: {0}% - normal usage
+	</sys:String>
+
+	<sys:String x:Key="DashboardDiskCritical">
+		Disk: {0}% - critical space
+	</sys:String>
+
+	<sys:String x:Key="DashboardDiskLow">
+		Disk: {0}% - low free space
+	</sys:String>
+
+	<sys:String x:Key="DashboardDiskNormal">
+		Disk: {0}% - normal status
+	</sys:String>
+
+	<sys:String x:Key="DashboardHealthExcellent">
+		System health: {0}% - excellent
+	</sys:String>
+
+	<sys:String x:Key="DashboardHealthAttention">
+		System health: {0}% - needs attention
+	</sys:String>
+
+	<sys:String x:Key="DashboardHealthCritical">
+		System health: {0}% - critical
+	</sys:String>
+
+	<sys:String x:Key="DashboardRecommendationRam">
+		Recommendation: RAM is nearly exhausted. Close resource-intensive applications and review programs that start automatically.
+	</sys:String>
+
+	<sys:String x:Key="DashboardRecommendationCpu">
+		Recommendation: CPU usage is very high. Review the processes using the most resources.
+	</sys:String>
+
+	<sys:String x:Key="DashboardRecommendationDisk">
+		Recommendation: available disk space is critical. Remove temporary files and unused applications.
+	</sys:String>
+
+	<sys:String x:Key="DashboardRecommendationHealth">
+		Recommendation: the system needs optimization. Review the modules with low scores.
+	</sys:String>
+
+	<sys:String x:Key="DashboardRecommendationGood">
+		Recommendation: the computer is running well. Review Startup applications and recommended services for additional improvements.
+	</sys:String>
+
+	<sys:String x:Key="DashboardUsageCritical">
+		Critical
+	</sys:String>
+
+	<sys:String x:Key="DashboardUsageHigh">
+		High
+	</sys:String>
+
+	<sys:String x:Key="DashboardUsageNormal">
+		Normal
+	</sys:String>
+
+	<!-- DASHBOARD - METRIC CARDS -->
+
+	<sys:String x:Key="DashboardMetricCpuTitle">
+		CPU Usage
+	</sys:String>
+
+	<sys:String x:Key="DashboardMetricRamTitle">
+		RAM Usage
+	</sys:String>
+
+	<sys:String x:Key="DashboardMetricDiskTitle">
+		Disk Usage
+	</sys:String>
+
+	<sys:String x:Key="DashboardMetricUptimeTitle">
+		Windows Uptime
+	</sys:String>
+
+	<!-- QUICK ACTIONS -->
+
+	<sys:String x:Key="QuickActionsTitle">
+		Quick Actions
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsDescription">
+		Quickly access the most frequently used WinBoost tools.
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsStartup">
+		Startup Manager
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsServices">
+		Services Manager
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsTempFiles">
+		Clean Temp Files
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimize">
+		Optimize System
+	</sys:String>
 	
 </ResourceDictionary>

@@ -59,6 +59,9 @@ namespace WinBoost.App.ViewModels
             _healthStateService.HealthChanged +=
                 HealthStateService_HealthChanged;
 
+            LanguageManager.Instance.LanguageChanged +=
+                  LanguageManager_LanguageChanged;
+
             _refreshTimer =
                 new DispatcherTimer
                 {
@@ -70,6 +73,15 @@ namespace WinBoost.App.ViewModels
                 RefreshTimer_Tick;
 
             StartMonitoring();
+        }
+
+        private static string T(
+    string key,
+    params object[] arguments)
+        {
+            return LocalizationHelper.Format(
+                key,
+                arguments);
         }
 
         public SystemHealthSummary HealthSummary
@@ -225,12 +237,17 @@ namespace WinBoost.App.ViewModels
         }
 
         public string CpuSummary =>
-    CpuUsageValue >= 85
-        ? $"CPU: {CpuUsageValue:F0}% - utilizare critică"
-        : CpuUsageValue >= 60
-            ? $"CPU: {CpuUsageValue:F0}% - utilizare ridicată"
-            : $"CPU: {CpuUsageValue:F0}% - utilizare normală";
-
+       CpuUsageValue >= 85
+           ? T(
+               "DashboardCpuCritical",
+               CpuUsageValue.ToString("F0"))
+           : CpuUsageValue >= 60
+               ? T(
+                   "DashboardCpuHigh",
+                   CpuUsageValue.ToString("F0"))
+               : T(
+                   "DashboardCpuNormal",
+                   CpuUsageValue.ToString("F0"));
         public PackIconKind CpuSummaryIcon =>
             CpuUsageValue >= 85
                 ? PackIconKind.AlertCircle
@@ -246,11 +263,17 @@ namespace WinBoost.App.ViewModels
                     : Brushes.LimeGreen;
 
         public string RamSummary =>
-            RamUsageValue >= 90
-                ? $"RAM: {RamUsageValue:F0}% - memorie aproape epuizată"
-                : RamUsageValue >= 75
-                    ? $"RAM: {RamUsageValue:F0}% - utilizare ridicată"
-                    : $"RAM: {RamUsageValue:F0}% - utilizare normală";
+     RamUsageValue >= 90
+         ? T(
+             "DashboardRamCritical",
+             RamUsageValue.ToString("F0"))
+         : RamUsageValue >= 75
+             ? T(
+                 "DashboardRamHigh",
+                 RamUsageValue.ToString("F0"))
+             : T(
+                 "DashboardRamNormal",
+                 RamUsageValue.ToString("F0"));
 
         public PackIconKind RamSummaryIcon =>
             RamUsageValue >= 90
@@ -267,12 +290,17 @@ namespace WinBoost.App.ViewModels
                     : Brushes.LimeGreen;
 
         public string DiskSummary =>
-            DiskUsageValue >= 90
-                ? $"Disk: {DiskUsageValue:F0}% - spațiu critic"
-                : DiskUsageValue >= 80
-                    ? $"Disk: {DiskUsageValue:F0}% - spațiu redus"
-                    : $"Disk: {DiskUsageValue:F0}% - stare normală";
-
+     DiskUsageValue >= 90
+         ? T(
+             "DashboardDiskCritical",
+             DiskUsageValue.ToString("F0"))
+         : DiskUsageValue >= 80
+             ? T(
+                 "DashboardDiskLow",
+                 DiskUsageValue.ToString("F0"))
+             : T(
+                 "DashboardDiskNormal",
+                 DiskUsageValue.ToString("F0"));
         public PackIconKind DiskSummaryIcon =>
             DiskUsageValue >= 90
                 ? PackIconKind.AlertCircle
@@ -288,12 +316,17 @@ namespace WinBoost.App.ViewModels
                     : Brushes.LimeGreen;
 
         public string HealthSummaryText =>
-            HealthScore >= 85
-                ? $"Sănătatea sistemului: {HealthScore}% - foarte bună"
-                : HealthScore >= 65
-                    ? $"Sănătatea sistemului: {HealthScore}% - necesită atenție"
-                    : $"Sănătatea sistemului: {HealthScore}% - stare critică";
-
+     HealthScore >= 85
+         ? T(
+             "DashboardHealthExcellent",
+             HealthScore)
+         : HealthScore >= 65
+             ? T(
+                 "DashboardHealthAttention",
+                 HealthScore)
+             : T(
+                 "DashboardHealthCritical",
+                 HealthScore);
         public PackIconKind HealthSummaryIcon =>
             HealthScore >= 85
                 ? PackIconKind.CheckCircle
@@ -314,37 +347,30 @@ namespace WinBoost.App.ViewModels
             {
                 if (RamUsageValue >= 90)
                 {
-                    return
-                        "Recomandare: memoria RAM este aproape epuizată. " +
-                        "Închide aplicațiile cu consum ridicat și verifică " +
-                        "programele care pornesc automat.";
+                    return T(
+                        "DashboardRecommendationRam");
                 }
 
                 if (CpuUsageValue >= 85)
                 {
-                    return
-                        "Recomandare: procesorul este foarte solicitat. " +
-                        "Verifică procesele care consumă cele mai multe resurse.";
+                    return T(
+                        "DashboardRecommendationCpu");
                 }
 
                 if (DiskUsageValue >= 90)
                 {
-                    return
-                        "Recomandare: spațiul disponibil pe disc este critic. " +
-                        "Eliberează fișiere temporare și aplicațiile neutilizate.";
+                    return T(
+                        "DashboardRecommendationDisk");
                 }
 
                 if (HealthScore < 65)
                 {
-                    return
-                        "Recomandare: sistemul necesită optimizare. " +
-                        "Verifică modulele marcate cu scor redus.";
+                    return T(
+                        "DashboardRecommendationHealth");
                 }
 
-                return
-                    "Recomandare: calculatorul funcționează bine. " +
-                    "Poți verifica aplicațiile Startup și serviciile recomandate " +
-                    "pentru îmbunătățiri suplimentare.";
+                return T(
+                    "DashboardRecommendationGood");
             }
         }
 
@@ -501,15 +527,29 @@ namespace WinBoost.App.ViewModels
         {
             if (usage >= 85)
             {
-                return "Critic";
+                return T(
+                    "DashboardUsageCritical");
             }
 
             if (usage >= 60)
             {
-                return "Ridicat";
+                return T(
+                    "DashboardUsageHigh");
             }
 
-            return "Normal";
+            return T(
+                "DashboardUsageNormal");
+        }
+
+        private void LanguageManager_LanguageChanged(
+    object? sender,
+    EventArgs e)
+        {
+            CpuStatus =
+                GetUsageStatus(
+                    CpuUsageValue);
+
+            UpdateSystemSummary();
         }
 
         public event PropertyChangedEventHandler?

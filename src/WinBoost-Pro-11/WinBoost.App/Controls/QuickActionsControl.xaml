@@ -11,13 +11,13 @@
 		<StackPanel>
 
 			<TextBlock
-                Text="Quick Actions"
+                Text="{DynamicResource QuickActionsTitle}"
                 FontSize="20"
                 FontWeight="SemiBold"
                 Foreground="{StaticResource TextBrush}"/>
 
 			<TextBlock
-                Text="Accesează rapid cele mai utilizate instrumente WinBoost."
+                Text="{DynamicResource QuickActionsDescription}"
                 Margin="0,6,0,18"
                 FontSize="14"
                 TextWrapping="Wrap"
@@ -43,7 +43,7 @@
                             Foreground="#4CAF50"/>
 
 						<TextBlock
-                            Text="Startup Manager"
+                            Text="{DynamicResource QuickActionsStartup}"
                             VerticalAlignment="Center"/>
 
 					</StackPanel>
@@ -67,7 +67,7 @@
                             Foreground="#4CAF50"/>
 
 						<TextBlock
-                            Text="Services Manager"
+                            Text="{DynamicResource QuickActionsServices}"
                             VerticalAlignment="Center"/>
 
 					</StackPanel>
@@ -92,7 +92,7 @@
                             Foreground="#4CAF50"/>
 
 						<TextBlock
-                            Text="Clean Temp Files"
+                            Text="{DynamicResource QuickActionsTempFiles}"
                             VerticalAlignment="Center"/>
 
 					</StackPanel>
@@ -117,7 +117,7 @@
                             Foreground="#4CAF50"/>
 
 						<TextBlock
-                            Text="Optimize System"
+                            Text="{DynamicResource QuickActionsOptimize}"
                             VerticalAlignment="Center"/>
 
 					</StackPanel>

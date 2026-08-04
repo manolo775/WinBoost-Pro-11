@@ -55,7 +55,7 @@
 
 				<controls:MetricCard
                     IconKind="Cpu64Bit"
-                    Title="CPU Usage"
+                    Title="{DynamicResource DashboardMetricCpuTitle}"
                     Value="{Binding CpuUsage}"
                     Status="{Binding CpuStatus}"
                     ProgressValue="{Binding CpuUsageValue}"
@@ -63,7 +63,7 @@
 
 				<controls:MetricCard
                     IconKind="Memory"
-                    Title="RAM Usage"
+                    Title="{DynamicResource DashboardMetricRamTitle}"
                     Value="{Binding RamUsage}"
                     Subtitle="{Binding RamDetails}"
                     Status=""
@@ -72,7 +72,7 @@
 
 				<controls:MetricCard
                     IconKind="Harddisk"
-                    Title="Disk Usage"
+                    Title="{DynamicResource DashboardMetricDiskTitle}"
                     Value="{Binding DiskUsage}"
                     Status=""
                     ProgressValue="{Binding DiskUsageValue}"
@@ -80,7 +80,7 @@
 
 				<controls:MetricCard
                     IconKind="ClockOutline"
-                    Title="Windows Uptime"
+                    Title="{DynamicResource DashboardMetricUptimeTitle}"
                     Value="{Binding Uptime}"
                     Subtitle=""
                     Status=""
