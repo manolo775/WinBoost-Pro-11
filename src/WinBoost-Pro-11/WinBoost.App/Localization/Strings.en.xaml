@@ -434,5 +434,181 @@
 	<sys:String x:Key="QuickActionsOptimize">
 		Optimize System
 	</sys:String>
+
+	<!-- UPTIME -->
+
+	<sys:String x:Key="UptimeDaysHours">
+		{0} days {1} hours
+	</sys:String>
+
+	<sys:String x:Key="UptimeHoursMinutes">
+		{0} hours {1} min
+	</sys:String>
+
+	<!-- SYSTEM HEALTH STATUS -->
+
+	<sys:String x:Key="SystemHealthExcellent">
+		Excellent
+	</sys:String>
+
+	<sys:String x:Key="SystemHealthGood">
+		Good
+	</sys:String>
+
+	<sys:String x:Key="SystemHealthAttention">
+		Needs attention
+	</sys:String>
+
+	<sys:String x:Key="SystemHealthCritical">
+		Critical
+	</sys:String>
+
+	<!-- PERFORMANCE PAGE -->
+
+	<sys:String x:Key="PerformancePageTitle">
+		Performance
+	</sys:String>
+
+	<sys:String x:Key="PerformancePageDescription">
+		Real-time monitoring and optimization
+	</sys:String>
+
+	<!-- PERFORMANCE METRICS -->
+
+	<sys:String x:Key="PerformanceCpuUsage">
+		CPU Usage
+	</sys:String>
+
+	<sys:String x:Key="PerformanceRamUsage">
+		RAM Usage
+	</sys:String>
+
+	<sys:String x:Key="PerformanceDiskUsage">
+		Disk Usage
+	</sys:String>
+
+	<!-- PERFORMANCE - TOP PROCESSES -->
+
+	<sys:String x:Key="PerformanceTopProcessesTitle">
+		Top Processes
+	</sys:String>
+
+	<sys:String x:Key="PerformanceTopProcessesDescription">
+		Processes using the most CPU resources
+	</sys:String>
+
+	<sys:String x:Key="PerformanceColumnProcess">
+		Process
+	</sys:String>
+
+	<sys:String x:Key="PerformanceColumnPid">
+		PID
+	</sys:String>
+
+	<sys:String x:Key="PerformanceColumnCpu">
+		CPU
+	</sys:String>
+
+	<sys:String x:Key="PerformanceColumnRam">
+		RAM
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalyzePrompt">
+		Press Analyze System to check your system.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalyze">
+		Analyze System
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalyzing">
+		Analyzing...
+	</sys:String>
+
+	<sys:String x:Key="PerformanceApplySelected">
+		Apply Selected
+	</sys:String>
+
+	<sys:String x:Key="PerformanceApplying">
+		Applying...
+	</sys:String>
+
+	<sys:String x:Key="PerformanceOptimizationDescription">
+		Analyze the system and apply the recommended optimizations.
+	</sys:String>
+
+	<!-- PERFORMANCE - ANALYSIS AND RECOMMENDATIONS -->
+
+	<sys:String x:Key="PerformanceStatusAnalyzing">
+		Analyzing the system...
+	</sys:String>
+
+	<sys:String x:Key="PerformanceTempCleanupTitle">
+		Temporary file cleanup
+	</sys:String>
+
+	<sys:String x:Key="PerformanceTempCleanupDescription">
+		{0} files can free approximately {1}.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceTempCleanupMessage">
+		approximately {0} of temporary files can be cleaned
+	</sys:String>
+
+	<sys:String x:Key="PerformanceCpuHighMessage">
+		CPU usage is high
+	</sys:String>
+
+	<sys:String x:Key="PerformanceRamHighMessage">
+		RAM usage is high
+	</sys:String>
+
+	<sys:String x:Key="PerformanceDiskLowMessage">
+		available disk space is low
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalysisNormal">
+		Analysis completed: the system is running normally.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceRecommendationsPrefix">
+		Recommendations: {0}
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalysisFailed">
+		The analysis could not be completed: {0}
+	</sys:String>
+
+	<!-- PERFORMANCE - OPTIMIZATION CONFIRMATION -->
+
+	<sys:String x:Key="PerformanceOptimizationConfirmTitle">
+		Optimization confirmation
+	</sys:String>
+
+	<sys:String x:Key="PerformanceOptimizationConfirmMessage">
+		Only temporary files older than 24 hours will be deleted.
+
+		Do you want to continue?
+	</sys:String>
+
+	<sys:String x:Key="PerformanceApplyingOptimizations">
+		Applying selected optimizations...
+	</sys:String>
+
+	<sys:String x:Key="PerformanceSelectRecommendation">
+		Select at least one recommendation.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceCleanupCompleted">
+		Cleanup completed: {0} files deleted, {1} freed.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceNothingToClean">
+		No files were found that can be deleted.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceOptimizationFailed">
+		Optimization could not be completed: {0}
+	</sys:String>
 	
 </ResourceDictionary>

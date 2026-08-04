@@ -434,5 +434,181 @@
 	<sys:String x:Key="QuickActionsOptimize">
 		Optimizează sistemul
 	</sys:String>
+
+	<!-- UPTIME -->
+
+	<sys:String x:Key="UptimeDaysHours">
+		{0} zile {1} ore
+	</sys:String>
+
+	<sys:String x:Key="UptimeHoursMinutes">
+		{0} ore {1} min
+	</sys:String>
+
+	<!-- SYSTEM HEALTH STATUS -->
+
+	<sys:String x:Key="SystemHealthExcellent">
+		Excelent
+	</sys:String>
+
+	<sys:String x:Key="SystemHealthGood">
+		Bun
+	</sys:String>
+
+	<sys:String x:Key="SystemHealthAttention">
+		Necesită atenție
+	</sys:String>
+
+	<sys:String x:Key="SystemHealthCritical">
+		Critic
+	</sys:String>
+
+	<!-- PERFORMANCE PAGE -->
+
+	<sys:String x:Key="PerformancePageTitle">
+		Performanță
+	</sys:String>
+
+	<sys:String x:Key="PerformancePageDescription">
+		Monitorizare și optimizare în timp real
+	</sys:String>
+
+	<!-- PERFORMANCE METRICS -->
+
+	<sys:String x:Key="PerformanceCpuUsage">
+		Utilizare CPU
+	</sys:String>
+
+	<sys:String x:Key="PerformanceRamUsage">
+		Utilizare RAM
+	</sys:String>
+
+	<sys:String x:Key="PerformanceDiskUsage">
+		Utilizare disc
+	</sys:String>
+
+	<!-- PERFORMANCE - TOP PROCESSES -->
+
+	<sys:String x:Key="PerformanceTopProcessesTitle">
+		Procese principale
+	</sys:String>
+
+	<sys:String x:Key="PerformanceTopProcessesDescription">
+		Procesele care folosesc cel mai mult procesorul
+	</sys:String>
+
+	<sys:String x:Key="PerformanceColumnProcess">
+		Proces
+	</sys:String>
+
+	<sys:String x:Key="PerformanceColumnPid">
+		PID
+	</sys:String>
+
+	<sys:String x:Key="PerformanceColumnCpu">
+		CPU
+	</sys:String>
+
+	<sys:String x:Key="PerformanceColumnRam">
+		RAM
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalyzePrompt">
+		Apasă Analizează sistemul pentru verificarea sistemului.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalyze">
+		Analizează sistemul
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalyzing">
+		Se analizează...
+	</sys:String>
+
+	<sys:String x:Key="PerformanceApplySelected">
+		Aplică selecția
+	</sys:String>
+
+	<sys:String x:Key="PerformanceApplying">
+		Se aplică...
+	</sys:String>
+
+	<sys:String x:Key="PerformanceOptimizationDescription">
+		Analizează sistemul și aplică optimizările recomandate.
+	</sys:String>
+
+	<!-- PERFORMANCE - ANALIZĂ ȘI RECOMANDĂRI -->
+
+	<sys:String x:Key="PerformanceStatusAnalyzing">
+		Se analizează sistemul...
+	</sys:String>
+
+	<sys:String x:Key="PerformanceTempCleanupTitle">
+		Curățare fișiere temporare
+	</sys:String>
+
+	<sys:String x:Key="PerformanceTempCleanupDescription">
+		{0} fișiere pot elibera aproximativ {1}.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceTempCleanupMessage">
+		se pot curăța aproximativ {0} de fișiere temporare
+	</sys:String>
+
+	<sys:String x:Key="PerformanceCpuHighMessage">
+		utilizarea procesorului este ridicată
+	</sys:String>
+
+	<sys:String x:Key="PerformanceRamHighMessage">
+		utilizarea memoriei RAM este ridicată
+	</sys:String>
+
+	<sys:String x:Key="PerformanceDiskLowMessage">
+		spațiul disponibil pe disc este redus
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalysisNormal">
+		Analiză finalizată: sistemul funcționează normal.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceRecommendationsPrefix">
+		Recomandări: {0}
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAnalysisFailed">
+		Analiza nu a putut fi finalizată: {0}
+	</sys:String>
+
+	<!-- PERFORMANCE - CONFIRMARE OPTIMIZARE -->
+
+	<sys:String x:Key="PerformanceOptimizationConfirmTitle">
+		Confirmare optimizare
+	</sys:String>
+
+	<sys:String x:Key="PerformanceOptimizationConfirmMessage">
+		Vor fi șterse numai fișierele temporare mai vechi de 24 de ore.
+
+		Continui?
+	</sys:String>
+
+	<sys:String x:Key="PerformanceApplyingOptimizations">
+		Se aplică optimizările selectate...
+	</sys:String>
+
+	<sys:String x:Key="PerformanceSelectRecommendation">
+		Selectează cel puțin o recomandare.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceCleanupCompleted">
+		Curățare finalizată: {0} fișiere șterse, {1} eliberați.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceNothingToClean">
+		Nu au fost găsite fișiere care să poată fi șterse.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceOptimizationFailed">
+		Optimizarea nu a putut fi finalizată: {0}
+	</sys:String>
 	
 </ResourceDictionary>

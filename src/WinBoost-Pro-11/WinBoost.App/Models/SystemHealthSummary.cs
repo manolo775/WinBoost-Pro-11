@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
+using WinBoost.App.Localization;
 
 namespace WinBoost.App.Models
 {
@@ -12,6 +13,12 @@ namespace WinBoost.App.Models
         private int _startupScore;
         private int _privacyScore;
         private int _windowsUpdateScore;
+
+        public SystemHealthSummary()
+        {
+            LanguageManager.Instance.LanguageChanged +=
+                LanguageManager_LanguageChanged;
+        }
 
         public int PerformanceScore
         {
@@ -134,10 +141,21 @@ namespace WinBoost.App.Models
         public string OverallHealthStatus =>
             OverallHealthScore switch
             {
-                >= 90 => "Excelent",
-                >= 75 => "Bun",
-                >= 60 => "Necesită atenție",
-                _ => "Critic"
+                >= 90 =>
+                    LocalizationHelper.Get(
+                        "SystemHealthExcellent"),
+
+                >= 75 =>
+                    LocalizationHelper.Get(
+                        "SystemHealthGood"),
+
+                >= 60 =>
+                    LocalizationHelper.Get(
+                        "SystemHealthAttention"),
+
+                _ =>
+                    LocalizationHelper.Get(
+                        "SystemHealthCritical")
             };
 
         public Brush OverallHealthBrush =>
@@ -156,6 +174,14 @@ namespace WinBoost.App.Models
                 score,
                 0,
                 100);
+        }
+
+        private void LanguageManager_LanguageChanged(
+            object? sender,
+            EventArgs e)
+        {
+            OnPropertyChanged(
+                nameof(OverallHealthStatus));
         }
 
         private void NotifyOverallHealthChanged()

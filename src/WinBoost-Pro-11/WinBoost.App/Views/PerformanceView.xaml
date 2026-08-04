@@ -21,13 +21,13 @@
 			<StackPanel Grid.Row="0">
 
 				<TextBlock
-                    Text="Performance"
+                    Text="{DynamicResource PerformancePageTitle}"
                     FontSize="30"
                     FontWeight="SemiBold"
                     Foreground="{StaticResource TextBrush}"/>
 
 				<TextBlock
-                    Text="Monitorizare și optimizare în timp real"
+                   Text="{DynamicResource PerformancePageDescription}"
                     Margin="0,6,0,0"
                     FontSize="14"
                     Foreground="{StaticResource SecondaryTextBrush}"/>
@@ -52,7 +52,7 @@
 					<StackPanel>
 
 						<TextBlock
-                            Text="CPU Usage"
+                           Text="{DynamicResource PerformanceCpuUsage}"
                             FontSize="16"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
@@ -84,7 +84,7 @@
 					<StackPanel>
 
 						<TextBlock
-                            Text="RAM Usage"
+                            Text="{DynamicResource PerformanceRamUsage}"
                             FontSize="16"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
@@ -116,7 +116,7 @@
 					<StackPanel>
 
 						<TextBlock
-                            Text="Disk Usage"
+                            Text="{DynamicResource PerformanceDiskUsage}"
                             FontSize="16"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
@@ -166,7 +166,7 @@
                             TextWrapping="Wrap"/>
 
 						<TextBlock
-                            Text="Analizează sistemul și aplică optimizările recomandate."
+                            Text="{DynamicResource PerformanceOptimizationDescription}"
                             Margin="0,8,0,0"
                             Foreground="{StaticResource SecondaryTextBrush}"
                             TextWrapping="Wrap"/>
@@ -216,17 +216,19 @@
                         VerticalAlignment="Center">
 
 						<Button
-                            Content="{Binding OptimizationButtonText}"
-                            Command="{Binding OptimizeCommand}"
-                            Width="150"
-                            Height="42"/>
+                              Content="{Binding OptimizationButtonText}"
+                              Command="{Binding OptimizeCommand}"
+                              Width="190"
+                              Height="42"
+                              HorizontalContentAlignment="Center"/>
 
 						<Button
-                            Content="{Binding ApplyButtonText}"
-                            Command="{Binding ApplyOptimizationsCommand}"
-                            Width="150"
-                            Height="42"
-                            Margin="0,8,0,0"/>
+                                Content="{Binding ApplyButtonText}"
+                                Command="{Binding ApplyOptimizationsCommand}"
+                                 Width="190"
+                                Height="42"
+                                Margin="0,8,0,0"
+                                HorizontalContentAlignment="Center"/>
 
 					</StackPanel>
 
@@ -246,13 +248,13 @@
 				<StackPanel>
 
 					<TextBlock
-                        Text="Top Processes"
+                        Text="{DynamicResource PerformanceTopProcessesTitle}"
                         FontSize="20"
                         FontWeight="SemiBold"
                         Foreground="{StaticResource TextBrush}"/>
 
 					<TextBlock
-                        Text="Procesele care folosesc cel mai mult procesorul"
+                        Text="{DynamicResource PerformanceTopProcessesDescription}"
                         Margin="0,5,0,18"
                         Foreground="{StaticResource SecondaryTextBrush}"/>
 
@@ -268,25 +270,25 @@
 						</Grid.ColumnDefinitions>
 
 						<TextBlock
-                            Text="Proces"
+                            Text="{DynamicResource PerformanceColumnProcess}"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
                             Grid.Column="1"
-                            Text="PID"
+                            Text="{DynamicResource PerformanceColumnPid}"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
                             Grid.Column="2"
-                            Text="CPU"
+                            Text="{DynamicResource PerformanceColumnCpu}"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
                             Grid.Column="3"
-                            Text="RAM"
+                            Text="{DynamicResource PerformanceColumnRam}"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 

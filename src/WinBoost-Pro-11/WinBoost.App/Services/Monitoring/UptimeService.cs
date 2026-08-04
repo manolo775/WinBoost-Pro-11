@@ -1,4 +1,5 @@
 ﻿using System;
+using WinBoost.App.Localization;
 
 namespace WinBoost.App.Services.Monitoring
 {
@@ -7,14 +8,21 @@ namespace WinBoost.App.Services.Monitoring
         public string GetWindowsUptime()
         {
             TimeSpan uptime =
-                TimeSpan.FromMilliseconds(Environment.TickCount64);
+                TimeSpan.FromMilliseconds(
+                    Environment.TickCount64);
 
             if (uptime.Days > 0)
             {
-                return $"{uptime.Days} zile {uptime.Hours} ore";
+                return LocalizationHelper.Format(
+                    "UptimeDaysHours",
+                    uptime.Days,
+                    uptime.Hours);
             }
 
-            return $"{uptime.Hours} ore {uptime.Minutes} min";
+            return LocalizationHelper.Format(
+                "UptimeHoursMinutes",
+                uptime.Hours,
+                uptime.Minutes);
         }
     }
 }

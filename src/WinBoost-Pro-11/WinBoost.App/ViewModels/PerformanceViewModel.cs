@@ -7,9 +7,11 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
 using WinBoost.App.Commands;
+using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Monitoring;
 using WinBoost.App.Services.Optimization;
+
 
 namespace WinBoost.App.ViewModels
 {
@@ -24,7 +26,7 @@ namespace WinBoost.App.ViewModels
         private bool _isApplyingOptimizations;
 
         private string _optimizationStatus =
-            "Apasă Analyze System pentru verificarea sistemului.";
+            LocalizationHelper.Get("PerformanceAnalyzePrompt");
 
         public ObservableCollection<ProcessInfo> TopProcesses { get; }
 
@@ -88,13 +90,13 @@ namespace WinBoost.App.ViewModels
 
         public string OptimizationButtonText =>
             IsAnalyzing
-                ? "Analyzing..."
-                : "Analyze System";
+                ? LocalizationHelper.Get("PerformanceAnalyzing")
+                : LocalizationHelper.Get("PerformanceAnalyze");
 
         public string ApplyButtonText =>
             IsApplyingOptimizations
-                ? "Se optimizează..."
-                : "Apply Selected";
+                ? LocalizationHelper.Get("PerformanceApplying")
+                : LocalizationHelper.Get("PerformanceApplySelected");
 
         public PerformanceViewModel()
         {
@@ -130,6 +132,9 @@ namespace WinBoost.App.ViewModels
 
             _processRefreshTimer.Tick +=
                 ProcessRefreshTimer_Tick;
+
+            LanguageManager.Instance.LanguageChanged +=
+                   LanguageManager_LanguageChanged;
 
             StartPerformanceMonitoring();
         }
@@ -205,64 +210,90 @@ namespace WinBoost.App.ViewModels
             }
 
             IsAnalyzing = true;
-            OptimizationStatus = "Analizez sistemul...";
+
+            OptimizationStatus =
+                LocalizationHelper.Get(
+                    "PerformanceStatusAnalyzing");
+
             Recommendations.Clear();
 
             try
             {
-                var messages = new List<string>();
+                var messages =
+                    new List<string>();
 
                 var tempResult =
-                    await _tempFileService.AnalyzeAsync();
+                    await _tempFileService
+                        .AnalyzeAsync();
 
                 if (tempResult.FileCount > 0)
                 {
                     string space =
-                        FormatBytes(tempResult.TotalBytes);
+                        FormatBytes(
+                            tempResult.TotalBytes);
 
                     Recommendations.Add(
                         new OptimizationRecommendation
                         {
                             Id = "temp-cleanup",
+
                             Title =
-                                "Curățare fișiere temporare",
+                                LocalizationHelper.Get(
+                                    "PerformanceTempCleanupTitle"),
+
                             Description =
-                                $"{tempResult.FileCount} fișiere pot elibera aproximativ {space}.",
+                                LocalizationHelper.Format(
+                                    "PerformanceTempCleanupDescription",
+                                    tempResult.FileCount,
+                                    space),
+
                             RequiresAdministrator = false,
                             IsSelected = true
                         });
 
                     messages.Add(
-                        $"se pot curăța aproximativ {space} de fișiere temporare");
+                        LocalizationHelper.Format(
+                            "PerformanceTempCleanupMessage",
+                            space));
                 }
 
                 if (CpuUsageValue >= 80)
                 {
                     messages.Add(
-                        "utilizarea procesorului este ridicată");
+                        LocalizationHelper.Get(
+                            "PerformanceCpuHighMessage"));
                 }
 
                 if (RamUsageValue >= 85)
                 {
                     messages.Add(
-                        "utilizarea memoriei RAM este ridicată");
+                        LocalizationHelper.Get(
+                            "PerformanceRamHighMessage"));
                 }
 
                 if (DiskUsageValue >= 90)
                 {
                     messages.Add(
-                        "spațiul disponibil pe disc este redus");
+                        LocalizationHelper.Get(
+                            "PerformanceDiskLowMessage"));
                 }
 
-                OptimizationStatus = messages.Count == 0
-                    ? "Analiză finalizată: sistemul funcționează normal."
-                    : "Recomandări: " +
-                      string.Join(" • ", messages);
+                OptimizationStatus =
+                    messages.Count == 0
+                        ? LocalizationHelper.Get(
+                            "PerformanceAnalysisNormal")
+                        : LocalizationHelper.Format(
+                            "PerformanceRecommendationsPrefix",
+                            string.Join(
+                                " • ",
+                                messages));
             }
             catch (Exception ex)
             {
                 OptimizationStatus =
-                    $"Analiza nu a putut fi finalizată: {ex.Message}";
+                    LocalizationHelper.Format(
+                        "PerformanceAnalysisFailed",
+                        ex.Message);
             }
             finally
             {
@@ -286,15 +317,18 @@ namespace WinBoost.App.ViewModels
             if (selectedItems.Count == 0)
             {
                 OptimizationStatus =
-                    "Selectează cel puțin o recomandare.";
+                    LocalizationHelper.Get(
+                    "PerformanceSelectRecommendation");
 
                 return;
             }
 
             MessageBoxResult confirmation =
                 MessageBox.Show(
-                    "Vor fi șterse numai fișierele temporare mai vechi de 24 de ore.\n\nContinui?",
-                    "Confirmare optimizare",
+                    LocalizationHelper.Get(
+                        "PerformanceOptimizationConfirmMessage"),
+                    LocalizationHelper.Get(
+                        "PerformanceOptimizationConfirmTitle"),
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
 
@@ -303,7 +337,8 @@ namespace WinBoost.App.ViewModels
 
             IsApplyingOptimizations = true;
             OptimizationStatus =
-                "Se aplică optimizările selectate...";
+                LocalizationHelper.Get(
+                    "PerformanceApplyingOptimizations");
 
             try
             {
@@ -326,19 +361,50 @@ namespace WinBoost.App.ViewModels
                 Recommendations.Clear();
 
                 OptimizationStatus =
-                    deletedFiles > 0
-                        ? $"Curățare finalizată: {deletedFiles} fișiere șterse, {FormatBytes(freedBytes)} eliberați."
-                        : "Nu au fost găsite fișiere care să poată fi șterse.";
+                       LocalizationHelper.Format(
+                       "PerformanceCleanupCompleted",
+                        deletedFiles,
+         FormatBytes(freedBytes));
             }
             catch (Exception ex)
             {
                 OptimizationStatus =
-                    $"Optimizarea nu a putut fi finalizată: {ex.Message}";
+                    OptimizationStatus =
+                    LocalizationHelper.Format(
+                    "PerformanceOptimizationFailed",
+        ex.Message);
             }
             finally
             {
                 IsApplyingOptimizations = false;
             }
+        }
+
+        private async void LanguageManager_LanguageChanged(
+       object? sender,
+       EventArgs e)
+        {
+            OnPropertyChanged(
+                nameof(OptimizationButtonText));
+
+            OnPropertyChanged(
+                nameof(ApplyButtonText));
+
+            if (IsAnalyzing ||
+                IsApplyingOptimizations)
+            {
+                return;
+            }
+
+            if (Recommendations.Count > 0)
+            {
+                await AnalyzeSystemAsync();
+                return;
+            }
+
+            OptimizationStatus =
+                LocalizationHelper.Get(
+                    "PerformanceAnalyzePrompt");
         }
 
         private static string FormatBytes(long bytes)
