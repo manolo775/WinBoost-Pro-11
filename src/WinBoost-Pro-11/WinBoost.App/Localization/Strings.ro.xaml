@@ -552,7 +552,7 @@
 	</sys:String>
 
 	<sys:String x:Key="PerformanceTempCleanupMessage">
-		se pot curăța aproximativ {0} de fișiere temporare
+		Se pot curăța aproximativ {0} de fișiere temporare.
 	</sys:String>
 
 	<sys:String x:Key="PerformanceCpuHighMessage">
@@ -560,7 +560,7 @@
 	</sys:String>
 
 	<sys:String x:Key="PerformanceRamHighMessage">
-		utilizarea memoriei RAM este ridicată
+		Utilizarea memoriei RAM este ridicată
 	</sys:String>
 
 	<sys:String x:Key="PerformanceDiskLowMessage">
@@ -609,6 +609,14 @@
 
 	<sys:String x:Key="PerformanceOptimizationFailed">
 		Optimizarea nu a putut fi finalizată: {0}
+	</sys:String>
+
+	<sys:String x:Key="PerformanceHighCpuProcessMessage">
+		Procesul {0} utilizează {1}% CPU. Închide aplicațiile sau activitățile neutilizate.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceRecommendationsTitle">
+		Recomandări
 	</sys:String>
 	
 </ResourceDictionary>

@@ -1,8 +1,9 @@
 ﻿<UserControl
     x:Class="WinBoost.App.Views.PerformanceView"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
+	
 	<ScrollViewer
         VerticalScrollBarVisibility="Auto"
         HorizontalScrollBarVisibility="Disabled">
@@ -159,11 +160,52 @@
 
 					<StackPanel Grid.Column="0">
 
+
 						<TextBlock
-                            Text="{Binding OptimizationStatus}"
-                            FontSize="18"
-                            Foreground="{StaticResource SecondaryTextBrush}"
-                            TextWrapping="Wrap"/>
+							Text="{DynamicResource PerformanceRecommendationsTitle}"
+							FontSize="18"
+							FontWeight="SemiBold"
+							Foreground="{StaticResource TextBrush}"/>
+						<ItemsControl
+							
+                      ItemsSource="{Binding RecommendationItems}"
+                      Margin="0,10,0,0">
+
+							<ItemsControl.ItemTemplate>
+
+								<DataTemplate>
+
+									<Grid Margin="0,8">
+
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto"/>
+											<ColumnDefinition Width="*"/>
+										</Grid.ColumnDefinitions>
+
+										<materialDesign:PackIcon
+											Grid.Column="0"
+											Kind="{Binding Icon}"
+											Width="20"
+											Height="20"
+											Margin="0,1,10,0"
+											VerticalAlignment="Top"
+											Foreground="{Binding IconBrush}"/>
+
+										<TextBlock
+											Grid.Column="1"
+											Text="{Binding Text}"
+											FontSize="15"
+											LineHeight="22"
+											TextWrapping="Wrap"
+											Foreground="{StaticResource TextBrush}"/>
+
+									</Grid>
+
+								</DataTemplate>
+
+							</ItemsControl.ItemTemplate>
+
+						</ItemsControl>
 
 						<TextBlock
                             Text="{DynamicResource PerformanceOptimizationDescription}"

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 
@@ -35,6 +36,16 @@ namespace WinBoost.App.Localization
         public void SetLanguage(
             Language language)
         {
+            CultureInfo culture =
+    language == Language.English
+        ? CultureInfo.GetCultureInfo("en-US")
+        : CultureInfo.GetCultureInfo("ro-RO");
+
+            CultureInfo.CurrentCulture =
+                culture;
+
+            CultureInfo.CurrentUICulture =
+                culture;
             string dictionaryPath =
                 language == Language.English
                     ? EnglishDictionary

@@ -11,7 +11,8 @@ using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Monitoring;
 using WinBoost.App.Services.Optimization;
-
+using MaterialDesignThemes.Wpf;
+using System.Windows.Media;
 
 namespace WinBoost.App.ViewModels
 {
@@ -32,6 +33,10 @@ namespace WinBoost.App.ViewModels
 
         public ObservableCollection<OptimizationRecommendation>
             Recommendations
+        { get; }
+
+        public ObservableCollection<RecommendationItem>
+    RecommendationItems
         { get; }
 
         public ICommand OptimizeCommand { get; }
@@ -111,6 +116,12 @@ namespace WinBoost.App.ViewModels
 
             Recommendations =
                 new ObservableCollection<OptimizationRecommendation>();
+
+            RecommendationItems =
+                new ObservableCollection<RecommendationItem>();
+
+            RecommendationItems =
+                new ObservableCollection<RecommendationItem>();
 
             OptimizeCommand =
                 new RelayCommand(
@@ -216,6 +227,7 @@ namespace WinBoost.App.ViewModels
                     "PerformanceStatusAnalyzing");
 
             Recommendations.Clear();
+            RecommendationItems.Clear();
 
             try
             {
@@ -251,6 +263,16 @@ namespace WinBoost.App.ViewModels
                             IsSelected = true
                         });
 
+                    RecommendationItems.Add(
+                          new RecommendationItem
+                           {
+                                 Icon = PackIconKind.CheckCircle,
+                                  IconBrush = Brushes.LimeGreen,
+                                 Text = LocalizationHelper.Format(
+                                 "PerformanceTempCleanupMessage",
+                                space)
+                           });
+
                     messages.Add(
                         LocalizationHelper.Format(
                             "PerformanceTempCleanupMessage",
@@ -264,11 +286,61 @@ namespace WinBoost.App.ViewModels
                             "PerformanceCpuHighMessage"));
                 }
 
+   
+
                 if (RamUsageValue >= 85)
                 {
                     messages.Add(
                         LocalizationHelper.Get(
                             "PerformanceRamHighMessage"));
+                }
+
+                     RecommendationItems.Add(
+                         new RecommendationItem
+                      {
+                            Icon = PackIconKind.Alert,
+                         IconBrush = Brushes.Gold,
+                           Text = LocalizationHelper.Get(
+                            "PerformanceRamHighMessage")
+                            });
+
+                 await RefreshTopProcessesAsync();
+
+                ProcessInfo? highestCpuProcess =
+                    TopProcesses
+                        .OrderByDescending(
+                            process => process.CpuUsage)
+                        .FirstOrDefault();
+
+                if (highestCpuProcess != null &&
+                    highestCpuProcess.CpuUsage >= 20)
+                {
+                    messages.Add(
+                        LocalizationHelper.Format(
+                            "PerformanceHighCpuProcessMessage",
+                            highestCpuProcess.Name,
+                            highestCpuProcess.CpuUsage.ToString("F1")));
+
+                    RecommendationItems.Add(
+                        new RecommendationItem
+                        {
+                            Icon = PackIconKind.AlertCircle,
+                            IconBrush = Brushes.Orange,
+                            Text = LocalizationHelper.Format(
+                                "PerformanceHighCpuProcessMessage",
+                                highestCpuProcess.Name,
+                                highestCpuProcess.CpuUsage.ToString("F1"))
+                        });
+                }
+
+                if (highestCpuProcess != null &&
+                    highestCpuProcess.CpuUsage >= 20)
+                {
+                    messages.Add(
+                        LocalizationHelper.Format(
+                            "PerformanceHighCpuProcessMessage",
+                            highestCpuProcess.Name,
+                            highestCpuProcess.CpuUsage.ToString("F1")));
                 }
 
                 if (DiskUsageValue >= 90)

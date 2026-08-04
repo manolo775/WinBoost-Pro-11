@@ -552,15 +552,16 @@
 	</sys:String>
 
 	<sys:String x:Key="PerformanceTempCleanupMessage">
-		approximately {0} of temporary files can be cleaned
+		Approximately {0} of temporary files can be cleaned.
 	</sys:String>
+
 
 	<sys:String x:Key="PerformanceCpuHighMessage">
 		CPU usage is high
 	</sys:String>
 
 	<sys:String x:Key="PerformanceRamHighMessage">
-		RAM usage is high
+		RAM usage is high.
 	</sys:String>
 
 	<sys:String x:Key="PerformanceDiskLowMessage">
@@ -609,6 +610,14 @@
 
 	<sys:String x:Key="PerformanceOptimizationFailed">
 		Optimization could not be completed: {0}
+	</sys:String>
+
+	<sys:String x:Key="PerformanceHighCpuProcessMessage">
+		The {0} process is using {1}% CPU. Close unused applications or activities.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceRecommendationsTitle">
+		Recommendations
 	</sys:String>
 	
 </ResourceDictionary>
