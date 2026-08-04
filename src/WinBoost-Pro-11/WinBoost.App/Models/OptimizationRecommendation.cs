@@ -3,39 +3,57 @@ using System.Runtime.CompilerServices;
 
 namespace WinBoost.App.Models
 {
-    public class OptimizationRecommendation : INotifyPropertyChanged
+    public class OptimizationRecommendation :
+        INotifyPropertyChanged
     {
         private bool _isSelected;
 
-        public string Id { get; init; } = string.Empty;
+        public string Id { get; init; } =
+            string.Empty;
 
-        public string Title { get; init; } = string.Empty;
+        public string Title { get; init; } =
+            string.Empty;
 
-        public string Description { get; init; } = string.Empty;
+        public string Description { get; init; } =
+            string.Empty;
 
         public bool RequiresAdministrator { get; init; }
+
+        public bool IsActionable { get; init; } = true;
+
+        public string ActionId { get; init; } =
+            string.Empty;
+
+        public string Impact { get; init; } =
+            "Low";
 
         public bool IsSelected
         {
             get => _isSelected;
+
             set
             {
                 if (_isSelected == value)
+                {
                     return;
+                }
 
                 _isSelected = value;
                 OnPropertyChanged();
             }
         }
 
-        public event PropertyChangedEventHandler? PropertyChanged;
+        public event PropertyChangedEventHandler?
+            PropertyChanged;
 
         protected void OnPropertyChanged(
-            [CallerMemberName] string? propertyName = null)
+            [CallerMemberName]
+            string? propertyName = null)
         {
             PropertyChanged?.Invoke(
                 this,
-                new PropertyChangedEventArgs(propertyName));
+                new PropertyChangedEventArgs(
+                    propertyName));
         }
     }
 }

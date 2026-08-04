@@ -130,10 +130,18 @@ namespace WinBoost.App.ViewModels
                          !IsApplyingOptimizations);
 
             ApplyOptimizationsCommand =
-                new RelayCommand(
-                    async _ => await ApplyOptimizationsAsync(),
-                    _ => !IsAnalyzing &&
-                         !IsApplyingOptimizations);
+            new RelayCommand(
+                async _ =>
+                    await ApplyOptimizationsAsync(),
+                _ =>
+                    !IsAnalyzing &&
+                    !IsApplyingOptimizations &&
+                    Recommendations.Any(
+                        item =>
+                            item.IsActionable &&
+                            item.IsSelected &&
+                            !string.IsNullOrWhiteSpace(
+                                item.ActionId)));
 
             _processRefreshTimer =
                 new DispatcherTimer
@@ -149,6 +157,7 @@ namespace WinBoost.App.ViewModels
 
             StartPerformanceMonitoring();
         }
+
 
         public void StartPerformanceMonitoring()
         {
@@ -248,18 +257,21 @@ namespace WinBoost.App.ViewModels
                         new OptimizationRecommendation
                         {
                             Id = "temp-cleanup",
+                            ActionId = "temp-cleanup",
 
                             Title =
-                                LocalizationHelper.Get(
-                                    "PerformanceTempCleanupTitle"),
+        LocalizationHelper.Get(
+            "PerformanceTempCleanupTitle"),
 
                             Description =
-                                LocalizationHelper.Format(
-                                    "PerformanceTempCleanupDescription",
-                                    tempResult.FileCount,
-                                    space),
+        LocalizationHelper.Format(
+            "PerformanceTempCleanupDescription",
+            tempResult.FileCount,
+            space),
 
                             RequiresAdministrator = false,
+                            IsActionable = true,
+                            Impact = "Low",
                             IsSelected = true
                         });
 
@@ -359,6 +371,7 @@ namespace WinBoost.App.ViewModels
                             string.Join(
                                 " • ",
                                 messages));
+                CommandManager.InvalidateRequerySuggested();
             }
             catch (Exception ex)
             {
@@ -383,7 +396,12 @@ namespace WinBoost.App.ViewModels
 
             var selectedItems =
                 Recommendations
-                    .Where(item => item.IsSelected)
+                    .Where(
+                        item =>
+                            item.IsActionable &&
+                            item.IsSelected &&
+                            !string.IsNullOrWhiteSpace(
+                                item.ActionId))
                     .ToList();
 
             if (selectedItems.Count == 0)
@@ -418,19 +436,35 @@ namespace WinBoost.App.ViewModels
                 long freedBytes = 0;
 
                 foreach (OptimizationRecommendation item
-                         in selectedItems)
+         in selectedItems)
                 {
-                    if (item.Id != "temp-cleanup")
+                    if (!item.IsActionable)
+                    {
                         continue;
+                    }
 
-                    var result =
-                        await _tempFileService.CleanAsync();
+                    switch (item.ActionId)
+                    {
+                        case "temp-cleanup":
+                            {
+                                var result =
+                                    await _tempFileService
+                                        .CleanAsync();
 
-                    deletedFiles += result.DeletedFiles;
-                    freedBytes += result.FreedBytes;
+                                deletedFiles +=
+                                    result.DeletedFiles;
+
+                                freedBytes +=
+                                    result.FreedBytes;
+
+                                break;
+                            }
+                    }
                 }
 
                 Recommendations.Clear();
+
+                CommandManager.InvalidateRequerySuggested();
 
                 OptimizationStatus =
                        LocalizationHelper.Format(
