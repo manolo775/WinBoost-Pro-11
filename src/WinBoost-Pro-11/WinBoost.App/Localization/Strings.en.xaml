@@ -685,7 +685,7 @@
 	</sys:String>
 
 	<sys:String x:Key="OptimizationHistoryClear">
-		Clear History
+		Clear 
 	</sys:String>
 
 	<sys:String x:Key="OptimizationStatusSuccess">
