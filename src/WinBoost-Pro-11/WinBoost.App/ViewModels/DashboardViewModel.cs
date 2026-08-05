@@ -390,10 +390,7 @@ namespace WinBoost.App.ViewModels
         public string HealthStatus =>
             HealthSummary.OverallHealthStatus;
 
-        public int WinBoostOverallScore =>
-         WinBoostHealthScoreService
-             .Instance
-              .OverallScore;
+
 
         public void StartMonitoring()
         {
@@ -522,8 +519,7 @@ namespace WinBoost.App.ViewModels
             OnPropertyChanged(
                 nameof(HealthStatus));
 
-            OnPropertyChanged(
-                nameof(WinBoostOverallScore));
+          
 
             OnPropertyChanged(
                 nameof(HealthSummary));

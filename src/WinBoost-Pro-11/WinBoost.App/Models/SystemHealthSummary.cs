@@ -126,14 +126,13 @@ namespace WinBoost.App.Models
         }
 
         public int OverallHealthScore =>
-            (int)Math.Round(
-                (
-                    PerformanceScore +
-                    ServicesScore +
-                    StartupScore +
-                    PrivacyScore +
-                    WindowsUpdateScore
-                ) / 5.0);
+                NormalizeScore(
+                     (int)Math.Round(
+             PerformanceScore * 0.30 +
+             ServicesScore * 0.20 +
+             StartupScore * 0.15 +
+             PrivacyScore * 0.15 +
+             WindowsUpdateScore * 0.20));
 
         public string OverallHealthText =>
             $"{OverallHealthScore}%";

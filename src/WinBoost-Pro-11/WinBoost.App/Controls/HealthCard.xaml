@@ -43,8 +43,8 @@
                                              Mode=OneWay}"/>
 
 					<ProgressBar
-                        Value="{Binding WinBoostOverallScore,
-                                Mode=OneWay}"
+Value="{Binding HealthSummary.OverallHealthScore,
+                Mode=OneWay}"
                         Maximum="100"
                         Height="8"
                         Margin="0,14,30,0"
@@ -61,9 +61,8 @@
                     VerticalAlignment="Center">
 
 					<TextBlock
-                        Text="{Binding WinBoostOverallScore,
-                            Mode=OneWay,
-                            StringFormat={}{0}%}"
+                        Text="{Binding HealthSummary.OverallHealthText,
+                               Mode=OneWay}"
                         FontSize="38"
                         FontWeight="Bold"
                         Foreground="{Binding HealthSummary.OverallHealthBrush,
