@@ -25,6 +25,8 @@ namespace WinBoost.App.ViewModels
         private readonly DispatcherTimer _processRefreshTimer;
         private readonly StartupAppsScanner
                          _startupAppsScanner;
+        private readonly OptimizationCoordinator
+                          _optimizationCoordinator;
 
         private bool _isRefreshingProcesses;
         private bool _isAnalyzing;
@@ -171,6 +173,13 @@ namespace WinBoost.App.ViewModels
             _startupAppsScanner =
                  new StartupAppsScanner();
 
+            _optimizationCoordinator =
+                 new OptimizationCoordinator();
+            _optimizationCoordinator
+                    .Engine
+                    .ProgressChanged +=
+                     OptimizationEngine_ProgressChanged;
+
             TopProcesses =
                 new ObservableCollection<ProcessInfo>();
 
@@ -187,6 +196,7 @@ namespace WinBoost.App.ViewModels
                     async _ => await AnalyzeSystemAsync(),
                     _ => !IsAnalyzing &&
                          !IsApplyingOptimizations);
+
 
             ApplyOptimizationsCommand =
             new RelayCommand(
@@ -570,7 +580,7 @@ namespace WinBoost.App.ViewModels
             {
                 OptimizationStatus =
                     LocalizationHelper.Get(
-                    "PerformanceSelectRecommendation");
+                        "PerformanceSelectRecommendation");
 
                 return;
             }
@@ -584,63 +594,91 @@ namespace WinBoost.App.ViewModels
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
 
-            if (confirmation != MessageBoxResult.Yes)
+            if (confirmation !=
+                MessageBoxResult.Yes)
+            {
                 return;
+            }
 
             IsApplyingOptimizations = true;
+
             OptimizationStatus =
                 LocalizationHelper.Get(
                     "PerformanceApplyingOptimizations");
 
             try
             {
-                int deletedFiles = 0;
-                long freedBytes = 0;
-
-                foreach (OptimizationRecommendation item
-         in selectedItems)
-                {
-                    if (!item.IsActionable)
+                var options =
+                    new OptimizationOptions
                     {
-                        continue;
-                    }
+                        CleanTemporaryFiles =
+                            selectedItems.Any(
+                                item =>
+                                    item.ActionId ==
+                                    "temp-cleanup"),
 
-                    switch (item.ActionId)
-                    {
-                        case "temp-cleanup":
-                            {
-                                var result =
-                                    await _tempFileService
-                                        .CleanAsync();
+                        EmptyRecycleBin =
+                            selectedItems.Any(
+                                item =>
+                                    item.ActionId ==
+                                    "recycle-bin"),
 
-                                deletedFiles +=
-                                    result.DeletedFiles;
+                        CleanDnsCache =
+                            selectedItems.Any(
+                                item =>
+                                    item.ActionId ==
+                                    "dns-cache"),
 
-                                freedBytes +=
-                                    result.FreedBytes;
+                        CleanThumbnailCache =
+                            selectedItems.Any(
+                                item =>
+                                    item.ActionId ==
+                                    "thumbnail-cache"),
 
-                                break;
-                            }
-                    }
-                }
+                        CleanPrefetch =
+                            selectedItems.Any(
+                                item =>
+                                    item.ActionId ==
+                                    "prefetch"),
+
+                        CleanWindowsErrorReports =
+                            selectedItems.Any(
+                                item =>
+                                    item.ActionId ==
+                                    "windows-error-reports"),
+
+                        CleanWindowsLogs =
+                            selectedItems.Any(
+                                item =>
+                                    item.ActionId ==
+                                    "windows-logs")
+                    };
+
+                OptimizationReport report =
+                    await _optimizationCoordinator
+                        .OptimizeAsync(
+                            options);
 
                 Recommendations.Clear();
+                RecommendationItems.Clear();
 
-                CommandManager.InvalidateRequerySuggested();
+                CommandManager
+                    .InvalidateRequerySuggested();
 
                 OptimizationStatus =
-                       LocalizationHelper.Format(
-                       "PerformanceCleanupCompleted",
-                        deletedFiles,
-         FormatBytes(freedBytes));
+                    report.IsSuccessful
+                        ? LocalizationHelper.Format(
+                            "PerformanceCleanupCompleted",
+                            report.TotalDeletedFiles,
+                            report.RecoveredSpaceText)
+                        : report.Message;
             }
             catch (Exception ex)
             {
-               
-                    OptimizationStatus =
+                OptimizationStatus =
                     LocalizationHelper.Format(
-                    "PerformanceOptimizationFailed",
-        ex.Message);
+                        "PerformanceOptimizationFailed",
+                        ex.Message);
             }
             finally
             {
@@ -673,6 +711,17 @@ namespace WinBoost.App.ViewModels
             OptimizationStatus =
                 LocalizationHelper.Get(
                     "PerformanceAnalyzePrompt");
+        }
+
+        private void OptimizationEngine_ProgressChanged(
+                   object? sender,
+                  OptimizationProgressEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                OptimizationStatus =
+                    $"{e.ProgressPercentage}% - {e.OperationName}";
+            });
         }
 
         private static string FormatBytes(long bytes)
