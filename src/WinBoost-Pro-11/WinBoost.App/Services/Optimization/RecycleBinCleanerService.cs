@@ -58,6 +58,11 @@ namespace WinBoost.App.Services.Optimization
                     {
                         return new OptimizationResult
                         {
+
+                            OperationId = "recycle-bin",
+                            OperationName = "Recycle Bin",
+                            RequiresAdministrator = false,
+
                             IsSuccessful = true,
                             DeletedFilesCount = 0,
                             RecoveredBytes = 0,
@@ -84,6 +89,11 @@ namespace WinBoost.App.Services.Optimization
 
                     return new OptimizationResult
                     {
+                        OperationId = "recycle-bin",
+                        OperationName = "Recycle Bin",
+                        RequiresAdministrator = false,
+
+
                         IsSuccessful = true,
 
                         DeletedFilesCount =
@@ -102,6 +112,11 @@ namespace WinBoost.App.Services.Optimization
                 {
                     return new OptimizationResult
                     {
+
+                        OperationId = "recycle-bin",
+                        OperationName = "Recycle Bin",
+                        RequiresAdministrator = false,
+
                         IsSuccessful = false,
 
                         Message =

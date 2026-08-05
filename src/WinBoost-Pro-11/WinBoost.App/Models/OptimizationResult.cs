@@ -2,19 +2,63 @@
 {
     public class OptimizationResult
     {
-        public bool IsSuccessful { get; set; }
+        public string OperationId
+        {
+            get;
+            set;
+        } =
+            string.Empty;
 
-        public long DeletedFilesCount { get; set; }
+        public string OperationName
+        {
+            get;
+            set;
+        } =
+            string.Empty;
 
-        public long RecoveredBytes { get; set; }
+        public bool IsSuccessful
+        {
+            get;
+            set;
+        }
 
-        public string Message { get; set; } =
+        public bool WasSkipped
+        {
+            get;
+            set;
+        }
+
+        public bool RequiresAdministrator
+        {
+            get;
+            set;
+        }
+
+        public long DeletedFilesCount
+        {
+            get;
+            set;
+        }
+
+        public long RecoveredBytes
+        {
+            get;
+            set;
+        }
+
+        public string Message
+        {
+            get;
+            set;
+        } =
             string.Empty;
 
         public string RecoveredSpaceText =>
-            FormatBytes(RecoveredBytes);
+            FormatBytes(
+                RecoveredBytes);
 
-        private static string FormatBytes(long bytes)
+        private static string FormatBytes(
+            long bytes)
         {
             string[] units =
             {
@@ -25,17 +69,23 @@
                 "TB"
             };
 
-            double value = bytes;
-            int unitIndex = 0;
+            double value =
+                bytes;
+
+            int unitIndex =
+                0;
 
             while (value >= 1024 &&
                    unitIndex < units.Length - 1)
             {
-                value /= 1024;
+                value /=
+                    1024;
+
                 unitIndex++;
             }
 
-            return $"{value:F2} {units[unitIndex]}";
+            return
+                $"{value:F2} {units[unitIndex]}";
         }
     }
 }

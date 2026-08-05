@@ -22,6 +22,11 @@ namespace WinBoost.App.Services.Optimization
                     {
                         return new OptimizationResult
                         {
+
+                            OperationId = "temp-files",
+                            OperationName = "Temporary Files",
+                            RequiresAdministrator = false,
+
                             IsSuccessful = true,
                             Message =
                                 "Folderul temporar al utilizatorului nu există."
@@ -35,6 +40,11 @@ namespace WinBoost.App.Services.Optimization
 
                     return new OptimizationResult
                     {
+
+                        OperationId = "temp-files",
+                        OperationName = "Temporary Files",
+                        RequiresAdministrator = false,
+
                         IsSuccessful = true,
                         DeletedFilesCount = deletedFilesCount,
                         RecoveredBytes = recoveredBytes,
@@ -47,6 +57,11 @@ namespace WinBoost.App.Services.Optimization
                 {
                     return new OptimizationResult
                     {
+
+                        OperationId = "temp-files",
+                        OperationName = "Temporary Files",
+                        RequiresAdministrator = false,
+
                         IsSuccessful = false,
                         DeletedFilesCount = deletedFilesCount,
                         RecoveredBytes = recoveredBytes,
