@@ -36,6 +36,14 @@ namespace WinBoost.App.ViewModels
             LocalizationHelper.Get("PerformanceAnalyzePrompt");
         private int _performanceAnalyzerScore = 100;
 
+        private int _optimizationProgress;
+
+        private string _currentOptimizationOperation =
+            string.Empty;
+
+        private readonly OptimizationSummaryViewModel
+                    _optimizationSummaryViewModel;
+
         public int PerformanceAnalyzerScore
         {
             get => _performanceAnalyzerScore;
@@ -162,6 +170,50 @@ namespace WinBoost.App.ViewModels
                 ? LocalizationHelper.Get("PerformanceApplying")
                 : LocalizationHelper.Get("PerformanceApplySelected");
 
+        public int OptimizationProgress
+        {
+            get => _optimizationProgress;
+
+            private set
+            {
+                int normalizedValue =
+                    Math.Clamp(
+                        value,
+                        0,
+                        100);
+
+                if (_optimizationProgress ==
+                    normalizedValue)
+                {
+                    return;
+                }
+
+                _optimizationProgress =
+                    normalizedValue;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public string CurrentOptimizationOperation
+        {
+            get => _currentOptimizationOperation;
+
+            private set
+            {
+                if (_currentOptimizationOperation ==
+                    value)
+                {
+                    return;
+                }
+
+                _currentOptimizationOperation =
+                    value;
+
+                OnPropertyChanged();
+            }
+        }
+
         public PerformanceViewModel()
         {
             _processMonitorService =
@@ -175,6 +227,10 @@ namespace WinBoost.App.ViewModels
 
             _optimizationCoordinator =
                  new OptimizationCoordinator();
+
+            _optimizationSummaryViewModel =
+                 new OptimizationSummaryViewModel();
+
             _optimizationCoordinator
                     .Engine
                     .ProgressChanged +=
@@ -227,6 +283,9 @@ namespace WinBoost.App.ViewModels
             StartPerformanceMonitoring();
         }
 
+        public OptimizationSummaryViewModel
+              OptimizationSummaryViewModel =>
+              _optimizationSummaryViewModel;
 
         public void StartPerformanceMonitoring()
         {
@@ -602,6 +661,9 @@ namespace WinBoost.App.ViewModels
 
             IsApplyingOptimizations = true;
 
+            _optimizationSummaryViewModel
+              .Clear();
+
             OptimizationStatus =
                 LocalizationHelper.Get(
                     "PerformanceApplyingOptimizations");
@@ -659,6 +721,10 @@ namespace WinBoost.App.ViewModels
                         .OptimizeAsync(
                             options);
 
+                _optimizationSummaryViewModel
+                    .Update(
+                        report);
+
                 Recommendations.Clear();
                 RecommendationItems.Clear();
 
@@ -687,8 +753,8 @@ namespace WinBoost.App.ViewModels
         }
 
         private async void LanguageManager_LanguageChanged(
-       object? sender,
-       EventArgs e)
+          object? sender,
+          EventArgs e)
         {
             OnPropertyChanged(
                 nameof(OptimizationButtonText));
@@ -714,16 +780,21 @@ namespace WinBoost.App.ViewModels
         }
 
         private void OptimizationEngine_ProgressChanged(
-                   object? sender,
-                  OptimizationProgressEventArgs e)
+            object? sender,
+            OptimizationProgressEventArgs e)
         {
             Application.Current.Dispatcher.Invoke(() =>
             {
+                OptimizationProgress =
+                    e.ProgressPercentage;
+
+                CurrentOptimizationOperation =
+                    e.OperationName;
+
                 OptimizationStatus =
                     $"{e.ProgressPercentage}% - {e.OperationName}";
             });
         }
-
         private static string FormatBytes(long bytes)
         {
             const double megabyte =

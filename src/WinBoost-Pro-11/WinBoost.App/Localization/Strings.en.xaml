@@ -643,5 +643,37 @@
 	<sys:String x:Key="PerformanceScoreCritical">
 		Critical
 	</sys:String>
+
+	<sys:String x:Key="OptimizationReportTitle">
+		Optimization Report
+	</sys:String>
+
+	<sys:String x:Key="OptimizationRecoveredSpace">
+		Recovered Space
+	</sys:String>
+
+	<sys:String x:Key="OptimizationDeletedFiles">
+		Deleted Files
+	</sys:String>
+
+	<sys:String x:Key="OptimizationDuration">
+		Duration
+	</sys:String>
+
+	<sys:String x:Key="OptimizationSuccessfulOperations">
+		Successful Operations
+	</sys:String>
+
+	<sys:String x:Key="OptimizationFailedOperations">
+		Failed Operations
+	</sys:String>
+
+	<sys:String x:Key="OptimizationSkippedOperations">
+		Skipped Operations
+	</sys:String>
+
+	<sys:String x:Key="OptimizationTemporaryFilesOperation">
+		Temporary Files
+	</sys:String>
 	
 </ResourceDictionary>

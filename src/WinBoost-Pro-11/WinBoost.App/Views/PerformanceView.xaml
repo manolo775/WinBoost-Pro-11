@@ -198,141 +198,304 @@
 			<!-- ZONA DE OPTIMIZARE -->
 
 			<Border
-                Grid.Row="2"
-                Margin="0,25,0,0"
-                Padding="22"
-                CornerRadius="10"
-                Background="{StaticResource CardBrush}">
+				Grid.Row="2"
+				Margin="0,25,0,0"
+				Padding="22"
+				CornerRadius="10"
+				Background="{StaticResource CardBrush}">
 
 				<Grid>
 
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="*"/>
-						<ColumnDefinition Width="Auto"/>
-					</Grid.ColumnDefinitions>
+					<Grid.RowDefinitions>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+						<RowDefinition Height="Auto"/>
+					</Grid.RowDefinitions>
 
-					<!-- RECOMANDĂRI -->
+					<Grid Grid.Row="0">
 
-					<StackPanel Grid.Column="0">
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
 
+						<!-- RECOMANDĂRI -->
 
-						<TextBlock
-							Text="{DynamicResource PerformanceRecommendationsTitle}"
-							FontSize="18"
-							FontWeight="SemiBold"
-							Foreground="{StaticResource TextBrush}"/>
-						<ItemsControl
-							
-                      ItemsSource="{Binding RecommendationItems}"
-                      Margin="0,10,0,0">
+						<StackPanel 
+							Grid.Column="0">
 
-							<ItemsControl.ItemTemplate>
+							<TextBlock
+								Text="{DynamicResource PerformanceRecommendationsTitle}"
+								FontSize="18"
+								FontWeight="SemiBold"
+								Foreground="{StaticResource TextBrush}"/>
 
-								<DataTemplate>
+							<ItemsControl
+								ItemsSource="{Binding RecommendationItems}"
+								Margin="0,10,0,0">
 
-									<Grid Margin="0,8">
+								<ItemsControl.ItemTemplate>
 
-										<Grid.ColumnDefinitions>
-											<ColumnDefinition Width="Auto"/>
-											<ColumnDefinition Width="*"/>
-										</Grid.ColumnDefinitions>
+									<DataTemplate>
 
-										<materialDesign:PackIcon
-											Grid.Column="0"
-											Kind="{Binding Icon}"
-											Width="20"
-											Height="20"
-											Margin="0,1,10,0"
-											VerticalAlignment="Top"
-											Foreground="{Binding IconBrush}"/>
+										<Grid Margin="0,8">
 
-										<TextBlock
-											Grid.Column="1"
-											Text="{Binding Text}"
-											FontSize="15"
-											LineHeight="22"
-											TextWrapping="Wrap"
-											Foreground="{StaticResource TextBrush}"/>
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="Auto"/>
+												<ColumnDefinition Width="*"/>
+											</Grid.ColumnDefinitions>
 
-									</Grid>
-
-								</DataTemplate>
-
-							</ItemsControl.ItemTemplate>
-
-						</ItemsControl>
-
-						<TextBlock
-                            Text="{DynamicResource PerformanceOptimizationDescription}"
-                            Margin="0,8,0,0"
-                            Foreground="{StaticResource SecondaryTextBrush}"
-                            TextWrapping="Wrap"/>
-
-						<ItemsControl
-                            ItemsSource="{Binding Recommendations}"
-                            Margin="0,12,0,0">
-
-							<ItemsControl.ItemTemplate>
-
-								<DataTemplate>
-
-									<CheckBox
-                                        IsChecked="{Binding IsSelected, Mode=TwoWay}"
-                                        Margin="0,5,0,0">
-
-										<StackPanel Margin="8,0,0,0">
+											<materialDesign:PackIcon
+												Grid.Column="0"
+												Kind="{Binding Icon}"
+												Width="20"
+												Height="20"
+												Margin="0,1,10,0"
+												VerticalAlignment="Top"
+												Foreground="{Binding IconBrush}"/>
 
 											<TextBlock
-                                                Text="{Binding Title}"
-                                                FontWeight="SemiBold"
-                                                Foreground="{StaticResource TextBrush}"/>
+												Grid.Column="1"
+												Text="{Binding Text}"
+												FontSize="15"
+												LineHeight="22"
+												TextWrapping="Wrap"
+												Foreground="{StaticResource TextBrush}"/>
 
-											<TextBlock
-                                                Text="{Binding Description}"
-                                                Margin="0,3,0,0"
-                                                TextWrapping="Wrap"
-                                                Foreground="{StaticResource SecondaryTextBrush}"/>
+										</Grid>
 
-										</StackPanel>
+									</DataTemplate>
 
-									</CheckBox>
+								</ItemsControl.ItemTemplate>
 
-								</DataTemplate>
+							</ItemsControl>
 
-							</ItemsControl.ItemTemplate>
+							<TextBlock
+								Text="{DynamicResource PerformanceOptimizationDescription}"
+								Margin="0,8,0,0"
+								Foreground="{StaticResource SecondaryTextBrush}"
+								TextWrapping="Wrap"/>
 
-						</ItemsControl>
+							<ItemsControl
+								ItemsSource="{Binding Recommendations}"
+								Margin="0,12,0,0">
 
-					</StackPanel>
+								<ItemsControl.ItemTemplate>
 
-					<!-- BUTOANE -->
+									<DataTemplate>
+
+										<CheckBox
+											IsChecked="{Binding IsSelected, Mode=TwoWay}"
+											Margin="0,5,0,0">
+
+											<StackPanel Margin="8,0,0,0">
+
+												<TextBlock
+													Text="{Binding Title}"
+													FontWeight="SemiBold"
+													Foreground="{StaticResource TextBrush}"/>
+
+												<TextBlock
+													Text="{Binding Description}"
+													Margin="0,3,0,0"
+													TextWrapping="Wrap"
+													Foreground="{StaticResource SecondaryTextBrush}"/>
+
+											</StackPanel>
+
+										</CheckBox>
+
+									</DataTemplate>
+
+								</ItemsControl.ItemTemplate>
+
+							</ItemsControl>
+
+						</StackPanel>
+
+						<!-- BUTOANE -->
+
+						<StackPanel
+							Grid.Column="1"
+							Margin="20,0,0,0"
+							VerticalAlignment="Center">
+
+							<Button
+								Content="{Binding OptimizationButtonText}"
+								Command="{Binding OptimizeCommand}"
+								Width="190"
+								Height="42"
+								HorizontalContentAlignment="Center"/>
+
+							<Button
+								Content="{Binding ApplyButtonText}"
+								Command="{Binding ApplyOptimizationsCommand}"
+								Width="190"
+								Height="42"
+								Margin="0,8,0,0"
+								HorizontalContentAlignment="Center"/>
+
+						</StackPanel>
+
+					</Grid>
+
+					<!-- PROGRES OPTIMIZARE -->
 
 					<StackPanel
-                        Grid.Column="1"
-                        Margin="20,0,0,0"
-                        VerticalAlignment="Center">
+						Grid.Row="1"
+						Margin="0,20,0,0">
 
-						<Button
-                              Content="{Binding OptimizationButtonText}"
-                              Command="{Binding OptimizeCommand}"
-                              Width="190"
-                              Height="42"
-                              HorizontalContentAlignment="Center"/>
+						<Grid>
 
-						<Button
-                                Content="{Binding ApplyButtonText}"
-                                Command="{Binding ApplyOptimizationsCommand}"
-                                 Width="190"
-                                Height="42"
-                                Margin="0,8,0,0"
-                                HorizontalContentAlignment="Center"/>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+
+							<TextBlock
+								Grid.Column="0"
+								Text="{Binding CurrentOptimizationOperation,
+                                   Mode=OneWay}"
+								FontSize="14"
+								TextWrapping="Wrap"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
+
+							<TextBlock
+								Grid.Column="1"
+								Text="{Binding OptimizationProgress,
+                                   Mode=OneWay,
+                                   StringFormat={}{0}%}"
+								Margin="15,0,0,0"
+								FontSize="14"
+								FontWeight="SemiBold"
+								Foreground="{StaticResource TextBrush}"/>
+
+						</Grid>
+
+						<ProgressBar
+							Value="{Binding OptimizationProgress,
+                                Mode=OneWay}"
+							Minimum="0"
+							Maximum="100"
+							Height="10"
+							Margin="0,8,0,0"/>
 
 					</StackPanel>
 
+					<Border
+						Grid.Row="2"
+						Margin="0,20,0,0"
+						Padding="18"
+						CornerRadius="8"
+						Background="#2A2D31">
+
+						<StackPanel>
+
+							<TextBlock
+								Text="{DynamicResource OptimizationReportTitle}"
+								FontSize="18"
+								FontWeight="SemiBold"
+								Foreground="White"/>
+
+							<UniformGrid
+                                Columns="3"
+                                  Rows="2"
+                                  Margin="0,15,0,0">
+
+								<StackPanel Margin="0,0,15,15">
+
+									<TextBlock
+										Text="{DynamicResource OptimizationRecoveredSpace}"
+										Foreground="#B8BCC4"/>
+
+									<TextBlock
+										Text="{Binding OptimizationSummaryViewModel.Summary.RecoveredSpaceText}"
+										FontSize="18"
+										FontWeight="Bold"
+										Foreground="White"/>
+
+								</StackPanel>
+
+								<StackPanel Margin="0,0,15,15">
+
+									<TextBlock
+										Text="{DynamicResource OptimizationDeletedFiles}"
+										Foreground="#B8BCC4"/>
+
+									<TextBlock
+										Text="{Binding OptimizationSummaryViewModel.Summary.DeletedFilesText}"
+										FontSize="18"
+										FontWeight="Bold"
+										Foreground="White"/>
+
+								</StackPanel>
+
+								<StackPanel Margin="0,0,0,15">
+
+									<TextBlock
+										Text="{DynamicResource OptimizationDuration}"
+										Foreground="#B8BCC4"/>
+
+									<TextBlock
+										Text="{Binding OptimizationSummaryViewModel.Summary.DurationText}"
+										FontSize="18"
+										FontWeight="Bold"
+										Foreground="White"/>
+
+								</StackPanel>
+
+								<StackPanel Margin="0,0,15,0">
+
+									<TextBlock
+										Text="{DynamicResource OptimizationSuccessfulOperations}"
+										Foreground="#B8BCC4"/>
+
+									<TextBlock
+										Text="{Binding OptimizationSummaryViewModel.Summary.SuccessfulOperations}"
+										FontSize="18"
+										FontWeight="Bold"
+										Foreground="#00C853"/>
+
+								</StackPanel>
+
+								<StackPanel Margin="0,0,15,0">
+
+									<TextBlock
+										Text="{DynamicResource OptimizationFailedOperations}"
+										Foreground="#B8BCC4"/>
+
+									<TextBlock
+										Text="{Binding OptimizationSummaryViewModel.Summary.FailedOperations}"
+										FontSize="18"
+										FontWeight="Bold"
+										Foreground="#FF5252"/>
+
+								</StackPanel>
+
+								<StackPanel>
+
+									<TextBlock
+										Text="{DynamicResource OptimizationSkippedOperations}"
+										Foreground="#B8BCC4"/>
+
+									<TextBlock
+										Text="{Binding OptimizationSummaryViewModel.Summary.SkippedOperations}"
+										FontSize="18"
+										FontWeight="Bold"
+										Foreground="#FFC107"/>
+
+								</StackPanel>
+
+							</UniformGrid>
+
+						</StackPanel>
+
+					</Border>
+					
 				</Grid>
 
 			</Border>
-
+			
 			<!-- TOP PROCESSES -->
 
 			<Border

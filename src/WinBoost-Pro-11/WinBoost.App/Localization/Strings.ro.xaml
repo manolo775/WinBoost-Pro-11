@@ -642,5 +642,38 @@
 	<sys:String x:Key="PerformanceScoreCritical">
 		Critic
 	</sys:String>
+
+	<sys:String x:Key="OptimizationReportTitle">
+		Raport optimizare
+	</sys:String>
+
+	<sys:String x:Key="OptimizationRecoveredSpace">
+		Spațiu recuperat
+	</sys:String>
+
+	<sys:String x:Key="OptimizationDeletedFiles">
+		Fișiere șterse
+	</sys:String>
+
+	<sys:String x:Key="OptimizationDuration">
+		Durată
+	</sys:String>
+
+	<sys:String x:Key="OptimizationSuccessfulOperations">
+		Operații reușite
+	</sys:String>
+
+	<sys:String x:Key="OptimizationFailedOperations">
+		Operații eșuate
+	</sys:String>
+
+	<sys:String x:Key="OptimizationSkippedOperations">
+		Operații omise
+	</sys:String>
+
+	<sys:String x:Key="OptimizationTemporaryFilesOperation">
+		Fișiere temporare
+	</sys:String>
+	
 	
 </ResourceDictionary>

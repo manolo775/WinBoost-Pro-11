@@ -1,7 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using WinBoost.App.Localization;
 using WinBoost.App.Models;
+using WinBoost.App.Localization;
 
 namespace WinBoost.App.Services.Optimization
 {
@@ -24,7 +26,9 @@ namespace WinBoost.App.Services.Optimization
                         {
 
                             OperationId = "temp-files",
-                            OperationName = "Temporary Files",
+                            OperationName =
+                               LocalizationHelper.Get(
+                                  "OptimizationTemporaryFilesOperation"),
                             RequiresAdministrator = false,
 
                             IsSuccessful = true,
@@ -42,7 +46,9 @@ namespace WinBoost.App.Services.Optimization
                     {
 
                         OperationId = "temp-files",
-                        OperationName = "Temporary Files",
+                        OperationName =
+                                    LocalizationHelper.Get(
+                                   "OptimizationTemporaryFilesOperation"),
                         RequiresAdministrator = false,
 
                         IsSuccessful = true,
@@ -59,7 +65,9 @@ namespace WinBoost.App.Services.Optimization
                     {
 
                         OperationId = "temp-files",
-                        OperationName = "Temporary Files",
+                        OperationName =
+                                 LocalizationHelper.Get(
+                                 "OptimizationTemporaryFilesOperation"),
                         RequiresAdministrator = false,
 
                         IsSuccessful = false,
