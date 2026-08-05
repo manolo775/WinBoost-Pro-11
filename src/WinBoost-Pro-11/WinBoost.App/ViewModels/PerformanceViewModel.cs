@@ -43,6 +43,8 @@ namespace WinBoost.App.ViewModels
 
         private readonly OptimizationSummaryViewModel
                     _optimizationSummaryViewModel;
+        private readonly OptimizationHistoryViewModel
+                    _optimizationHistoryViewModel;
 
         public int PerformanceAnalyzerScore
         {
@@ -231,6 +233,9 @@ namespace WinBoost.App.ViewModels
             _optimizationSummaryViewModel =
                  new OptimizationSummaryViewModel();
 
+            _optimizationHistoryViewModel =
+                 new OptimizationHistoryViewModel();
+
             _optimizationCoordinator
                     .Engine
                     .ProgressChanged +=
@@ -286,6 +291,10 @@ namespace WinBoost.App.ViewModels
         public OptimizationSummaryViewModel
               OptimizationSummaryViewModel =>
               _optimizationSummaryViewModel;
+
+        public OptimizationHistoryViewModel
+              OptimizationHistoryViewModel =>
+              _optimizationHistoryViewModel;
 
         public void StartPerformanceMonitoring()
         {
@@ -720,6 +729,11 @@ namespace WinBoost.App.ViewModels
                     await _optimizationCoordinator
                         .OptimizeAsync(
                             options);
+
+                OptimizationHistoryService
+                    .Instance
+                    .Add(
+                     report);
 
                 _optimizationSummaryViewModel
                     .Update(

@@ -674,6 +674,26 @@
 	<sys:String x:Key="OptimizationTemporaryFilesOperation">
 		Fișiere temporare
 	</sys:String>
+
+	<sys:String x:Key="OptimizationHistoryTab">
+		Istoric optimizări
+	</sys:String>
+
+	<sys:String x:Key="OptimizationHistoryTitle">
+		Ultimele optimizări efectuate
+	</sys:String>
+
+	<sys:String x:Key="OptimizationHistoryClear">
+		Șterge istoricul
+	</sys:String>
+
+	<sys:String x:Key="OptimizationStatusSuccess">
+		Succes
+	</sys:String>
+
+	<sys:String x:Key="OptimizationStatusFailed">
+		Finalizat cu erori
+	</sys:String>
 	
 	
 </ResourceDictionary>
