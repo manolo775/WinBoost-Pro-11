@@ -9,8 +9,7 @@
              d:DesignWidth="900">
 
 	<ScrollViewer
-        VerticalScrollBarVisibility="Auto"
-        HorizontalScrollBarVisibility="Disabled">
+    Style="{StaticResource WinBoostPageScrollViewerStyle}">
 
 		<Grid
             Margin="0,0,0,30"

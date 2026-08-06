@@ -120,7 +120,7 @@
 	</sys:String>
 
 	<sys:String x:Key="ServicesColumnHealth">
-		Health
+		Sănătate
 	</sys:String>
 
 	<sys:String x:Key="ServicesColumnActions">
@@ -1133,4 +1133,70 @@
 		Date opționale
 	</sys:String>
 
+	<!-- SERVICES - STATUSURI ȘI RECOMANDĂRI -->
+
+	<sys:String x:Key="ServicesServiceStatusRunning">
+		Rulează
+	</sys:String>
+
+	<sys:String x:Key="ServicesServiceStatusStopped">
+		Oprit
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupAutomatic">
+		Automat
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupAutomaticDelayed">
+		Automat (întârziat)
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupManual">
+		Manual
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupDisabled">
+		Dezactivat
+	</sys:String>
+
+	<sys:String x:Key="ServicesRiskCritical">
+		Critic
+	</sys:String>
+
+	<sys:String x:Key="ServicesRiskHigh">
+		Ridicat
+	</sys:String>
+
+	<sys:String x:Key="ServicesRiskMedium">
+		Mediu
+	</sys:String>
+
+	<sys:String x:Key="ServicesRiskLow">
+		Scăzut
+	</sys:String>
+
+	<sys:String x:Key="ServicesRiskUnknown">
+		Necunoscut
+	</sys:String>
+
+	<sys:String x:Key="ServicesRecommendationCritical">
+		Serviciu critic
+	</sys:String>
+
+	<sys:String x:Key="ServicesRecommendationKeepEnabled">
+		Păstrează activ
+	</sys:String>
+
+	<sys:String x:Key="ServicesRecommendationOptional">
+		Opțional
+	</sys:String>
+
+	<sys:String x:Key="ServicesRecommendationSafeToDisable">
+		Poate fi dezactivat dacă nu este utilizat
+	</sys:String>
+
+	<sys:String x:Key="ServicesRecommendationReview">
+		Verifică
+	</sys:String>
+	
 </ResourceDictionary>

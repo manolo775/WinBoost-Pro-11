@@ -1126,6 +1126,70 @@
 		Enhanced data
 	</sys:String>
 
-	
+	<!-- SERVICES - STATUSES AND RECOMMENDATIONS -->
+
+	<sys:String x:Key="ServicesServiceStatusRunning">
+		Running
+	</sys:String>
+
+	<sys:String x:Key="ServicesServiceStatusStopped">
+		Stopped
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupAutomatic">
+		Automatic
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupAutomaticDelayed">
+		Automatic (Delayed)
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupManual">
+		Manual
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupDisabled">
+		Disabled
+	</sys:String>
+
+	<sys:String x:Key="ServicesRiskCritical">
+		Critical
+	</sys:String>
+
+	<sys:String x:Key="ServicesRiskHigh">
+		High
+	</sys:String>
+
+	<sys:String x:Key="ServicesRiskMedium">
+		Medium
+	</sys:String>
+
+	<sys:String x:Key="ServicesRiskLow">
+		Low
+	</sys:String>
+
+	<sys:String x:Key="ServicesRiskUnknown">
+		Unknown
+	</sys:String>
+
+	<sys:String x:Key="ServicesRecommendationCritical">
+		Critical service
+	</sys:String>
+
+	<sys:String x:Key="ServicesRecommendationKeepEnabled">
+		Keep enabled
+	</sys:String>
+
+	<sys:String x:Key="ServicesRecommendationOptional">
+		Optional
+	</sys:String>
+
+	<sys:String x:Key="ServicesRecommendationSafeToDisable">
+		Safe to disable if unused
+	</sys:String>
+
+	<sys:String x:Key="ServicesRecommendationReview">
+		Review
+	</sys:String>
 	
 </ResourceDictionary>

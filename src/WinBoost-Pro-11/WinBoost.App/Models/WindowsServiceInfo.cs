@@ -3,13 +3,48 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Media;
+using WinBoost.App.Localization;
 
 namespace WinBoost.App.Models
 {
-    public class WindowsServiceInfo : INotifyPropertyChanged
+    public sealed class WindowsServiceInfo :
+        INotifyPropertyChanged
     {
+        public const string StatusRunning =
+            "Running";
+
+        public const string StatusStopped =
+            "Stopped";
+
+        public const string StartupAutomatic =
+            "Automatic";
+
+        public const string StartupAutomaticDelayed =
+            "Automatic (Delayed)";
+
+        public const string StartupManual =
+            "Manual";
+
+        public const string StartupDisabled =
+            "Disabled";
+
+        public const string RiskCritical =
+            "Critical";
+
+        public const string RiskHigh =
+            "High";
+
+        public const string RiskMedium =
+            "Medium";
+
+        public const string RiskLow =
+            "Low";
+
+        public const string RiskUnknown =
+            "Unknown";
+
         private string _status =
-            string.Empty;
+            StatusStopped;
 
         private Brush _statusBrush =
             Brushes.LightGray;
@@ -22,34 +57,70 @@ namespace WinBoost.App.Models
             true;
 
         private string _riskLevel =
-            "Unknown";
+            RiskUnknown;
 
         private string _startType =
-            string.Empty;
+            StartupManual;
 
         private string _selectedStartupType =
+            StartupManual;
+
+        private string _recommendation =
             string.Empty;
 
         public WindowsServiceInfo()
         {
             AvailableStartupTypes =
-                new ObservableCollection<string>
-                {
-                    "Automatic",
-                    "Automatic (Delayed)",
-                    "Manual",
-                    "Disabled"
-                };
+                new ObservableCollection<string>();
+
+            RebuildAvailableStartupTypes();
         }
 
-        public string DisplayName { get; set; } =
+        public string DisplayName
+        {
+            get;
+            set;
+        } =
             string.Empty;
 
-        public string ServiceName { get; set; } =
+        public string ServiceName
+        {
+            get;
+            set;
+        } =
             string.Empty;
 
-        public string Recommendation { get; set; } =
-            string.Empty;
+        /*
+         * Valoarea internă a recomandării.
+         * Este păstrată în formatul folosit de scanner.
+         */
+        public string Recommendation
+        {
+            get => _recommendation;
+
+            set
+            {
+                string normalizedValue =
+                    value ?? string.Empty;
+
+                if (_recommendation ==
+                    normalizedValue)
+                {
+                    return;
+                }
+
+                _recommendation =
+                    normalizedValue;
+
+                OnPropertyChanged();
+
+                OnPropertyChanged(
+                    nameof(RecommendationText));
+
+                OnPropertyChanged(
+                    nameof(RecommendationBrush));
+            }
+        }
 
         public ObservableCollection<string>
             AvailableStartupTypes
@@ -57,25 +128,56 @@ namespace WinBoost.App.Models
             get;
         }
 
+        /*
+         * Valoare internă:
+         * Running / Stopped.
+         */
         public string Status
         {
             get => _status;
 
             set
             {
-                if (_status == value)
+                string normalizedValue =
+                    NormalizeStatus(
+                        value);
+
+                if (_status ==
+                    normalizedValue)
                 {
                     return;
                 }
 
-                _status = value;
+                _status =
+                    normalizedValue;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(CanStart));
-                OnPropertyChanged(nameof(CanStop));
-                OnPropertyChanged(nameof(CanRestart));
+
+                OnPropertyChanged(
+                    nameof(StatusText));
+
+                OnPropertyChanged(
+                    nameof(CanStart));
+
+                OnPropertyChanged(
+                    nameof(CanStop));
+
+                OnPropertyChanged(
+                    nameof(CanRestart));
             }
         }
+
+        /*
+         * Textul afișat în interfață.
+         */
+        public string StatusText =>
+            Status.Equals(
+                StatusRunning,
+                StringComparison.OrdinalIgnoreCase)
+                ? LocalizationHelper.Get(
+                    "ServicesServiceStatusRunning")
+                : LocalizationHelper.Get(
+                    "ServicesServiceStatusStopped");
 
         public Brush StatusBrush
         {
@@ -83,52 +185,94 @@ namespace WinBoost.App.Models
 
             set
             {
-                if (_statusBrush == value)
+                if (Equals(
+                        _statusBrush,
+                        value))
                 {
                     return;
                 }
 
-                _statusBrush = value;
+                _statusBrush =
+                    value;
+
                 OnPropertyChanged();
             }
         }
 
+        /*
+         * Valoare internă:
+         * Automatic / Automatic (Delayed) /
+         * Manual / Disabled.
+         */
         public string StartType
         {
             get => _startType;
 
             set
             {
-                if (_startType == value)
+                string normalizedValue =
+                    NormalizeStartupType(
+                        value);
+
+                if (_startType ==
+                    normalizedValue)
                 {
                     return;
                 }
 
-                _startType = value;
+                _startType =
+                    normalizedValue;
 
                 OnPropertyChanged();
 
-                SelectedStartupType = value;
+                OnPropertyChanged(
+                    nameof(StartTypeText));
+
+                SelectedStartupType =
+                    normalizedValue;
             }
         }
 
+        public string StartTypeText =>
+            GetStartupTypeDisplayText(
+                StartType);
+
+        /*
+         * Pentru moment păstrăm valoarea internă,
+         * deoarece este folosită de comenzile existente.
+         */
         public string SelectedStartupType
         {
             get => _selectedStartupType;
 
             set
             {
-                if (_selectedStartupType == value)
+                string normalizedValue =
+                    NormalizeStartupType(
+                        value);
+
+                if (_selectedStartupType ==
+                    normalizedValue)
                 {
                     return;
                 }
 
-                _selectedStartupType = value;
+                _selectedStartupType =
+                    normalizedValue;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(HasStartupTypeChanged));
+
+                OnPropertyChanged(
+                    nameof(SelectedStartupTypeText));
+
+                OnPropertyChanged(
+                    nameof(HasStartupTypeChanged));
             }
         }
+
+        public string SelectedStartupTypeText =>
+            GetStartupTypeDisplayText(
+                SelectedStartupType);
 
         public bool IsBusy
         {
@@ -141,13 +285,22 @@ namespace WinBoost.App.Models
                     return;
                 }
 
-                _isBusy = value;
+                _isBusy =
+                    value;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(CanStart));
-                OnPropertyChanged(nameof(CanStop));
-                OnPropertyChanged(nameof(CanRestart));
-                OnPropertyChanged(nameof(CanChangeStartupType));
+
+                OnPropertyChanged(
+                    nameof(CanStart));
+
+                OnPropertyChanged(
+                    nameof(CanStop));
+
+                OnPropertyChanged(
+                    nameof(CanRestart));
+
+                OnPropertyChanged(
+                    nameof(CanChangeStartupType));
             }
         }
 
@@ -162,13 +315,22 @@ namespace WinBoost.App.Models
                     return;
                 }
 
-                _isCritical = value;
+                _isCritical =
+                    value;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(CanStart));
-                OnPropertyChanged(nameof(CanStop));
-                OnPropertyChanged(nameof(CanRestart));
-                OnPropertyChanged(nameof(CanChangeStartupType));
+
+                OnPropertyChanged(
+                    nameof(CanStart));
+
+                OnPropertyChanged(
+                    nameof(CanStop));
+
+                OnPropertyChanged(
+                    nameof(CanRestart));
+
+                OnPropertyChanged(
+                    nameof(CanChangeStartupType));
             }
         }
 
@@ -178,112 +340,192 @@ namespace WinBoost.App.Models
 
             set
             {
-                if (_canBeStoppedSafely == value)
+                if (_canBeStoppedSafely ==
+                    value)
                 {
                     return;
                 }
 
-                _canBeStoppedSafely = value;
+                _canBeStoppedSafely =
+                    value;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(CanStop));
-                OnPropertyChanged(nameof(CanRestart));
+
+                OnPropertyChanged(
+                    nameof(CanStop));
+
+                OnPropertyChanged(
+                    nameof(CanRestart));
             }
         }
 
+        /*
+         * Valoare internă:
+         * Critical / High / Medium / Low / Unknown.
+         */
         public string RiskLevel
         {
             get => _riskLevel;
 
             set
             {
-                if (_riskLevel == value)
+                string normalizedValue =
+                    NormalizeRiskLevel(
+                        value);
+
+                if (_riskLevel ==
+                    normalizedValue)
                 {
                     return;
                 }
 
-                _riskLevel = value;
+                _riskLevel =
+                    normalizedValue;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(RiskBrush));
+
+                OnPropertyChanged(
+                    nameof(RiskLevelText));
+
+                OnPropertyChanged(
+                    nameof(RiskBrush));
+
+                OnPropertyChanged(
+                    nameof(HealthScore));
+
+                OnPropertyChanged(
+                    nameof(HealthScoreText));
+
+                OnPropertyChanged(
+                    nameof(HealthScoreBrush));
             }
         }
+
+        public string RiskLevelText =>
+            RiskLevel switch
+            {
+                RiskCritical =>
+                    LocalizationHelper.Get(
+                        "ServicesRiskCritical"),
+
+                RiskHigh =>
+                    LocalizationHelper.Get(
+                        "ServicesRiskHigh"),
+
+                RiskMedium =>
+                    LocalizationHelper.Get(
+                        "ServicesRiskMedium"),
+
+                RiskLow =>
+                    LocalizationHelper.Get(
+                        "ServicesRiskLow"),
+
+                _ =>
+                    LocalizationHelper.Get(
+                        "ServicesRiskUnknown")
+            };
 
         public Brush RiskBrush =>
             RiskLevel switch
             {
-                "Critical" => Brushes.OrangeRed,
-                "High" => Brushes.Orange,
-                "Medium" => Brushes.Gold,
-                "Low" => Brushes.LimeGreen,
-                _ => Brushes.LightGray
+                RiskCritical =>
+                    Brushes.OrangeRed,
+
+                RiskHigh =>
+                    Brushes.Orange,
+
+                RiskMedium =>
+                    Brushes.Gold,
+
+                RiskLow =>
+                    Brushes.LimeGreen,
+
+                _ =>
+                    Brushes.LightGray
             };
 
-        public Brush RecommendationBrush
-        {
-            get
+        public string RecommendationText =>
+            Recommendation switch
             {
-                if (Recommendation.StartsWith(
-                        "Critical",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    return Brushes.OrangeRed;
-                }
+                "Critical service" =>
+                    LocalizationHelper.Get(
+                        "ServicesRecommendationCritical"),
 
-                if (Recommendation.Equals(
-                        "Keep enabled",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    return Brushes.LimeGreen;
-                }
+                "Keep enabled" =>
+                    LocalizationHelper.Get(
+                        "ServicesRecommendationKeepEnabled"),
 
-                if (Recommendation.Equals(
-                        "Optional",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    return Brushes.Gold;
-                }
+                "Optional" =>
+                    LocalizationHelper.Get(
+                        "ServicesRecommendationOptional"),
 
-                if (Recommendation.Equals(
-                        "Safe to disable if unused",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    return Brushes.DeepSkyBlue;
-                }
+                "Safe to disable if unused" =>
+                    LocalizationHelper.Get(
+                        "ServicesRecommendationSafeToDisable"),
 
-                if (Recommendation.Equals(
-                        "Review",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    return Brushes.Silver;
-                }
+                "Review" =>
+                    LocalizationHelper.Get(
+                        "ServicesRecommendationReview"),
 
-                return Brushes.LightGray;
-            }
-        }
+                _ =>
+                    Recommendation
+            };
 
-        public int HealthScore
-        {
-            get
+        public Brush RecommendationBrush =>
+            Recommendation switch
             {
-                return RiskLevel switch
-                {
-                    "Critical" => 100,
-                    "High" => 90,
-                    "Medium" => 75,
-                    "Low" => 60,
-                    _ => 70
-                };
-            }
-        }
+                "Critical service" =>
+                    Brushes.OrangeRed,
+
+                "Keep enabled" =>
+                    Brushes.LimeGreen,
+
+                "Optional" =>
+                    Brushes.Gold,
+
+                "Safe to disable if unused" =>
+                    Brushes.DeepSkyBlue,
+
+                "Review" =>
+                    Brushes.Silver,
+
+                _ =>
+                    Brushes.LightGray
+            };
+
+        public int HealthScore =>
+            RiskLevel switch
+            {
+                RiskCritical =>
+                    100,
+
+                RiskHigh =>
+                    90,
+
+                RiskMedium =>
+                    75,
+
+                RiskLow =>
+                    60,
+
+                _ =>
+                    70
+            };
 
         public Brush HealthScoreBrush =>
             HealthScore switch
             {
-                >= 90 => Brushes.LimeGreen,
-                >= 75 => Brushes.Gold,
-                >= 60 => Brushes.Orange,
-                _ => Brushes.OrangeRed
+                >= 90 =>
+                    Brushes.LimeGreen,
+
+                >= 75 =>
+                    Brushes.Gold,
+
+                >= 60 =>
+                    Brushes.Orange,
+
+                _ =>
+                    Brushes.OrangeRed
             };
 
         public string HealthScoreText =>
@@ -292,10 +534,10 @@ namespace WinBoost.App.Models
         public bool CanStart =>
             !IsBusy &&
             !Status.Equals(
-                "Running",
+                StatusRunning,
                 StringComparison.OrdinalIgnoreCase) &&
             !StartType.Equals(
-                "Disabled",
+                StartupDisabled,
                 StringComparison.OrdinalIgnoreCase);
 
         public bool CanStop =>
@@ -303,7 +545,7 @@ namespace WinBoost.App.Models
             !IsCritical &&
             CanBeStoppedSafely &&
             Status.Equals(
-                "Running",
+                StatusRunning,
                 StringComparison.OrdinalIgnoreCase);
 
         public bool CanRestart =>
@@ -311,7 +553,7 @@ namespace WinBoost.App.Models
             !IsCritical &&
             CanBeStoppedSafely &&
             Status.Equals(
-                "Running",
+                StatusRunning,
                 StringComparison.OrdinalIgnoreCase);
 
         public bool CanChangeStartupType =>
@@ -336,16 +578,168 @@ namespace WinBoost.App.Models
                 StartType;
         }
 
+        public void RefreshLocalizedProperties()
+        {
+            OnPropertyChanged(
+                nameof(StatusText));
+
+            OnPropertyChanged(
+                nameof(StartTypeText));
+
+            OnPropertyChanged(
+                nameof(SelectedStartupTypeText));
+
+            OnPropertyChanged(
+                nameof(RiskLevelText));
+
+            OnPropertyChanged(
+                nameof(RecommendationText));
+
+            RebuildAvailableStartupTypes();
+        }
+
+        private void RebuildAvailableStartupTypes()
+        {
+            AvailableStartupTypes.Clear();
+
+            /*
+             * Păstrăm momentan valorile interne pentru
+             * compatibilitate cu ServiceStartupTypeViewModel.
+             * Localizarea ComboBox-ului va fi făcută
+             * după verificarea acelui ViewModel.
+             */
+            AvailableStartupTypes.Add(
+                StartupAutomatic);
+
+            AvailableStartupTypes.Add(
+                StartupAutomaticDelayed);
+
+            AvailableStartupTypes.Add(
+                StartupManual);
+
+            AvailableStartupTypes.Add(
+                StartupDisabled);
+        }
+
+        private static string GetStartupTypeDisplayText(
+            string startupType)
+        {
+            return startupType switch
+            {
+                StartupAutomatic =>
+                    LocalizationHelper.Get(
+                        "ServicesStartupAutomatic"),
+
+                StartupAutomaticDelayed =>
+                    LocalizationHelper.Get(
+                        "ServicesStartupAutomaticDelayed"),
+
+                StartupManual =>
+                    LocalizationHelper.Get(
+                        "ServicesStartupManual"),
+
+                StartupDisabled =>
+                    LocalizationHelper.Get(
+                        "ServicesStartupDisabled"),
+
+                _ =>
+                    startupType
+            };
+        }
+
+        private static string NormalizeStatus(
+            string? status)
+        {
+            if (string.Equals(
+                    status,
+                    StatusRunning,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return StatusRunning;
+            }
+
+            return StatusStopped;
+        }
+
+        private static string NormalizeStartupType(
+            string? startupType)
+        {
+            if (string.Equals(
+                    startupType,
+                    StartupAutomatic,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return StartupAutomatic;
+            }
+
+            if (string.Equals(
+                    startupType,
+                    StartupAutomaticDelayed,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return StartupAutomaticDelayed;
+            }
+
+            if (string.Equals(
+                    startupType,
+                    StartupDisabled,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return StartupDisabled;
+            }
+
+            return StartupManual;
+        }
+
+        private static string NormalizeRiskLevel(
+            string? riskLevel)
+        {
+            if (string.Equals(
+                    riskLevel,
+                    RiskCritical,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return RiskCritical;
+            }
+
+            if (string.Equals(
+                    riskLevel,
+                    RiskHigh,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return RiskHigh;
+            }
+
+            if (string.Equals(
+                    riskLevel,
+                    RiskMedium,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return RiskMedium;
+            }
+
+            if (string.Equals(
+                    riskLevel,
+                    RiskLow,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return RiskLow;
+            }
+
+            return RiskUnknown;
+        }
+
         public event PropertyChangedEventHandler?
             PropertyChanged;
 
-        protected void OnPropertyChanged(
+        private void OnPropertyChanged(
             [CallerMemberName]
             string? propertyName = null)
         {
             PropertyChanged?.Invoke(
                 this,
-                new PropertyChangedEventArgs(propertyName));
+                new PropertyChangedEventArgs(
+                    propertyName));
         }
     }
 }

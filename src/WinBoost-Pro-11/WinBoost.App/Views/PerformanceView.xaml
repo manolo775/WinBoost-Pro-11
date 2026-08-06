@@ -5,8 +5,7 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
 	<ScrollViewer
-        VerticalScrollBarVisibility="Auto"
-        HorizontalScrollBarVisibility="Disabled">
+		Style="{StaticResource WinBoostPageScrollViewerStyle}">
 
 		<Grid Margin="30">
 

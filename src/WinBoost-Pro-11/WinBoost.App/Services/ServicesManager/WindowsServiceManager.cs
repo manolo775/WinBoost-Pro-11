@@ -9,7 +9,7 @@ using WinBoost.App.Models;
 
 namespace WinBoost.App.Services.ServicesManager
 {
-    public class WindowsServiceManager
+    public sealed class WindowsServiceManager
     {
         private const string ServicesRegistryPath =
             @"SYSTEM\CurrentControlSet\Services";
@@ -30,35 +30,52 @@ namespace WinBoost.App.Services.ServicesManager
                 var services =
                     new List<WindowsServiceInfo>();
 
+                IEnumerable<ServiceController>
+                    orderedServices =
+                        ServiceController
+                            .GetServices()
+                            .OrderBy(
+                                service =>
+                                    service.DisplayName,
+                                StringComparer
+                                    .CurrentCultureIgnoreCase);
+
                 foreach (ServiceController service
-                         in ServiceController
-                             .GetServices()
-                             .OrderBy(item =>
-                                 item.DisplayName))
+                         in orderedServices)
                 {
                     try
                     {
                         string serviceName =
                             service.ServiceName;
 
+                        string displayName =
+                            string.IsNullOrWhiteSpace(
+                                service.DisplayName)
+                                ? serviceName
+                                : service.DisplayName;
+
+                        string status =
+                            GetStatus(
+                                service.Status);
+
+                        string startType =
+                            GetStartType(
+                                serviceName);
+
                         services.Add(
                             new WindowsServiceInfo
                             {
                                 DisplayName =
-                                    string.IsNullOrWhiteSpace(
-                                        service.DisplayName)
-                                        ? serviceName
-                                        : service.DisplayName,
+                                    displayName,
 
                                 ServiceName =
                                     serviceName,
 
                                 Status =
-                                    service.Status.ToString(),
+                                    status,
 
                                 StartType =
-                                    GetStartType(
-                                        serviceName),
+                                    startType,
 
                                 Recommendation =
                                     _recommendationEngine
@@ -82,7 +99,7 @@ namespace WinBoost.App.Services.ServicesManager
 
                                 StatusBrush =
                                     GetStatusBrush(
-                                        service.Status)
+                                        status)
                             });
                     }
                     catch
@@ -100,6 +117,15 @@ namespace WinBoost.App.Services.ServicesManager
             });
         }
 
+        private static string GetStatus(
+            ServiceControllerStatus status)
+        {
+            return status ==
+                   ServiceControllerStatus.Running
+                ? WindowsServiceInfo.StatusRunning
+                : WindowsServiceInfo.StatusStopped;
+        }
+
         private static string GetStartType(
             string serviceName)
         {
@@ -111,19 +137,21 @@ namespace WinBoost.App.Services.ServicesManager
 
                 if (serviceKey == null)
                 {
-                    return "Unknown";
+                    return WindowsServiceInfo.StartupManual;
                 }
 
                 object? startValue =
-                    serviceKey.GetValue("Start");
+                    serviceKey.GetValue(
+                        "Start");
 
                 if (startValue == null)
                 {
-                    return "Unknown";
+                    return WindowsServiceInfo.StartupManual;
                 }
 
                 int startType =
-                    Convert.ToInt32(startValue);
+                    Convert.ToInt32(
+                        startValue);
 
                 bool delayedAutomatic =
                     Convert.ToInt32(
@@ -133,30 +161,35 @@ namespace WinBoost.App.Services.ServicesManager
 
                 return startType switch
                 {
-                    0 => "Boot",
-                    1 => "System",
-
                     2 when delayedAutomatic =>
-                        "Automatic (Delayed)",
+                        WindowsServiceInfo
+                            .StartupAutomaticDelayed,
 
-                    2 => "Automatic",
-                    3 => "Manual",
-                    4 => "Disabled",
+                    2 =>
+                        WindowsServiceInfo
+                            .StartupAutomatic,
 
-                    _ => "Unknown"
+                    4 =>
+                        WindowsServiceInfo
+                            .StartupDisabled,
+
+                    _ =>
+                        WindowsServiceInfo
+                            .StartupManual
                 };
             }
             catch
             {
-                return "Unknown";
+                return WindowsServiceInfo.StartupManual;
             }
         }
 
         private static Brush GetStatusBrush(
-            ServiceControllerStatus status)
+            string status)
         {
-            return status ==
-                   ServiceControllerStatus.Running
+            return status.Equals(
+                WindowsServiceInfo.StatusRunning,
+                StringComparison.OrdinalIgnoreCase)
                 ? Brushes.LimeGreen
                 : Brushes.Orange;
         }

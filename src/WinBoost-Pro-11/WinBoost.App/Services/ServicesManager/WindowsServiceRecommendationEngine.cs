@@ -1,184 +1,213 @@
 ﻿using System;
 using System.Collections.Generic;
+using WinBoost.App.Models;
 
 namespace WinBoost.App.Services.ServicesManager
 {
-    public class WindowsServiceRecommendationEngine
+    public sealed class WindowsServiceRecommendationEngine
     {
+        public const string RecommendationCritical =
+            "Critical service";
+
+        public const string RecommendationKeepEnabled =
+            "Keep enabled";
+
+        public const string RecommendationOptional =
+            "Optional";
+
+        public const string RecommendationSafeToDisable =
+            "Safe to disable if unused";
+
+        public const string RecommendationReview =
+            "Review";
+
         private static readonly HashSet<string>
             CriticalServices =
-            new(
-                StringComparer.OrdinalIgnoreCase)
-            {
-                "RpcSs",
-                "RpcEptMapper",
-                "DcomLaunch",
-                "PlugPlay",
-                "Power",
-                "EventLog",
-                "Winmgmt",
-                "Dhcp",
-                "Dnscache",
-                "NlaSvc",
-                "LanmanWorkstation",
-                "ProfSvc",
-                "UserManager",
-                "SamSs",
-                "LSM",
-                "BFE",
-                "mpssvc",
-                "gpsvc",
-                "Schedule",
-                "CryptSvc",
-                "WinDefend",
-                "SecurityHealthService",
-                "wscsvc"
-            };
+                new(
+                    StringComparer.OrdinalIgnoreCase)
+                {
+                    "RpcSs",
+                    "RpcEptMapper",
+                    "DcomLaunch",
+                    "PlugPlay",
+                    "Power",
+                    "EventLog",
+                    "Winmgmt",
+                    "Dhcp",
+                    "Dnscache",
+                    "NlaSvc",
+                    "LanmanWorkstation",
+                    "ProfSvc",
+                    "UserManager",
+                    "SamSs",
+                    "LSM",
+                    "BFE",
+                    "mpssvc",
+                    "gpsvc",
+                    "Schedule",
+                    "CryptSvc",
+                    "WinDefend",
+                    "SecurityHealthService",
+                    "wscsvc"
+                };
 
         private static readonly HashSet<string>
             KeepEnabledServices =
-            new(
-                StringComparer.OrdinalIgnoreCase)
-            {
-                "BITS",
-                "wuauserv",
-                "UsoSvc",
-                "W32Time",
-                "AudioSrv",
-                "AudioEndpointBuilder",
-                "Themes",
-                "Appinfo",
-                "ShellHWDetection"
-            };
+                new(
+                    StringComparer.OrdinalIgnoreCase)
+                {
+                    "BITS",
+                    "wuauserv",
+                    "UsoSvc",
+                    "W32Time",
+                    "AudioSrv",
+                    "AudioEndpointBuilder",
+                    "Themes",
+                    "Appinfo",
+                    "ShellHWDetection"
+                };
 
         private static readonly HashSet<string>
             OptionalServices =
-            new(
-                StringComparer.OrdinalIgnoreCase)
-            {
-                "Spooler",
-                "bthserv",
-                "TabletInputService",
-                "WSearch",
-                "MapsBroker",
-                "PhoneSvc",
-                "SensorService",
-                "WalletService"
-            };
+                new(
+                    StringComparer.OrdinalIgnoreCase)
+                {
+                    "Spooler",
+                    "bthserv",
+                    "TabletInputService",
+                    "WSearch",
+                    "MapsBroker",
+                    "PhoneSvc",
+                    "SensorService",
+                    "WalletService"
+                };
 
         private static readonly HashSet<string>
             SafeToDisableIfUnusedServices =
-            new(
-                StringComparer.OrdinalIgnoreCase)
-            {
-                "Fax",
-                "RemoteRegistry",
-                "XblAuthManager",
-                "XblGameSave",
-                "XboxGipSvc",
-                "XboxNetApiSvc",
-                "lfsvc",
-                "RetailDemo",
-                "WMPNetworkSvc"
-            };
+                new(
+                    StringComparer.OrdinalIgnoreCase)
+                {
+                    "Fax",
+                    "RemoteRegistry",
+                    "XblAuthManager",
+                    "XblGameSave",
+                    "XboxGipSvc",
+                    "XboxNetApiSvc",
+                    "lfsvc",
+                    "RetailDemo",
+                    "WMPNetworkSvc"
+                };
 
         public string GetRecommendation(
             string serviceName)
         {
-            if (string.IsNullOrWhiteSpace(serviceName))
+            if (string.IsNullOrWhiteSpace(
+                    serviceName))
             {
-                return "Review";
+                return RecommendationReview;
             }
 
-            if (IsCritical(serviceName))
+            if (IsCritical(
+                    serviceName))
             {
-                return "Critical - do not stop";
+                return RecommendationCritical;
             }
 
-            if (KeepEnabledServices.Contains(serviceName))
+            if (KeepEnabledServices.Contains(
+                    serviceName))
             {
-                return "Keep enabled";
+                return RecommendationKeepEnabled;
             }
 
-            if (OptionalServices.Contains(serviceName))
+            if (OptionalServices.Contains(
+                    serviceName))
             {
-                return "Optional";
+                return RecommendationOptional;
             }
 
             if (SafeToDisableIfUnusedServices.Contains(
                     serviceName))
             {
-                return "Safe to disable if unused";
+                return RecommendationSafeToDisable;
             }
 
-            return "Review";
+            return RecommendationReview;
         }
 
         public bool IsCritical(
             string serviceName)
         {
-            if (string.IsNullOrWhiteSpace(serviceName))
+            if (string.IsNullOrWhiteSpace(
+                    serviceName))
             {
                 return false;
             }
 
-            return CriticalServices.Contains(serviceName);
+            return CriticalServices.Contains(
+                serviceName);
         }
 
         public string GetRiskLevel(
             string serviceName)
         {
-            if (string.IsNullOrWhiteSpace(serviceName))
+            if (string.IsNullOrWhiteSpace(
+                    serviceName))
             {
-                return "Unknown";
+                return WindowsServiceInfo.RiskUnknown;
             }
 
-            if (CriticalServices.Contains(serviceName))
+            if (CriticalServices.Contains(
+                    serviceName))
             {
-                return "Critical";
+                return WindowsServiceInfo.RiskCritical;
             }
 
-            if (KeepEnabledServices.Contains(serviceName))
+            if (KeepEnabledServices.Contains(
+                    serviceName))
             {
-                return "High";
+                return WindowsServiceInfo.RiskHigh;
             }
 
-            if (OptionalServices.Contains(serviceName))
+            if (OptionalServices.Contains(
+                    serviceName))
             {
-                return "Medium";
+                return WindowsServiceInfo.RiskMedium;
             }
 
             if (SafeToDisableIfUnusedServices.Contains(
                     serviceName))
             {
-                return "Low";
+                return WindowsServiceInfo.RiskLow;
             }
 
-            return "Unknown";
+            return WindowsServiceInfo.RiskUnknown;
         }
 
         public bool CanBeStoppedSafely(
             string serviceName)
         {
-            if (string.IsNullOrWhiteSpace(serviceName))
+            if (string.IsNullOrWhiteSpace(
+                    serviceName))
             {
                 return false;
             }
 
             /*
-             * WinBoost blochează doar serviciile cunoscute
-             * ca fiind critice.
+             * Serviciile cunoscute ca fiind critice
+             * nu pot fi oprite din WinBoost.
              *
-             * Pentru serviciile necunoscute, utilizatorul va
-             * primi în continuare un avertisment înainte de oprire.
+             * Pentru celelalte servicii, utilizatorul
+             * primește confirmare înainte de oprire.
              */
-            return !CriticalServices.Contains(serviceName);
+            return !CriticalServices.Contains(
+                serviceName);
         }
 
         public bool IsRecommendedForOptimization(
             string serviceName)
         {
-            if (string.IsNullOrWhiteSpace(serviceName))
+            if (string.IsNullOrWhiteSpace(
+                    serviceName))
             {
                 return false;
             }

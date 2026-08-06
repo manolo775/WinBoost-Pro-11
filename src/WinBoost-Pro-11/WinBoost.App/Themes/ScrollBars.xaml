@@ -1,0 +1,341 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<!-- ====================================== -->
+	<!-- WINBOOST SCROLLBAR - THUMB -->
+	<!-- ====================================== -->
+
+	<Style
+        x:Key="WinBoostScrollBarThumbStyle"
+        TargetType="Thumb">
+
+		<Setter
+            Property="Cursor"
+            Value="Hand"/>
+
+		<Setter Property="Template">
+
+			<Setter.Value>
+
+				<ControlTemplate TargetType="Thumb">
+
+					<Border
+                        x:Name="ThumbBorder"
+                        Margin="1"
+                        CornerRadius="6"
+                        Background="#7A818A"
+                        BorderBrush="#9AA1AA"
+                        BorderThickness="1">
+
+						<Border.Effect>
+
+							<DropShadowEffect
+                                BlurRadius="5"
+                                ShadowDepth="0"
+                                Opacity="0.30"/>
+
+						</Border.Effect>
+
+					</Border>
+
+					<ControlTemplate.Triggers>
+
+						<Trigger
+                            Property="IsMouseOver"
+                            Value="True">
+
+							<Setter
+                                TargetName="ThumbBorder"
+                                Property="Background"
+                                Value="#00A83B"/>
+
+							<Setter
+                                TargetName="ThumbBorder"
+                                Property="BorderBrush"
+                                Value="#00D447"/>
+
+						</Trigger>
+
+						<Trigger
+                            Property="IsDragging"
+                            Value="True">
+
+							<Setter
+                                TargetName="ThumbBorder"
+                                Property="Background"
+                                Value="#00C853"/>
+
+							<Setter
+                                TargetName="ThumbBorder"
+                                Property="BorderBrush"
+                                Value="#00E676"/>
+
+						</Trigger>
+
+						<Trigger
+                            Property="IsEnabled"
+                            Value="False">
+
+							<Setter
+                                TargetName="ThumbBorder"
+                                Property="Opacity"
+                                Value="0.35"/>
+
+						</Trigger>
+
+					</ControlTemplate.Triggers>
+
+				</ControlTemplate>
+
+			</Setter.Value>
+
+		</Setter>
+
+	</Style>
+
+	<!-- ====================================== -->
+	<!-- HORIZONTAL SCROLLBAR -->
+	<!-- ====================================== -->
+
+	<Style
+        x:Key="HorizontalDarkScrollBarStyle"
+        TargetType="ScrollBar">
+
+		<Setter
+            Property="Orientation"
+            Value="Horizontal"/>
+
+		<Setter
+            Property="Height"
+            Value="16"/>
+
+		<Setter
+            Property="MinWidth"
+            Value="80"/>
+
+		<Setter
+            Property="Background"
+            Value="#171A1E"/>
+
+		<Setter
+            Property="BorderBrush"
+            Value="#343A40"/>
+
+		<Setter
+            Property="BorderThickness"
+            Value="1"/>
+
+		<Setter Property="Template">
+
+			<Setter.Value>
+
+				<ControlTemplate TargetType="ScrollBar">
+
+					<Border
+                        Height="{TemplateBinding Height}"
+                        CornerRadius="8"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+
+						<Track
+                            x:Name="PART_Track"
+                            Margin="2"
+                            Orientation="Horizontal"
+                            IsDirectionReversed="False">
+
+							<Track.DecreaseRepeatButton>
+
+								<RepeatButton
+                                    Command="ScrollBar.PageLeftCommand"
+                                    Focusable="False"
+                                    IsTabStop="False"
+                                    Opacity="0"/>
+
+							</Track.DecreaseRepeatButton>
+
+						
+                                 <Thumb
+                                      Width="12"
+                                      MinHeight="60"
+                                       HorizontalAlignment="Center"
+                                      Style="{StaticResource WinBoostScrollBarThumbStyle}"/>
+
+							<Track.IncreaseRepeatButton>
+
+								<RepeatButton
+                                    Command="ScrollBar.PageRightCommand"
+                                    Focusable="False"
+                                    IsTabStop="False"
+                                    Opacity="0"/>
+
+							</Track.IncreaseRepeatButton>
+
+						</Track>
+
+					</Border>
+
+				</ControlTemplate>
+
+			</Setter.Value>
+
+		</Setter>
+
+	</Style>
+
+	<!-- ====================================== -->
+	<!-- VERTICAL SCROLLBAR -->
+	<!-- ====================================== -->
+
+	<Style
+        x:Key="VerticalDarkScrollBarStyle"
+        TargetType="ScrollBar">
+
+		<Setter
+            Property="Orientation"
+            Value="Vertical"/>
+
+		<Setter
+            Property="Width"
+            Value="16"/>
+
+		<Setter
+            Property="MinHeight"
+            Value="80"/>
+
+		<Setter
+            Property="Background"
+            Value="#171A1E"/>
+
+		<Setter
+            Property="BorderBrush"
+            Value="#343A40"/>
+
+		<Setter
+            Property="BorderThickness"
+            Value="1"/>
+
+		<Setter Property="Template">
+
+			<Setter.Value>
+
+				<ControlTemplate TargetType="ScrollBar">
+
+					<Border
+                        Width="{TemplateBinding Width}"
+                        CornerRadius="8"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+
+						<Track
+                            x:Name="PART_Track"
+                            Margin="2"
+                            Orientation="Vertical"
+                            IsDirectionReversed="True">
+
+							<Track.DecreaseRepeatButton>
+
+								<RepeatButton
+                                    Command="ScrollBar.PageUpCommand"
+                                    Focusable="False"
+                                    IsTabStop="False"
+                                    Opacity="0"/>
+
+							</Track.DecreaseRepeatButton>
+
+							<Track.Thumb>
+
+								<Thumb
+                                    MinHeight="54"
+                                    Style="{StaticResource WinBoostScrollBarThumbStyle}"/>
+
+							</Track.Thumb>
+
+							<Track.IncreaseRepeatButton>
+
+								<RepeatButton
+                                    Command="ScrollBar.PageDownCommand"
+                                    Focusable="False"
+                                    IsTabStop="False"
+                                    Opacity="0"/>
+
+							</Track.IncreaseRepeatButton>
+
+						</Track>
+
+					</Border>
+
+				</ControlTemplate>
+
+			</Setter.Value>
+
+		</Setter>
+
+	</Style>
+
+	<!-- ====================================== -->
+	<!-- GLOBAL STYLE -->
+	<!-- Aplicat automat tuturor ScrollBar-urilor -->
+	<!-- ====================================== -->
+
+	<!-- ScrollViewer principal pentru toate paginile WinBoost. -->
+	<Style
+		x:Key="WinBoostPageScrollViewerStyle"
+		TargetType="ScrollViewer">
+
+		<Setter
+			Property="VerticalScrollBarVisibility"
+			Value="Auto"/>
+
+		<Setter
+			Property="HorizontalScrollBarVisibility"
+			Value="Disabled"/>
+
+		<Setter
+			Property="CanContentScroll"
+			Value="False"/>
+
+		<Setter Property="Template">
+
+			<Setter.Value>
+
+				<ControlTemplate TargetType="ScrollViewer">
+
+					<Grid>
+
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+
+						<ScrollContentPresenter
+							x:Name="PART_ScrollContentPresenter"
+							Grid.Column="0"
+							CanContentScroll="{TemplateBinding CanContentScroll}"
+							Content="{TemplateBinding Content}"
+							ContentTemplate="{TemplateBinding ContentTemplate}"
+							Margin="{TemplateBinding Padding}"/>
+
+						<ScrollBar
+							x:Name="PART_VerticalScrollBar"
+							Grid.Column="1"
+							Margin="10,0,0,0"
+							Minimum="0"
+							Maximum="{TemplateBinding ScrollableHeight}"
+							Value="{TemplateBinding VerticalOffset}"
+							ViewportSize="{TemplateBinding ViewportHeight}"
+							Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+							Style="{StaticResource VerticalDarkScrollBarStyle}"/>
+
+					</Grid>
+
+				</ControlTemplate>
+
+			</Setter.Value>
+
+		</Setter>
+
+	</Style>
+</ResourceDictionary>
