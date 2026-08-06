@@ -379,10 +379,9 @@
 					</StackPanel>
 
 					<TabControl
-				Grid.Row="2"
-				Margin="0,20,0,0"
-				Background="Transparent"
-				BorderThickness="0">
+		               Grid.Row="2"
+		               Margin="0,20,0,0"
+		               Style="{StaticResource WinBoostTabControlStyle}">
 
 						<!-- RAPORT OPTIMIZARE -->
 
@@ -975,6 +974,173 @@
 
 						</TabItem>
 
+						<!-- JURNAL LIVE -->
+
+						<TabItem>
+
+							<TabItem.Header>
+
+								<StackPanel
+									Orientation="Horizontal"
+									Margin="8,4">
+
+									<materialDesign:PackIcon
+										Kind="ConsoleLine"
+										Width="19"
+										Height="19"
+										Margin="0,0,7,0"
+										Foreground="#AB47BC"/>
+
+									<TextBlock
+										Text="{DynamicResource OptimizationLiveLogTab}"
+										FontWeight="SemiBold"/>
+
+								</StackPanel>
+
+							</TabItem.Header>
+
+							<Border
+								Padding="20"
+								CornerRadius="10"
+								Background="#2A2D31">
+
+								<Grid>
+
+									<Grid.RowDefinitions>
+										<RowDefinition Height="Auto"/>
+										<RowDefinition Height="*"/>
+									</Grid.RowDefinitions>
+
+									<!-- ANTET -->
+
+									<Grid Grid.Row="0">
+
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="*"/>
+											<ColumnDefinition Width="Auto"/>
+										</Grid.ColumnDefinitions>
+
+										<StackPanel
+											Grid.Column="0"
+											Orientation="Horizontal"
+											VerticalAlignment="Center">
+
+											<materialDesign:PackIcon
+												Kind="TextBoxSearchOutline"
+												Width="22"
+												Height="22"
+												Margin="0,0,9,0"
+												Foreground="#AB47BC"/>
+
+											<TextBlock
+							                       Text="{DynamicResource OptimizationLiveLogTitle}"
+							                        FontSize="22"
+							                        FontWeight="Bold"
+							                        Foreground="White"/>
+
+										</StackPanel>
+
+										<Button
+											Grid.Column="1"
+											Command="{Binding OptimizationLogViewModel.ClearLogCommand}"
+											Margin="15,0,0,0"
+											Padding="12,7"
+											Cursor="Hand">
+
+											<StackPanel Orientation="Horizontal">
+
+												<materialDesign:PackIcon
+													Kind="DeleteSweepOutline"
+													Width="19"
+													Height="19"
+													Margin="0,0,7,0"
+													Foreground="#FF6B6B"/>
+
+												<TextBlock
+													Text="{DynamicResource OptimizationLiveLogClear}"
+													VerticalAlignment="Center"/>
+
+											</StackPanel>
+
+										</Button>
+
+									</Grid>
+
+									<!-- MESAJE JURNAL -->
+
+									<ScrollViewer
+										Grid.Row="1"
+										Margin="0,16,0,0"
+										MaxHeight="320"
+										VerticalScrollBarVisibility="Auto"
+										HorizontalScrollBarVisibility="Disabled">
+
+										<ItemsControl
+											ItemsSource="{Binding OptimizationLogViewModel.Entries}">
+
+											<ItemsControl.ItemTemplate>
+
+												<DataTemplate>
+
+													<Border
+                                                        Margin="0,0,0,12"
+                                                        Padding="18,14"
+                                                        Style="{StaticResource InteractiveCardStyle}">
+
+														<Grid>
+
+															<Grid.ColumnDefinitions>
+																<ColumnDefinition Width="90"/>
+																<ColumnDefinition Width="38"/>
+																<ColumnDefinition Width="*"/>
+															</Grid.ColumnDefinitions>
+
+															<TextBlock
+                                                                 Grid.Column="0"
+                                                                 Text="{Binding TimeText}"
+                                                                    VerticalAlignment="Center"
+                                                                 FontFamily="Consolas"
+                                                                 FontSize="15"
+                                                                 FontWeight="SemiBold"
+                                                                 Foreground="#A7ACB4"/>
+
+															<materialDesign:PackIcon
+                                                                Grid.Column="1"
+                                                                Kind="{Binding IconKind}"
+                                                                 Width="22"
+                                                                 Height="22"
+                                                                 HorizontalAlignment="Left"
+                                                                VerticalAlignment="Center"
+                                                                Foreground="{Binding IconColor}"/>
+
+															<TextBlock
+                                                                  Grid.Column="2"
+                                                                  Text="{Binding Message}"
+                                                                  VerticalAlignment="Center"
+                                                                  FontSize="16"
+                                                                  FontWeight="SemiBold"
+                                                                  LineHeight="23"
+                                                                   TextWrapping="Wrap"
+                                                                  Foreground="White"/>
+
+														</Grid>
+
+													</Border>
+
+												</DataTemplate>
+
+											</ItemsControl.ItemTemplate>
+
+										</ItemsControl>
+
+									</ScrollViewer>
+
+								</Grid>
+
+							</Border>
+
+						</TabItem>
+						
 					</TabControl>
 				</Grid>
 

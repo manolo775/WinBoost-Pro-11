@@ -694,6 +694,107 @@
 	<sys:String x:Key="OptimizationStatusFailed">
 		Finalizat cu erori
 	</sys:String>
-	
+
+	<sys:String x:Key="OptimizationLiveLogTab">
+		Jurnal live
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLiveLogTitle">
+		Activitatea optimizării
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLiveLogClear">
+		Șterge jurnalul
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLiveLogEmpty">
+		Jurnalul este gol. Rulează o optimizare pentru a vedea activitatea.
+	</sys:String>
+
+	<!-- LIVE OPTIMIZATION LOG -->
+
+	<sys:String x:Key="OptimizationLogStarted">
+		Pornire optimizare
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogNoOperations">
+		Nu a fost selectată nicio operație.
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogCompleted">
+		Optimizarea a fost finalizată.
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogCompletedWithErrors">
+		Optimizarea a fost finalizată cu erori.
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogFailedFormat">
+		Optimizarea nu a putut fi finalizată: {0}
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogOperationSkippedFormat">
+		{0}: omis
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogOperationFailedFormat">
+		{0}: eroare
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogTempStart">
+		Curățare fișiere temporare
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogTempCompleted">
+		Fișiere temporare: finalizat
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogRecycleBinStart">
+		Golire Coș de reciclare
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogRecycleBinCompleted">
+		Coș de reciclare: golit
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogDnsStart">
+		Curățare cache DNS
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogDnsCompleted">
+		Cache DNS: curățat
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogThumbnailStart">
+		Curățare cache miniaturi
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogThumbnailCompleted">
+		Cache miniaturi: curățat
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogPrefetchStart">
+		Curățare Windows Prefetch
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogPrefetchCompleted">
+		Windows Prefetch: curățat
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogErrorReportsStart">
+		Curățare rapoarte de eroare Windows
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogErrorReportsCompleted">
+		Rapoarte de eroare Windows: curățate
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogWindowsLogsStart">
+		Curățare jurnale Windows
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogWindowsLogsCompleted">
+		Jurnale Windows: curățate
+	</sys:String>
 	
 </ResourceDictionary>

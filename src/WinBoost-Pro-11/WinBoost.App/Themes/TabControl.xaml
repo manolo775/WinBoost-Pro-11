@@ -1,0 +1,193 @@
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<!-- TAB ITEM -->
+
+	<Style
+        x:Key="WinBoostTabItemStyle"
+        TargetType="TabItem">
+
+		<Setter Property="Foreground"
+                Value="#D7DADF"/>
+
+		<Setter Property="Background"
+                Value="#24272B"/>
+
+		<Setter Property="BorderBrush"
+                Value="#3A3E44"/>
+
+		<Setter Property="BorderThickness"
+                Value="1"/>
+
+		<Setter Property="Padding"
+                Value="16,10"/>
+
+		<Setter Property="Margin"
+                Value="0,0,6,0"/>
+
+		<Setter Property="Cursor"
+                Value="Hand"/>
+
+		<Setter Property="Template">
+
+			<Setter.Value>
+
+				<ControlTemplate
+                    TargetType="TabItem">
+
+					<Border
+                        x:Name="TabBorder"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="8,8,0,0"
+                        Padding="{TemplateBinding Padding}">
+
+						<Grid>
+
+							<Grid.RowDefinitions>
+								<RowDefinition Height="*"/>
+								<RowDefinition Height="3"/>
+							</Grid.RowDefinitions>
+
+							<ContentPresenter
+                                Grid.Row="0"
+                                ContentSource="Header"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                RecognizesAccessKey="True"/>
+
+							<Border
+                                x:Name="SelectionIndicator"
+                                Grid.Row="1"
+                                Height="3"
+                                Margin="0,7,0,-10"
+                                CornerRadius="2"
+                                Background="Transparent"/>
+
+						</Grid>
+
+					</Border>
+
+					<ControlTemplate.Triggers>
+
+						<Trigger
+                            Property="IsMouseOver"
+                            Value="True">
+
+							<Setter
+                                TargetName="TabBorder"
+                                Property="Background"
+                                Value="#30343A"/>
+
+							<Setter
+                                TargetName="TabBorder"
+                                Property="BorderBrush"
+                                Value="#555B63"/>
+
+						</Trigger>
+
+						<Trigger
+                            Property="IsSelected"
+                            Value="True">
+
+							<Setter
+                                Property="Foreground"
+                                Value="White"/>
+
+							<Setter
+                                TargetName="TabBorder"
+                                Property="Background"
+                                Value="#2D3137"/>
+
+							<Setter
+                                TargetName="TabBorder"
+                                Property="BorderBrush"
+                                Value="#5C636D"/>
+
+							<Setter
+                                TargetName="SelectionIndicator"
+                                Property="Background"
+                                Value="#AB47BC"/>
+
+						</Trigger>
+
+						<Trigger
+                            Property="IsEnabled"
+                            Value="False">
+
+							<Setter
+                                Property="Opacity"
+                                Value="0.45"/>
+
+						</Trigger>
+
+					</ControlTemplate.Triggers>
+
+				</ControlTemplate>
+
+			</Setter.Value>
+
+		</Setter>
+
+	</Style>
+
+	<!-- TAB CONTROL -->
+
+	<Style
+        x:Key="WinBoostTabControlStyle"
+        TargetType="TabControl">
+
+		<Setter Property="Background"
+                Value="Transparent"/>
+
+		<Setter Property="BorderThickness"
+                Value="0"/>
+
+		<Setter Property="ItemContainerStyle"
+                Value="{StaticResource WinBoostTabItemStyle}"/>
+
+		<Setter Property="Template">
+
+			<Setter.Value>
+
+				<ControlTemplate
+                    TargetType="TabControl">
+
+					<Grid>
+
+						<Grid.RowDefinitions>
+							<RowDefinition Height="Auto"/>
+							<RowDefinition Height="*"/>
+						</Grid.RowDefinitions>
+
+						<TabPanel
+                            Grid.Row="0"
+                            IsItemsHost="True"
+                            Background="Transparent"
+                            Margin="0,0,0,0"/>
+
+						<Border
+                            Grid.Row="1"
+                            Margin="0"
+                            Padding="0"
+                            Background="Transparent"
+                            BorderThickness="0">
+
+							<ContentPresenter
+                                ContentSource="SelectedContent"/>
+
+						</Border>
+
+					</Grid>
+
+				</ControlTemplate>
+
+			</Setter.Value>
+
+		</Setter>
+
+	</Style>
+
+</ResourceDictionary>

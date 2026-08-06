@@ -695,5 +695,107 @@
 	<sys:String x:Key="OptimizationStatusFailed">
 		Completed with Errors
 	</sys:String>
+
+	<sys:String x:Key="OptimizationLiveLogTab">
+		Live Log
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLiveLogTitle">
+		Optimization Activity
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLiveLogClear">
+		Clear Log
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLiveLogEmpty">
+		The log is empty. Run an optimization to see its activity.
+	</sys:String>
+
+	<!-- LIVE OPTIMIZATION LOG -->
+
+	<sys:String x:Key="OptimizationLogStarted">
+		Starting optimization
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogNoOperations">
+		No operation was selected.
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogCompleted">
+		Optimization completed successfully.
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogCompletedWithErrors">
+		Optimization completed with errors.
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogFailedFormat">
+		Optimization could not be completed: {0}
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogOperationSkippedFormat">
+		{0}: skipped
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogOperationFailedFormat">
+		{0}: failed
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogTempStart">
+		Cleaning temporary files
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogTempCompleted">
+		Temporary files: completed
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogRecycleBinStart">
+		Emptying Recycle Bin
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogRecycleBinCompleted">
+		Recycle Bin: emptied
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogDnsStart">
+		Cleaning DNS cache
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogDnsCompleted">
+		DNS cache: cleaned
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogThumbnailStart">
+		Cleaning thumbnail cache
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogThumbnailCompleted">
+		Thumbnail cache: cleaned
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogPrefetchStart">
+		Cleaning Windows Prefetch
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogPrefetchCompleted">
+		Windows Prefetch: cleaned
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogErrorReportsStart">
+		Cleaning Windows error reports
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogErrorReportsCompleted">
+		Windows error reports: cleaned
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogWindowsLogsStart">
+		Cleaning Windows logs
+	</sys:String>
+
+	<sys:String x:Key="OptimizationLogWindowsLogsCompleted">
+		Windows logs: cleaned
+	</sys:String>
 	
 </ResourceDictionary>

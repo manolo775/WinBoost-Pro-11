@@ -46,6 +46,9 @@ namespace WinBoost.App.ViewModels
         private readonly OptimizationHistoryViewModel
                     _optimizationHistoryViewModel;
 
+        private readonly OptimizationLogViewModel
+            _optimizationLogViewModel;
+
         public int PerformanceAnalyzerScore
         {
             get => _performanceAnalyzerScore;
@@ -236,6 +239,9 @@ namespace WinBoost.App.ViewModels
             _optimizationHistoryViewModel =
                  new OptimizationHistoryViewModel();
 
+            _optimizationLogViewModel =
+                       new OptimizationLogViewModel();
+
             _optimizationCoordinator
                     .Engine
                     .ProgressChanged +=
@@ -295,6 +301,10 @@ namespace WinBoost.App.ViewModels
         public OptimizationHistoryViewModel
               OptimizationHistoryViewModel =>
               _optimizationHistoryViewModel;
+
+        public OptimizationLogViewModel
+                  OptimizationLogViewModel =>
+                  _optimizationLogViewModel;
 
         public void StartPerformanceMonitoring()
         {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using WinBoost.App.Localization;
 using WinBoost.App.Models;
 
 namespace WinBoost.App.Services.Optimization
@@ -30,6 +31,9 @@ namespace WinBoost.App.Services.Optimization
         private readonly WindowsLogsCleanerService
             _windowsLogsCleanerService;
 
+        private readonly OptimizationLogService
+            _optimizationLogService;
+
         public OptimizationEngine()
         {
             _tempFilesCleanerService =
@@ -52,6 +56,9 @@ namespace WinBoost.App.Services.Optimization
 
             _windowsLogsCleanerService =
                 new WindowsLogsCleanerService();
+
+            _optimizationLogService =
+                OptimizationLogService.Instance;
         }
 
         public event EventHandler<OptimizationProgressEventArgs>?
@@ -70,8 +77,13 @@ namespace WinBoost.App.Services.Optimization
                 new OptimizationOptions
                 {
                     CleanTemporaryFiles = true,
-                    EmptyRecycleBin = emptyRecycleBin,
-                    CleanDnsCache = cleanDnsCache,
+
+                    EmptyRecycleBin =
+                        emptyRecycleBin,
+
+                    CleanDnsCache =
+                        cleanDnsCache,
+
                     CleanThumbnailCache =
                         cleanThumbnailCache
                 };
@@ -91,31 +103,43 @@ namespace WinBoost.App.Services.Optimization
             ArgumentNullException.ThrowIfNull(
                 options);
 
+            _optimizationLogService.Clear();
+
+            _optimizationLogService.Add(
+                LocalizationHelper.Get(
+                    "OptimizationLogStarted"),
+                OptimizationLogLevel.Information);
+
             var stopwatch =
                 Stopwatch.StartNew();
 
             var report =
                 new OptimizationReport();
 
-            List<OptimizationOperation>
-                operations =
-                    CreateOperations(
-                        options);
+            List<OptimizationOperation> operations =
+                CreateOperations(
+                    options);
 
             if (operations.Count == 0)
             {
                 stopwatch.Stop();
 
                 report.IsSuccessful = true;
+
                 report.Duration =
                     stopwatch.Elapsed;
 
                 report.Message =
-                    "Nu a fost selectată nicio operație.";
+                    LocalizationHelper.Get(
+                        "OptimizationLogNoOperations");
 
                 OnProgressChanged(
-                    "Nicio operație selectată",
+                    report.Message,
                     100);
+
+                _optimizationLogService.Add(
+                    report.Message,
+                    OptimizationLogLevel.Warning);
 
                 return report;
             }
@@ -138,6 +162,10 @@ namespace WinBoost.App.Services.Optimization
                         operation.StartMessage,
                         startProgress);
 
+                    _optimizationLogService.Add(
+                        operation.StartMessage,
+                        OptimizationLogLevel.Information);
+
                     OptimizationResult result =
                         await operation.ExecuteAsync();
 
@@ -145,14 +173,26 @@ namespace WinBoost.App.Services.Optimization
                         report,
                         result);
 
+                    string completionMessage =
+                        GetCompletionMessage(
+                            operation,
+                            result);
+
+                    OptimizationLogLevel completionLevel =
+                        GetCompletionLevel(
+                            result);
+
+                    _optimizationLogService.Add(
+                        completionMessage,
+                        completionLevel);
+
                     int completedProgress =
                         CalculateProgress(
                             index + 1,
                             operations.Count);
 
                     OnProgressChanged(
-                        GetCompletionMessage(
-                            result),
+                        completionMessage,
                         completedProgress);
                 }
 
@@ -164,20 +204,33 @@ namespace WinBoost.App.Services.Optimization
 
                 report.Message =
                     report.IsSuccessful
-                        ? "Optimizarea a fost finalizată."
-                        : "Optimizarea a fost finalizată cu erori.";
+                        ? LocalizationHelper.Get(
+                            "OptimizationLogCompleted")
+                        : LocalizationHelper.Get(
+                            "OptimizationLogCompletedWithErrors");
+
+                _optimizationLogService.Add(
+                    report.Message,
+                    report.IsSuccessful
+                        ? OptimizationLogLevel.Success
+                        : OptimizationLogLevel.Error);
             }
             catch (Exception ex)
             {
                 report.IsSuccessful = false;
 
                 report.Message =
-                    "Optimizarea nu a putut fi finalizată: " +
-                    ex.Message;
+                    LocalizationHelper.Format(
+                        "OptimizationLogFailedFormat",
+                        ex.Message);
 
                 OnProgressChanged(
-                    "Optimizarea a eșuat",
+                    report.Message,
                     100);
+
+                _optimizationLogService.Add(
+                    report.Message,
+                    OptimizationLogLevel.Error);
             }
             finally
             {
@@ -202,7 +255,13 @@ namespace WinBoost.App.Services.Optimization
                 operations.Add(
                     new OptimizationOperation(
                         "temp-files",
-                        "Curățare fișiere temporare",
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogTempStart"),
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogTempCompleted"),
+
                         () =>
                             _tempFilesCleanerService
                                 .CleanUserTempAsync()));
@@ -213,7 +272,13 @@ namespace WinBoost.App.Services.Optimization
                 operations.Add(
                     new OptimizationOperation(
                         "recycle-bin",
-                        "Golire Coș de reciclare",
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogRecycleBinStart"),
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogRecycleBinCompleted"),
+
                         () =>
                             _recycleBinCleanerService
                                 .EmptyRecycleBinAsync()));
@@ -224,7 +289,13 @@ namespace WinBoost.App.Services.Optimization
                 operations.Add(
                     new OptimizationOperation(
                         "dns-cache",
-                        "Curățare cache DNS",
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogDnsStart"),
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogDnsCompleted"),
+
                         () =>
                             _dnsCacheCleanerService
                                 .CleanAsync()));
@@ -235,7 +306,13 @@ namespace WinBoost.App.Services.Optimization
                 operations.Add(
                     new OptimizationOperation(
                         "thumbnail-cache",
-                        "Curățare cache miniaturi",
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogThumbnailStart"),
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogThumbnailCompleted"),
+
                         () =>
                             _thumbnailCacheCleanerService
                                 .CleanAsync()));
@@ -246,7 +323,13 @@ namespace WinBoost.App.Services.Optimization
                 operations.Add(
                     new OptimizationOperation(
                         "prefetch",
-                        "Curățare Windows Prefetch",
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogPrefetchStart"),
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogPrefetchCompleted"),
+
                         () =>
                             _prefetchCleanerService
                                 .CleanAsync()));
@@ -257,7 +340,13 @@ namespace WinBoost.App.Services.Optimization
                 operations.Add(
                     new OptimizationOperation(
                         "windows-error-reports",
-                        "Curățare rapoarte de eroare Windows",
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogErrorReportsStart"),
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogErrorReportsCompleted"),
+
                         () =>
                             _windowsErrorReportsCleanerService
                                 .CleanAsync()));
@@ -268,7 +357,13 @@ namespace WinBoost.App.Services.Optimization
                 operations.Add(
                     new OptimizationOperation(
                         "windows-logs",
-                        "Curățare jurnale Windows",
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogWindowsLogsStart"),
+
+                        LocalizationHelper.Get(
+                            "OptimizationLogWindowsLogsCompleted"),
+
                         () =>
                             _windowsLogsCleanerService
                                 .CleanAsync()));
@@ -292,34 +387,48 @@ namespace WinBoost.App.Services.Optimization
                 100;
 
             return Math.Clamp(
-                (int)Math.Round(progress),
+                (int)Math.Round(
+                    progress),
                 0,
                 100);
         }
 
         private static string GetCompletionMessage(
+            OptimizationOperation operation,
             OptimizationResult result)
         {
             if (result.WasSkipped)
             {
-                return string.IsNullOrWhiteSpace(
-                    result.OperationName)
-                        ? "Operație omisă"
-                        : $"{result.OperationName}: omis";
+                return LocalizationHelper.Format(
+                    "OptimizationLogOperationSkippedFormat",
+                    operation.StartMessage);
             }
 
             if (!result.IsSuccessful)
             {
-                return string.IsNullOrWhiteSpace(
-                    result.OperationName)
-                        ? "Operație finalizată cu eroare"
-                        : $"{result.OperationName}: eroare";
+                return LocalizationHelper.Format(
+                    "OptimizationLogOperationFailedFormat",
+                    operation.StartMessage);
             }
 
-            return string.IsNullOrWhiteSpace(
-                result.OperationName)
-                    ? "Operație finalizată"
-                    : $"{result.OperationName}: finalizat";
+            return operation.SuccessMessage;
+        }
+
+        private static OptimizationLogLevel
+            GetCompletionLevel(
+                OptimizationResult result)
+        {
+            if (result.WasSkipped)
+            {
+                return OptimizationLogLevel.Warning;
+            }
+
+            if (!result.IsSuccessful)
+            {
+                return OptimizationLogLevel.Error;
+            }
+
+            return OptimizationLogLevel.Success;
         }
 
         private void OnProgressChanged(
@@ -352,6 +461,7 @@ namespace WinBoost.App.Services.Optimization
             public OptimizationOperation(
                 string operationId,
                 string startMessage,
+                string successMessage,
                 Func<Task<OptimizationResult>>
                     executeAsync)
             {
@@ -360,6 +470,9 @@ namespace WinBoost.App.Services.Optimization
 
                 StartMessage =
                     startMessage;
+
+                SuccessMessage =
+                    successMessage;
 
                 ExecuteAsync =
                     executeAsync;
@@ -371,6 +484,11 @@ namespace WinBoost.App.Services.Optimization
             }
 
             public string StartMessage
+            {
+                get;
+            }
+
+            public string SuccessMessage
             {
                 get;
             }
