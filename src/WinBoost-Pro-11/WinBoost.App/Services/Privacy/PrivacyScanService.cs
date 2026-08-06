@@ -20,73 +20,98 @@ namespace WinBoost.App.Services.Privacy
 
         private static PrivacyCheckItem CheckDiagnosticData()
         {
-            object? rawValue = ReadValue(
-                RegistryHive.LocalMachine,
-                @"SOFTWARE\Policies\Microsoft\Windows\DataCollection",
-                "AllowTelemetry");
+            object? rawValue =
+                ReadValue(
+                    RegistryHive.LocalMachine,
+                    @"SOFTWARE\Policies\Microsoft\Windows\DataCollection",
+                    "AllowTelemetry");
 
-            rawValue ??= ReadValue(
-                RegistryHive.LocalMachine,
-                @"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection",
-                "AllowTelemetry");
+            rawValue ??=
+                ReadValue(
+                    RegistryHive.LocalMachine,
+                    @"SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\DataCollection",
+                    "AllowTelemetry");
 
-            int? value = ConvertToInt(rawValue);
+            int? value =
+                ConvertToInt(
+                    rawValue);
 
-            string status = value switch
-            {
-                0 => "Date minime",
-                1 => "Date necesare",
-                2 => "Date îmbunătățite",
-                3 => "Date opționale",
-                _ => "Setare implicită"
-            };
+            string statusResourceKey =
+                value switch
+                {
+                    0 =>
+                        "PrivacyStatusDiagnosticMinimal",
+
+                    1 =>
+                        "PrivacyStatusDiagnosticRequired",
+
+                    2 =>
+                        "PrivacyStatusDiagnosticEnhanced",
+
+                    3 =>
+                        "PrivacyStatusDiagnosticOptional",
+
+                    _ =>
+                        "PrivacyStatusDefault"
+                };
 
             return CreateItem(
                 "diagnostic-data",
-                "Diagnostic și telemetrie",
-                "Verifică nivelul datelor de diagnostic trimise către Microsoft.",
-                status);
+                "PrivacyItemDiagnosticTitle",
+                "PrivacyItemDiagnosticDescription",
+                statusResourceKey);
         }
 
         private static PrivacyCheckItem CheckAdvertisingId()
         {
-            int? disabledByPolicy = ConvertToInt(
-                ReadValue(
-                    RegistryHive.LocalMachine,
-                    @"SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo",
-                    "DisabledByGroupPolicy"));
+            int? disabledByPolicy =
+                ConvertToInt(
+                    ReadValue(
+                        RegistryHive.LocalMachine,
+                        @"SOFTWARE\Policies\Microsoft\Windows\AdvertisingInfo",
+                        "DisabledByGroupPolicy"));
 
-            string status;
+            string statusResourceKey;
 
             if (disabledByPolicy == 1)
             {
-                status = "Dezactivat";
+                statusResourceKey =
+                    "PrivacyStatusDisabled";
             }
             else
             {
-                object? rawValue = ReadValue(
-                    RegistryHive.CurrentUser,
-                    @"SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo",
-                    "Enabled");
+                object? rawValue =
+                    ReadValue(
+                        RegistryHive.CurrentUser,
+                        @"SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo",
+                        "Enabled");
 
-                rawValue ??= ReadValue(
-                    RegistryHive.LocalMachine,
-                    @"SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo",
-                    "Enabled");
+                rawValue ??=
+                    ReadValue(
+                        RegistryHive.LocalMachine,
+                        @"SOFTWARE\Microsoft\Windows\CurrentVersion\AdvertisingInfo",
+                        "Enabled");
 
-                status = ConvertToInt(rawValue) switch
-                {
-                    0 => "Dezactivat",
-                    1 => "Activat",
-                    _ => "Setare implicită"
-                };
+                statusResourceKey =
+                    ConvertToInt(
+                        rawValue) switch
+                    {
+                        0 =>
+                            "PrivacyStatusDisabled",
+
+                        1 =>
+                            "PrivacyStatusEnabled",
+
+                        _ =>
+                            "PrivacyStatusDefault"
+                    };
             }
 
             return CreateItem(
                 "advertising-id",
-                "Advertising ID",
-                "Verifică utilizarea identificatorului pentru reclame personalizate.",
-                status);
+                "PrivacyItemAdvertisingTitle",
+                "PrivacyItemAdvertisingDescription",
+                statusResourceKey);
         }
 
         private static PrivacyCheckItem CheckActivityHistory()
@@ -94,23 +119,26 @@ namespace WinBoost.App.Services.Privacy
             const string path =
                 @"SOFTWARE\Policies\Microsoft\Windows\System";
 
-            int? activityFeed = ConvertToInt(
-                ReadValue(
-                    RegistryHive.LocalMachine,
-                    path,
-                    "EnableActivityFeed"));
+            int? activityFeed =
+                ConvertToInt(
+                    ReadValue(
+                        RegistryHive.LocalMachine,
+                        path,
+                        "EnableActivityFeed"));
 
-            int? publishActivities = ConvertToInt(
-                ReadValue(
-                    RegistryHive.LocalMachine,
-                    path,
-                    "PublishUserActivities"));
+            int? publishActivities =
+                ConvertToInt(
+                    ReadValue(
+                        RegistryHive.LocalMachine,
+                        path,
+                        "PublishUserActivities"));
 
-            int? uploadActivities = ConvertToInt(
-                ReadValue(
-                    RegistryHive.LocalMachine,
-                    path,
-                    "UploadUserActivities"));
+            int? uploadActivities =
+                ConvertToInt(
+                    ReadValue(
+                        RegistryHive.LocalMachine,
+                        path,
+                        "UploadUserActivities"));
 
             bool isConfigured =
                 activityFeed.HasValue ||
@@ -122,17 +150,18 @@ namespace WinBoost.App.Services.Privacy
                 publishActivities == 1 ||
                 uploadActivities == 1;
 
-            string status = !isConfigured
-                ? "Setare implicită"
-                : isEnabled
-                    ? "Activat"
-                    : "Dezactivat";
+            string statusResourceKey =
+                !isConfigured
+                    ? "PrivacyStatusDefault"
+                    : isEnabled
+                        ? "PrivacyStatusEnabled"
+                        : "PrivacyStatusDisabled";
 
             return CreateItem(
                 "activity-history",
-                "Activity History",
-                "Verifică dacă Windows salvează istoricul activităților.",
-                status);
+                "PrivacyItemActivityHistoryTitle",
+                "PrivacyItemActivityHistoryDescription",
+                statusResourceKey);
         }
 
         private static PrivacyCheckItem CheckLocationServices()
@@ -141,58 +170,71 @@ namespace WinBoost.App.Services.Privacy
                 @"SOFTWARE\Microsoft\Windows\CurrentVersion\" +
                 @"CapabilityAccessManager\ConsentStore\location";
 
-            object? rawValue = ReadValue(
-                RegistryHive.CurrentUser,
-                path,
-                "Value");
+            object? rawValue =
+                ReadValue(
+                    RegistryHive.CurrentUser,
+                    path,
+                    "Value");
 
-            rawValue ??= ReadValue(
-                RegistryHive.LocalMachine,
-                path,
-                "Value");
+            rawValue ??=
+                ReadValue(
+                    RegistryHive.LocalMachine,
+                    path,
+                    "Value");
 
-            string? value = rawValue?.ToString();
+            string? value =
+                rawValue?.ToString();
 
-            string status;
+            string statusResourceKey;
 
             if (string.Equals(
-                value,
-                "Deny",
-                StringComparison.OrdinalIgnoreCase))
+                    value,
+                    "Deny",
+                    StringComparison.OrdinalIgnoreCase))
             {
-                status = "Dezactivat";
+                statusResourceKey =
+                    "PrivacyStatusDisabled";
             }
             else if (string.Equals(
-                value,
-                "Allow",
-                StringComparison.OrdinalIgnoreCase))
+                         value,
+                         "Allow",
+                         StringComparison.OrdinalIgnoreCase))
             {
-                status = "Activat";
+                statusResourceKey =
+                    "PrivacyStatusEnabled";
             }
             else
             {
-                status = "Setare implicită";
+                statusResourceKey =
+                    "PrivacyStatusDefault";
             }
 
             return CreateItem(
                 "location-services",
-                "Location Services",
-                "Verifică accesul aplicațiilor la locația dispozitivului.",
-                status);
+                "PrivacyItemLocationTitle",
+                "PrivacyItemLocationDescription",
+                statusResourceKey);
         }
 
         private static PrivacyCheckItem CreateItem(
             string id,
-            string title,
-            string description,
-            string status)
+            string titleResourceKey,
+            string descriptionResourceKey,
+            string statusResourceKey)
         {
             return new PrivacyCheckItem
             {
-                Id = id,
-                Title = title,
-                Description = description,
-                Status = status
+                Id =
+                    id,
+
+                TitleResourceKey =
+                    titleResourceKey,
+
+                DescriptionResourceKey =
+                    descriptionResourceKey,
+
+                StatusResourceKey =
+                    statusResourceKey
             };
         }
 
@@ -213,7 +255,8 @@ namespace WinBoost.App.Services.Privacy
                         path,
                         writable: false);
 
-                return key?.GetValue(valueName);
+                return key?.GetValue(
+                    valueName);
             }
             catch
             {
@@ -221,13 +264,15 @@ namespace WinBoost.App.Services.Privacy
             }
         }
 
-        private static int? ConvertToInt(object? value)
+        private static int? ConvertToInt(
+            object? value)
         {
             try
             {
                 return value == null
                     ? null
-                    : Convert.ToInt32(value);
+                    : Convert.ToInt32(
+                        value);
             }
             catch
             {

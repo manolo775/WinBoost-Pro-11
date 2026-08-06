@@ -994,5 +994,143 @@
 	<sys:String x:Key="StartupActionDisable">
 		Dezactivează
 	</sys:String>
-	
+
+	<!-- PRIVACY -->
+
+	<sys:String x:Key="PrivacyPageTitle">
+		Confidențialitate
+	</sys:String>
+
+	<sys:String x:Key="PrivacyPageDescription">
+		Verifică setările Windows care pot afecta confidențialitatea.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanTitle">
+		Verificare confidențialitate
+	</sys:String>
+
+	<sys:String x:Key="PrivacyCheckedSettingsTitle">
+		Setări verificate
+	</sys:String>
+
+	<sys:String x:Key="PrivacyInformationMessage">
+		Scanarea este doar informativă și nu modifică setările Windows.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyRecommendationsPrefix">
+		Au fost găsite
+	</sys:String>
+
+	<sys:String x:Key="PrivacyRecommendationsSuffix">
+		recomandări pentru îmbunătățirea confidențialității.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusNotScanned">
+		Neverificat
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusScanning">
+		Se verifică
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusScanned">
+		Verificat
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusError">
+		Eroare
+	</sys:String>
+
+	<sys:String x:Key="PrivacyButtonScan">
+		Scanează confidențialitatea
+	</sys:String>
+
+	<sys:String x:Key="PrivacyButtonScanning">
+		Se scanează...
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanInitialMessage">
+		Pornește o scanare pentru a verifica setările de confidențialitate.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanCheckingMessage">
+		Se verifică setările de confidențialitate...
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanFailedFormat">
+		Scanarea nu a putut fi finalizată: {0}
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanNoIssues">
+		Nu au fost găsite probleme de confidențialitate. PC-ul tău este configurat corespunzător.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanOneRecommendation">
+		A fost găsită o recomandare pentru îmbunătățirea confidențialității.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanMultipleRecommendationsFormat">
+		Au fost găsite {0} recomandări pentru îmbunătățirea confidențialității.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemDiagnosticTitle">
+		Diagnostic și telemetrie
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemDiagnosticDescription">
+		Verifică nivelul datelor de diagnostic trimise către Microsoft.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemAdvertisingTitle">
+		Identificator publicitar
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemAdvertisingDescription">
+		Verifică utilizarea identificatorului pentru reclame personalizate.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemActivityHistoryTitle">
+		Istoricul activităților
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemActivityHistoryDescription">
+		Verifică dacă Windows salvează istoricul activităților.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemLocationTitle">
+		Servicii de localizare
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemLocationDescription">
+		Verifică accesul aplicațiilor la locația dispozitivului.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusEnabled">
+		Activat
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusDisabled">
+		Dezactivat
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusDefault">
+		Setare implicită
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusDiagnosticMinimal">
+		Date minime
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusDiagnosticRequired">
+		Date necesare
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusDiagnosticEnhanced">
+		Date îmbunătățite
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusDiagnosticOptional">
+		Date opționale
+	</sys:String>
+
 </ResourceDictionary>

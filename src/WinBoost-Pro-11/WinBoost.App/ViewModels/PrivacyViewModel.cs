@@ -6,14 +6,15 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using WinBoost.App.Commands;
+using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Privacy;
 
-
 namespace WinBoost.App.ViewModels
 {
-    public sealed class PrivacyViewModel : INotifyPropertyChanged
+    public sealed class PrivacyViewModel :
+        INotifyPropertyChanged
     {
         private readonly PrivacyScanService
             _privacyScanService;
@@ -26,11 +27,52 @@ namespace WinBoost.App.ViewModels
 
         private bool _isScanning;
 
+        private PrivacyUiState _currentUiState =
+            PrivacyUiState.NotScanned;
+
         private string _scanStatus =
-            "Pornește o scanare pentru a verifica setările de confidențialitate.";
+            string.Empty;
 
         private string _overallStatus =
-            "Neverificat";
+            string.Empty;
+
+        private string _lastErrorMessage =
+            string.Empty;
+
+        private bool _hasCompletedScan;
+
+        public PrivacyViewModel()
+        {
+            _privacyScanService =
+                new PrivacyScanService();
+
+            _privacyRecommendationEngine =
+                new PrivacyRecommendationEngine();
+
+            _healthStateService =
+                SystemHealthStateService.Instance;
+
+            PrivacyItems =
+                CreateInitialPrivacyItems();
+
+            Recommendations =
+                new ObservableCollection<
+                    HealthRecommendation>();
+
+            ScanPrivacyCommand =
+                new RelayCommand(
+                    async _ =>
+                        await ScanPrivacyAsync(),
+                    _ =>
+                        !IsScanning);
+
+            LanguageManager
+                .Instance
+                .LanguageChanged +=
+                    LanguageManager_LanguageChanged;
+
+            ApplyLocalizedUiState();
+        }
 
         public ObservableCollection<PrivacyCheckItem>
             PrivacyItems
@@ -60,7 +102,9 @@ namespace WinBoost.App.ViewModels
                     return;
                 }
 
-                _scanStatus = value;
+                _scanStatus =
+                    value;
+
                 OnPropertyChanged();
             }
         }
@@ -76,7 +120,9 @@ namespace WinBoost.App.ViewModels
                     return;
                 }
 
-                _overallStatus = value;
+                _overallStatus =
+                    value;
+
                 OnPropertyChanged();
             }
         }
@@ -92,12 +138,16 @@ namespace WinBoost.App.ViewModels
                     return;
                 }
 
-                _isScanning = value;
+                _isScanning =
+                    value;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ScanButtonText));
 
-                CommandManager.InvalidateRequerySuggested();
+                OnPropertyChanged(
+                    nameof(ScanButtonText));
+
+                CommandManager
+                    .InvalidateRequerySuggested();
             }
         }
 
@@ -113,81 +163,76 @@ namespace WinBoost.App.ViewModels
 
         public string ScanButtonText =>
             IsScanning
-                ? "Se scanează..."
-                : "Scan Privacy";
+                ? LocalizationHelper.Get(
+                    "PrivacyButtonScanning")
+                : LocalizationHelper.Get(
+                    "PrivacyButtonScan");
 
-        public PrivacyViewModel()
+        private static ObservableCollection<PrivacyCheckItem>
+            CreateInitialPrivacyItems()
         {
-            _privacyScanService =
-                new PrivacyScanService();
-
-            _privacyRecommendationEngine =
-                new PrivacyRecommendationEngine();
-
-            _healthStateService =
-                SystemHealthStateService.Instance;
-
-            PrivacyItems =
-                new ObservableCollection<PrivacyCheckItem>
+            return new ObservableCollection<PrivacyCheckItem>
+            {
+                new()
                 {
-                    new PrivacyCheckItem
-                    {
-                        Id = "diagnostic-data",
+                    Id =
+                        "diagnostic-data",
 
-                        Title =
-                            "Diagnostic și telemetrie",
+                    TitleResourceKey =
+                        "PrivacyItemDiagnosticTitle",
 
-                        Description =
-                            "Verifică nivelul datelor de diagnostic " +
-                            "trimise către Microsoft."
-                    },
+                    DescriptionResourceKey =
+                        "PrivacyItemDiagnosticDescription",
 
-                    new PrivacyCheckItem
-                    {
-                        Id = "advertising-id",
+                    StatusResourceKey =
+                        "PrivacyStatusNotScanned"
+                },
 
-                        Title =
-                            "Advertising ID",
+                new()
+                {
+                    Id =
+                        "advertising-id",
 
-                        Description =
-                            "Verifică utilizarea identificatorului " +
-                            "pentru reclame personalizate."
-                    },
+                    TitleResourceKey =
+                        "PrivacyItemAdvertisingTitle",
 
-                    new PrivacyCheckItem
-                    {
-                        Id = "activity-history",
+                    DescriptionResourceKey =
+                        "PrivacyItemAdvertisingDescription",
 
-                        Title =
-                            "Activity History",
+                    StatusResourceKey =
+                        "PrivacyStatusNotScanned"
+                },
 
-                        Description =
-                            "Verifică dacă Windows salvează " +
-                            "istoricul activităților."
-                    },
+                new()
+                {
+                    Id =
+                        "activity-history",
 
-                    new PrivacyCheckItem
-                    {
-                        Id = "location-services",
+                    TitleResourceKey =
+                        "PrivacyItemActivityHistoryTitle",
 
-                        Title =
-                            "Location Services",
+                    DescriptionResourceKey =
+                        "PrivacyItemActivityHistoryDescription",
 
-                        Description =
-                            "Verifică accesul aplicațiilor la " +
-                            "locația dispozitivului."
-                    }
-                };
+                    StatusResourceKey =
+                        "PrivacyStatusNotScanned"
+                },
 
-            Recommendations =
-                new ObservableCollection<HealthRecommendation>();
+                new()
+                {
+                    Id =
+                        "location-services",
 
-            ScanPrivacyCommand =
-                new RelayCommand(
-                    async _ =>
-                        await ScanPrivacyAsync(),
-                    _ =>
-                        !IsScanning);
+                    TitleResourceKey =
+                        "PrivacyItemLocationTitle",
+
+                    DescriptionResourceKey =
+                        "PrivacyItemLocationDescription",
+
+                    StatusResourceKey =
+                        "PrivacyStatusNotScanned"
+                }
+            };
         }
 
         private async Task ScanPrivacyAsync()
@@ -197,13 +242,11 @@ namespace WinBoost.App.ViewModels
                 return;
             }
 
-            IsScanning = true;
+            IsScanning =
+                true;
 
-            OverallStatus =
-                "Se verifică";
-
-            ScanStatus =
-                "Se verifică setările de confidențialitate...";
+            SetUiState(
+                PrivacyUiState.Scanning);
 
             try
             {
@@ -217,29 +260,48 @@ namespace WinBoost.App.ViewModels
                 foreach (PrivacyCheckItem item
                          in results)
                 {
-                    PrivacyItems.Add(item);
+                    PrivacyItems.Add(
+                        item);
                 }
 
+                _hasCompletedScan =
+                    true;
+
                 BuildRecommendations();
+
                 UpdatePrivacyHealthScore();
 
-                OverallStatus =
-                    "Verificat";
+                SetUiState(
+                    RecommendationCount switch
+                    {
+                        0 =>
+                            PrivacyUiState.CompletedNoIssues,
 
-                UpdateScanStatusMessage();
+                        1 =>
+                            PrivacyUiState.CompletedOneRecommendation,
+
+                        _ =>
+                            PrivacyUiState.CompletedMultipleRecommendations
+                    });
             }
             catch (Exception ex)
             {
-                OverallStatus =
-                    "Eroare";
-
-                ScanStatus =
-                    "Scanarea nu a putut fi finalizată: " +
+                _lastErrorMessage =
                     ex.Message;
+
+                SetUiState(
+                    PrivacyUiState.Error);
             }
             finally
             {
-                IsScanning = false;
+                IsScanning =
+                    false;
+
+                OnPropertyChanged(
+                    nameof(ScanButtonText));
+
+                CommandManager
+                    .InvalidateRequerySuggested();
             }
         }
 
@@ -267,40 +329,19 @@ namespace WinBoost.App.ViewModels
                 nameof(PotentialGain));
         }
 
-        private void UpdateScanStatusMessage()
-        {
-            if (RecommendationCount == 0)
-            {
-                ScanStatus =
-                    "🟢 Nu au fost găsite probleme de " +
-                    "confidențialitate. PC-ul tău este " +
-                    "configurat corespunzător.";
-
-                return;
-            }
-
-            if (RecommendationCount == 1)
-            {
-                ScanStatus =
-                    "🟢 A fost găsită o recomandare pentru " +
-                    "îmbunătățirea confidențialității.";
-
-                return;
-            }
-
-            ScanStatus =
-                $"🟢 Au fost găsite {RecommendationCount} " +
-                "recomandări pentru îmbunătățirea " +
-                "confidențialității.";
-        }
-
         private void UpdatePrivacyHealthScore()
         {
             if (PrivacyItems.Count == 0)
             {
-                _healthStateService.UpdatePrivacyData(
-                    0,
-                    0);
+                _healthStateService
+                    .UpdatePrivacyData(
+                        0,
+                        0);
+
+                WinBoostHealthScoreService
+                    .Instance
+                    .PrivacyScore =
+                        0;
 
                 return;
             }
@@ -310,11 +351,20 @@ namespace WinBoost.App.ViewModels
                     item =>
                         item.StatusLevel switch
                         {
-                            "Good" => 100,
-                            "Neutral" => 70,
-                            "Attention" => 40,
-                            "Critical" => 0,
-                            _ => 70
+                            "Good" =>
+                                100,
+
+                            "Neutral" =>
+                                70,
+
+                            "Attention" =>
+                                40,
+
+                            "Critical" =>
+                                0,
+
+                            _ =>
+                                70
                         });
 
             int weightedScore =
@@ -322,15 +372,128 @@ namespace WinBoost.App.ViewModels
                     totalPoints /
                     PrivacyItems.Count);
 
-            _healthStateService.UpdatePrivacyData(
-                100,
-                weightedScore);
+            _healthStateService
+                .UpdatePrivacyData(
+                    100,
+                    weightedScore);
 
             WinBoostHealthScoreService
                 .Instance
-                   .PrivacyScore =
-                 weightedScore;
+                .PrivacyScore =
+                    weightedScore;
+        }
 
+        private void SetUiState(
+            PrivacyUiState state)
+        {
+            _currentUiState =
+                state;
+
+            ApplyLocalizedUiState();
+        }
+
+        private void ApplyLocalizedUiState()
+        {
+            switch (_currentUiState)
+            {
+                case PrivacyUiState.NotScanned:
+
+                    OverallStatus =
+                        LocalizationHelper.Get(
+                            "PrivacyStatusNotScanned");
+
+                    ScanStatus =
+                        LocalizationHelper.Get(
+                            "PrivacyScanInitialMessage");
+
+                    break;
+
+                case PrivacyUiState.Scanning:
+
+                    OverallStatus =
+                        LocalizationHelper.Get(
+                            "PrivacyStatusScanning");
+
+                    ScanStatus =
+                        LocalizationHelper.Get(
+                            "PrivacyScanCheckingMessage");
+
+                    break;
+
+                case PrivacyUiState.CompletedNoIssues:
+
+                    OverallStatus =
+                        LocalizationHelper.Get(
+                            "PrivacyStatusScanned");
+
+                    ScanStatus =
+                        LocalizationHelper.Get(
+                            "PrivacyScanNoIssues");
+
+                    break;
+
+                case PrivacyUiState.CompletedOneRecommendation:
+
+                    OverallStatus =
+                        LocalizationHelper.Get(
+                            "PrivacyStatusScanned");
+
+                    ScanStatus =
+                        LocalizationHelper.Get(
+                            "PrivacyScanOneRecommendation");
+
+                    break;
+
+                case PrivacyUiState.CompletedMultipleRecommendations:
+
+                    OverallStatus =
+                        LocalizationHelper.Get(
+                            "PrivacyStatusScanned");
+
+                    ScanStatus =
+                        LocalizationHelper.Format(
+                            "PrivacyScanMultipleRecommendationsFormat",
+                            RecommendationCount);
+
+                    break;
+
+                case PrivacyUiState.Error:
+
+                    OverallStatus =
+                        LocalizationHelper.Get(
+                            "PrivacyStatusError");
+
+                    ScanStatus =
+                        LocalizationHelper.Format(
+                            "PrivacyScanFailedFormat",
+                            _lastErrorMessage);
+
+                    break;
+            }
+        }
+
+        private void LanguageManager_LanguageChanged(
+            object? sender,
+            EventArgs e)
+        {
+            foreach (PrivacyCheckItem item
+                     in PrivacyItems)
+            {
+                item.RefreshLocalizedProperties();
+            }
+
+            if (_hasCompletedScan)
+            {
+                BuildRecommendations();
+            }
+
+            OnPropertyChanged(
+                nameof(ScanButtonText));
+
+            ApplyLocalizedUiState();
+
+            CommandManager
+                .InvalidateRequerySuggested();
         }
 
         public event PropertyChangedEventHandler?
@@ -344,6 +507,16 @@ namespace WinBoost.App.ViewModels
                 this,
                 new PropertyChangedEventArgs(
                     propertyName));
+        }
+
+        private enum PrivacyUiState
+        {
+            NotScanned,
+            Scanning,
+            CompletedNoIssues,
+            CompletedOneRecommendation,
+            CompletedMultipleRecommendations,
+            Error
         }
     }
 }

@@ -1,83 +1,112 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using WinBoost.App.Localization;
 
 namespace WinBoost.App.Models
 {
-    public class PrivacyCheckItem : INotifyPropertyChanged
+    public sealed class PrivacyCheckItem :
+        INotifyPropertyChanged
     {
-        private string _status =
-            "Neverificat";
+        private string _statusResourceKey =
+            "PrivacyStatusNotScanned";
 
-        public string Id { get; init; } =
-            string.Empty;
-
-        public string Title { get; init; } =
-            string.Empty;
-
-        public string Description { get; init; } =
-            string.Empty;
-
-        public string Status
+        public string Id
         {
-            get => _status;
+            get;
+            init;
+        } =
+            string.Empty;
+
+        public string TitleResourceKey
+        {
+            get;
+            init;
+        } =
+            string.Empty;
+
+        public string DescriptionResourceKey
+        {
+            get;
+            init;
+        } =
+            string.Empty;
+
+        public string StatusResourceKey
+        {
+            get => _statusResourceKey;
 
             set
             {
-                if (_status == value)
+                if (_statusResourceKey == value)
                 {
                     return;
                 }
 
-                _status = value;
+                _statusResourceKey =
+                    value ?? string.Empty;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(StatusLevel));
+                OnPropertyChanged(
+                    nameof(Status));
+
+                OnPropertyChanged(
+                    nameof(StatusLevel));
             }
         }
 
-        public string StatusLevel
-        {
-            get
+        public string Title =>
+            LocalizationHelper.Get(
+                TitleResourceKey);
+
+        public string Description =>
+            LocalizationHelper.Get(
+                DescriptionResourceKey);
+
+        public string Status =>
+            LocalizationHelper.Get(
+                StatusResourceKey);
+
+        public string StatusLevel =>
+            StatusResourceKey switch
             {
-                if (Status.Equals(
-                        "Dezactivat",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    return "Good";
-                }
+                "PrivacyStatusDisabled" =>
+                    "Good",
 
-                if (Status.Equals(
-                        "Date minime",
-                        StringComparison.OrdinalIgnoreCase) ||
-                    Status.Equals(
-                        "Date necesare",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    return "Good";
-                }
+                "PrivacyStatusDiagnosticMinimal" =>
+                    "Good",
 
-                if (Status.Equals(
-                        "Activat",
-                        StringComparison.OrdinalIgnoreCase) ||
-                    Status.Equals(
-                        "Date îmbunătățite",
-                        StringComparison.OrdinalIgnoreCase) ||
-                    Status.Equals(
-                        "Date opționale",
-                        StringComparison.OrdinalIgnoreCase))
-                {
-                    return "Attention";
-                }
+                "PrivacyStatusDiagnosticRequired" =>
+                    "Good",
 
-                return "Neutral";
-            }
+                "PrivacyStatusEnabled" =>
+                    "Attention",
+
+                "PrivacyStatusDiagnosticEnhanced" =>
+                    "Attention",
+
+                "PrivacyStatusDiagnosticOptional" =>
+                    "Attention",
+
+                _ =>
+                    "Neutral"
+            };
+
+        public void RefreshLocalizedProperties()
+        {
+            OnPropertyChanged(
+                nameof(Title));
+
+            OnPropertyChanged(
+                nameof(Description));
+
+            OnPropertyChanged(
+                nameof(Status));
         }
 
         public event PropertyChangedEventHandler?
             PropertyChanged;
 
-        protected void OnPropertyChanged(
+        private void OnPropertyChanged(
             [CallerMemberName]
             string? propertyName = null)
         {

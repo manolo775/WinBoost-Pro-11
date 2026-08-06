@@ -21,13 +21,13 @@
 			<StackPanel Grid.Row="0">
 
 				<TextBlock
-                    Text="Privacy"
+                    Text="{DynamicResource PrivacyPageTitle}"
                     FontSize="30"
                     FontWeight="SemiBold"
                     Foreground="{StaticResource TextBrush}"/>
 
 				<TextBlock
-                    Text="Verifică setările Windows care pot afecta confidențialitatea."
+                    Text="{DynamicResource PrivacyPageDescription}"
                     Margin="0,6,0,0"
                     FontSize="14"
                     TextWrapping="Wrap"
@@ -56,41 +56,52 @@
                         VerticalAlignment="Center">
 
 						<TextBlock
-                            Text="Privacy Check"
+                            Text="{DynamicResource PrivacyScanTitle}"
                             FontSize="20"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource TextBrush}"/>
 
 						<StackPanel
-		Margin="0,14,0,0"
-		Orientation="Horizontal"
-		VerticalAlignment="Center">
+                            Margin="0,14,0,0"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
 
 							<Ellipse
-								Width="16"
-								Height="16"
-								Fill="#35C759"
-								Margin="0,0,18,0"
-								VerticalAlignment="Center"/>
+                                Width="16"
+                                Height="16"
+                                Fill="#35C759"
+                                Margin="0,0,18,0"
+                                VerticalAlignment="Center"/>
 
-							<TextBlock
-								VerticalAlignment="Center"
-								FontSize="20"
-								FontWeight="Bold"
-								Foreground="White"
-								TextWrapping="Wrap">
+							<StackPanel
+                                Orientation="Horizontal"
+                                VerticalAlignment="Center">
 
-								<Run Text="Au fost găsite "/>
+								<TextBlock
+                                    Text="{DynamicResource PrivacyRecommendationsPrefix}"
+                                    VerticalAlignment="Center"
+                                    FontSize="20"
+                                    FontWeight="Bold"
+                                    Foreground="White"/>
 
-								<Run
-									Text="{Binding RecommendationCount, Mode=OneWay}"
-									Foreground="#35C759"
-									FontSize="24"
-									FontWeight="ExtraBold"/>
+								<TextBlock
+                                    Text="{Binding RecommendationCount,
+                                                   Mode=OneWay}"
+                                    Margin="7,0"
+                                    VerticalAlignment="Center"
+                                    FontSize="24"
+                                    FontWeight="ExtraBold"
+                                    Foreground="#35C759"/>
 
-								<Run Text=" recomandări pentru îmbunătățirea confidențialității."/>
+								<TextBlock
+                                    Text="{DynamicResource PrivacyRecommendationsSuffix}"
+                                    VerticalAlignment="Center"
+                                    FontSize="20"
+                                    FontWeight="Bold"
+                                    TextWrapping="Wrap"
+                                    Foreground="White"/>
 
-							</TextBlock>
+							</StackPanel>
 
 						</StackPanel>
 
@@ -264,7 +275,7 @@
                 Margin="0,25,0,0">
 
 				<TextBlock
-                    Text="Setări verificate"
+                    Text="{DynamicResource PrivacyCheckedSettingsTitle}"
                     FontSize="20"
                     FontWeight="SemiBold"
                     Foreground="{StaticResource TextBrush}"/>
@@ -290,8 +301,7 @@
 										<ColumnDefinition Width="Auto"/>
 									</Grid.ColumnDefinitions>
 
-									<StackPanel
-                                        Grid.Column="0">
+									<StackPanel Grid.Column="0">
 
 										<TextBlock
                                             Text="{Binding Title}"
@@ -391,7 +401,7 @@
                 Background="{StaticResource CardBrush}">
 
 				<TextBlock
-                    Text="Scanarea este doar informativă și nu modifică setările Windows."
+                    Text="{DynamicResource PrivacyInformationMessage}"
                     TextWrapping="Wrap"
                     Foreground="{StaticResource SecondaryTextBrush}"/>
 

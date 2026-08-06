@@ -995,5 +995,137 @@
 	<sys:String x:Key="StartupActionDisable">
 		Disable
 	</sys:String>
+
+	<!-- PRIVACY -->
+
+	<sys:String x:Key="PrivacyPageTitle">
+		Privacy
+	</sys:String>
+
+	<sys:String x:Key="PrivacyPageDescription">
+		Check Windows settings that may affect your privacy.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanTitle">
+		Privacy Check
+	</sys:String>
+
+	<sys:String x:Key="PrivacyCheckedSettingsTitle">
+		Checked Settings
+	</sys:String>
+
+	<sys:String x:Key="PrivacyInformationMessage">
+		This scan is informational only and does not modify Windows settings.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyRecommendationsPrefix">
+		Found
+	</sys:String>
+
+	<sys:String x:Key="PrivacyRecommendationsSuffix">
+		recommendations for improving privacy.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusNotScanned">
+		Not scanned
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusScanning">
+		Scanning
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusScanned">
+		Scanned
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusError">
+		Error
+	</sys:String>
+
+	<sys:String x:Key="PrivacyButtonScan">
+		Scan Privacy
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanInitialMessage">
+		Start a scan to check your privacy settings.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanCheckingMessage">
+		Checking privacy settings...
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanFailedFormat">
+		The scan could not be completed: {0}
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanNoIssues">
+		No privacy issues were found. Your PC is configured correctly.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanOneRecommendation">
+		One recommendation was found to improve privacy.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyScanMultipleRecommendationsFormat">
+		{0} recommendations were found to improve privacy.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemDiagnosticTitle">
+		Diagnostics and telemetry
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemDiagnosticDescription">
+		Checks the level of diagnostic data sent to Microsoft.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemAdvertisingTitle">
+		Advertising ID
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemAdvertisingDescription">
+		Checks whether the advertising identifier is used for personalized ads.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemActivityHistoryTitle">
+		Activity History
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemActivityHistoryDescription">
+		Checks whether Windows saves your activity history.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemLocationTitle">
+		Location Services
+	</sys:String>
+
+	<sys:String x:Key="PrivacyItemLocationDescription">
+		Checks application access to the device location.
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusEnabled">
+		Enabled
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusDisabled">
+		Disabled
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusDefault">
+		Default setting
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusDiagnosticMinimal">
+		Minimal data
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusDiagnosticRequired">
+		Required data
+	</sys:String>
+
+	<sys:String x:Key="PrivacyStatusDiagnosticEnhanced">
+		Enhanced data
+	</sys:String>
+
+	
 	
 </ResourceDictionary>
