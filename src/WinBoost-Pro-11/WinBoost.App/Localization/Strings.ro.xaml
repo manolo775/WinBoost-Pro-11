@@ -796,5 +796,203 @@
 	<sys:String x:Key="OptimizationLogWindowsLogsCompleted">
 		Jurnale Windows: curățate
 	</sys:String>
+
+	<!-- STARTUP MANAGER -->
+
+	<sys:String x:Key="StartupSourceCurrentUser">
+		Utilizator curent
+	</sys:String>
+
+	<sys:String x:Key="StartupSourceAllUsers">
+		Toți utilizatorii
+	</sys:String>
+
+	<sys:String x:Key="StartupSourceAllUsers32">
+		Toți utilizatorii (32-bit)
+	</sys:String>
+
+	<sys:String x:Key="StartupUnknownApplication">
+		Aplicație necunoscută
+	</sys:String>
+
+	<sys:String x:Key="StartupImpactUnknown">
+		Necunoscut
+	</sys:String>
+
+	<sys:String x:Key="StartupTypeRegistry">
+		Registry
+	</sys:String>
+
+	<!-- STARTUP VIEW MODEL -->
+
+	<sys:String x:Key="StartupScanPrompt">
+		Apasă Scan Startup pentru a verifica aplicațiile care pornesc cu Windows.
+	</sys:String>
+
+	<sys:String x:Key="StartupScanButton">
+		Scan Startup
+	</sys:String>
+
+	<sys:String x:Key="StartupScanningButton">
+		Se scanează...
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeNotScanned">
+		Neverificat
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeScanning">
+		Se verifică
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeScanned">
+		Verificat
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeChanging">
+		Se modifică
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeChanged">
+		Modificat
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeError">
+		Eroare
+	</sys:String>
+
+	<sys:String x:Key="StartupStatusScanning">
+		Se verifică aplicațiile care pornesc cu Windows...
+	</sys:String>
+
+	<sys:String x:Key="StartupScanCompletedFormat">
+		Scanare finalizată: {0} aplicații găsite.
+	</sys:String>
+
+	<sys:String x:Key="StartupScanCompletedEmpty">
+		Scanare finalizată: nu au fost găsite aplicații configurate pentru pornire automată.
+	</sys:String>
+
+	<sys:String x:Key="StartupScanFailedFormat">
+		Scanarea nu a putut fi finalizată: {0}
+	</sys:String>
+
+	<sys:String x:Key="StartupEnablingFormat">
+		Se activează aplicația „{0}”...
+	</sys:String>
+
+	<sys:String x:Key="StartupDisablingFormat">
+		Se dezactivează aplicația „{0}”...
+	</sys:String>
+
+	<sys:String x:Key="StartupEnabledFormat">
+		Aplicația „{0}” a fost activată.
+	</sys:String>
+
+	<sys:String x:Key="StartupDisabledFormat">
+		Aplicația „{0}” a fost dezactivată.
+	</sys:String>
+
+	<sys:String x:Key="StartupChangeFailedFormat">
+		Operația nu a putut fi finalizată: {0}
+	</sys:String>
+
+	<sys:String x:Key="StartupFilterAll">
+		Toate
+	</sys:String>
+
+	<sys:String x:Key="StartupFilterEnabled">
+		Activate
+	</sys:String>
+
+	<sys:String x:Key="StartupFilterDisabled">
+		Dezactivate
+	</sys:String>
+
+	<!-- STARTUP VIEW -->
+
+	<sys:String x:Key="StartupPageTitle">
+		Manager pornire
+	</sys:String>
+
+	<sys:String x:Key="StartupPageDescription">
+		Verifică și administrează aplicațiile care pornesc automat împreună cu Windows.
+	</sys:String>
+
+	<sys:String x:Key="StartupScanPanelTitle">
+		Verificare aplicații Startup
+	</sys:String>
+
+	<sys:String x:Key="StartupSafeChangesDescription">
+		Poți activa sau dezactiva în siguranță aplicațiile găsite.
+	</sys:String>
+
+	<sys:String x:Key="StartupApplicationsTitle">
+		Aplicații Startup
+	</sys:String>
+
+	<sys:String x:Key="StartupApplicationsDescription">
+		Aplicațiile active și cele dezactivate de WinBoost apar în această listă.
+	</sys:String>
+
+	<sys:String x:Key="StartupSearchPlaceholder">
+		Caută după nume, producător, sursă sau cale...
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnApplication">
+		Aplicație
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnPublisher">
+		Producător
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnSource">
+		Sursă
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnStatus">
+		Stare
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnImpact">
+		Impact
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnPath">
+		Cale
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnAction">
+		Acțiune
+	</sys:String>
+
+	<sys:String x:Key="StartupTotalLabel">
+		Total
+	</sys:String>
+
+	<sys:String x:Key="StartupEnabledLabel">
+		Activate
+	</sys:String>
+
+	<sys:String x:Key="StartupDisabledLabel">
+		Dezactivate
+	</sys:String>
+
+	<sys:String x:Key="StartupStatusEnabled">
+		Activată
+	</sys:String>
+
+	<sys:String x:Key="StartupStatusDisabled">
+		Dezactivată
+	</sys:String>
+
+	<sys:String x:Key="StartupActionEnable">
+		Activează
+	</sys:String>
+
+	<sys:String x:Key="StartupActionDisable">
+		Dezactivează
+	</sys:String>
 	
 </ResourceDictionary>

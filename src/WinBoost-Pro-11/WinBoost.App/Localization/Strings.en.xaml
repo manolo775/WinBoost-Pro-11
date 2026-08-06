@@ -797,5 +797,203 @@
 	<sys:String x:Key="OptimizationLogWindowsLogsCompleted">
 		Windows logs: cleaned
 	</sys:String>
+
+	<!-- STARTUP MANAGER -->
+
+	<sys:String x:Key="StartupSourceCurrentUser">
+		Current user
+	</sys:String>
+
+	<sys:String x:Key="StartupSourceAllUsers">
+		All users
+	</sys:String>
+
+	<sys:String x:Key="StartupSourceAllUsers32">
+		All users (32-bit)
+	</sys:String>
+
+	<sys:String x:Key="StartupUnknownApplication">
+		Unknown application
+	</sys:String>
+
+	<sys:String x:Key="StartupImpactUnknown">
+		Unknown
+	</sys:String>
+
+	<sys:String x:Key="StartupTypeRegistry">
+		Registry
+	</sys:String>
+
+	<!-- STARTUP VIEW MODEL -->
+
+	<sys:String x:Key="StartupScanPrompt">
+		Click Scan Startup to check applications that start with Windows.
+	</sys:String>
+
+	<sys:String x:Key="StartupScanButton">
+		Scan Startup
+	</sys:String>
+
+	<sys:String x:Key="StartupScanningButton">
+		Scanning...
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeNotScanned">
+		Not scanned
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeScanning">
+		Scanning
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeScanned">
+		Scanned
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeChanging">
+		Changing
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeChanged">
+		Changed
+	</sys:String>
+
+	<sys:String x:Key="StartupBadgeError">
+		Error
+	</sys:String>
+
+	<sys:String x:Key="StartupStatusScanning">
+		Checking applications that start with Windows...
+	</sys:String>
+
+	<sys:String x:Key="StartupScanCompletedFormat">
+		Scan completed: {0} applications found.
+	</sys:String>
+
+	<sys:String x:Key="StartupScanCompletedEmpty">
+		Scan completed: no applications configured for automatic startup were found.
+	</sys:String>
+
+	<sys:String x:Key="StartupScanFailedFormat">
+		The scan could not be completed: {0}
+	</sys:String>
+
+	<sys:String x:Key="StartupEnablingFormat">
+		Enabling “{0}”...
+	</sys:String>
+
+	<sys:String x:Key="StartupDisablingFormat">
+		Disabling “{0}”...
+	</sys:String>
+
+	<sys:String x:Key="StartupEnabledFormat">
+		“{0}” was enabled.
+	</sys:String>
+
+	<sys:String x:Key="StartupDisabledFormat">
+		“{0}” was disabled.
+	</sys:String>
+
+	<sys:String x:Key="StartupChangeFailedFormat">
+		The operation could not be completed: {0}
+	</sys:String>
+
+	<sys:String x:Key="StartupFilterAll">
+		All
+	</sys:String>
+
+	<sys:String x:Key="StartupFilterEnabled">
+		Enabled
+	</sys:String>
+
+	<sys:String x:Key="StartupFilterDisabled">
+		Disabled
+	</sys:String>
+
+	<!-- STARTUP VIEW -->
+
+	<sys:String x:Key="StartupPageTitle">
+		Startup Manager
+	</sys:String>
+
+	<sys:String x:Key="StartupPageDescription">
+		Review and manage applications that start automatically with Windows.
+	</sys:String>
+
+	<sys:String x:Key="StartupScanPanelTitle">
+		Startup Applications Check
+	</sys:String>
+
+	<sys:String x:Key="StartupSafeChangesDescription">
+		You can safely enable or disable the detected applications.
+	</sys:String>
+
+	<sys:String x:Key="StartupApplicationsTitle">
+		Startup Applications
+	</sys:String>
+
+	<sys:String x:Key="StartupApplicationsDescription">
+		Applications enabled or disabled by WinBoost appear in this list.
+	</sys:String>
+
+	<sys:String x:Key="StartupSearchPlaceholder">
+		Search by name, publisher, source, or path...
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnApplication">
+		Application
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnPublisher">
+		Publisher
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnSource">
+		Source
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnStatus">
+		Status
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnImpact">
+		Impact
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnPath">
+		Path
+	</sys:String>
+
+	<sys:String x:Key="StartupColumnAction">
+		Action
+	</sys:String>
+
+	<sys:String x:Key="StartupTotalLabel">
+		Total
+	</sys:String>
+
+	<sys:String x:Key="StartupEnabledLabel">
+		Enabled
+	</sys:String>
+
+	<sys:String x:Key="StartupDisabledLabel">
+		Disabled
+	</sys:String>
+
+	<sys:String x:Key="StartupStatusEnabled">
+		Enabled
+	</sys:String>
+
+	<sys:String x:Key="StartupStatusDisabled">
+		Disabled
+	</sys:String>
+
+	<sys:String x:Key="StartupActionEnable">
+		Enable
+	</sys:String>
+
+	<sys:String x:Key="StartupActionDisable">
+		Disable
+	</sys:String>
 	
 </ResourceDictionary>
