@@ -1,6 +1,7 @@
-﻿<UserControl x:Class="WinBoost.App.Controls.MetricsHistoryChart"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<UserControl
+    x:Class="WinBoost.App.Controls.MetricsHistoryChart"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
 	<Border
         Margin="50,15,50,10"
@@ -10,16 +11,70 @@
 
 		<StackPanel>
 
-			<TextBlock
-                Text="{DynamicResource DashboardHistoryTitle}"
-                FontSize="22"
-                FontWeight="Bold"
-                Foreground="White"/>
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
 
-			<TextBlock
-                Margin="0,6,0,16"
-                Text="{DynamicResource DashboardHistoryDescription}"
-                Foreground="#BDBDBD"/>
+				<StackPanel Grid.Column="0">
+
+					<TextBlock
+                        Text="{DynamicResource DashboardHistoryTitle}"
+                        FontSize="22"
+                        FontWeight="Bold"
+                        Foreground="White"/>
+
+					<TextBlock
+                        Margin="0,6,15,16"
+                        Text="{DynamicResource DashboardHistoryDescription}"
+                        TextWrapping="Wrap"
+                        Foreground="#BDBDBD"/>
+
+				</StackPanel>
+
+				<!-- SELECTOR ȘI ȘTERGERE ISTORIC -->
+
+				<StackPanel
+                    Grid.Column="1"
+                    Width="170"
+                    VerticalAlignment="Top">
+
+					<ComboBox
+                        Height="36"
+                        SelectedIndex="{Binding SelectedHistoryRangeIndex,
+                                                Mode=TwoWay,
+                                                UpdateSourceTrigger=PropertyChanged}">
+
+						<ComboBoxItem
+                            Content="{DynamicResource DashboardHistoryRangeLive}"/>
+
+						<ComboBoxItem
+                            Content="{DynamicResource DashboardHistoryRangeHour}"/>
+
+						<ComboBoxItem
+                            Content="{DynamicResource DashboardHistoryRange24Hours}"/>
+
+						<ComboBoxItem
+                            Content="{DynamicResource DashboardHistoryRange7Days}"/>
+
+					</ComboBox>
+
+					<Button
+                        Height="34"
+                        Margin="0,8,0,0"
+                        Padding="10,4"
+                        Command="{Binding ClearPerformanceHistoryCommand}"
+                        Content="{DynamicResource DashboardHistoryClearButton}"
+                        Background="#352844"
+                        BorderBrush="#6A4C85"
+                        Foreground="#FFD740"/>
+
+				</StackPanel>
+
+			</Grid>
+
+			<!-- LEGENDĂ -->
 
 			<StackPanel
                 Orientation="Horizontal"
@@ -38,6 +93,7 @@
 					<TextBlock
                         Text="CPU"
                         Foreground="#E0E0E0"/>
+
 				</StackPanel>
 
 				<StackPanel
@@ -53,6 +109,7 @@
 					<TextBlock
                         Text="RAM"
                         Foreground="#E0E0E0"/>
+
 				</StackPanel>
 
 				<StackPanel Orientation="Horizontal">
@@ -64,11 +121,14 @@
                         Fill="#FFD740"/>
 
 					<TextBlock
-                        Text="Disk"
+                        Text="{DynamicResource DashboardHistoryDiskLegend}"
                         Foreground="#E0E0E0"/>
+
 				</StackPanel>
 
 			</StackPanel>
+
+			<!-- GRAFIC -->
 
 			<Border
                 Height="180"
@@ -82,4 +142,5 @@
 		</StackPanel>
 
 	</Border>
+
 </UserControl>

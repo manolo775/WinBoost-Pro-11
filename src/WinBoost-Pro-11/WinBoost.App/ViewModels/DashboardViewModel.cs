@@ -1,27 +1,34 @@
 ﻿using MaterialDesignThemes.Wpf;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Windows.Threading;
+using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Health;
+using WinBoost.App.Services.History;
 using WinBoost.App.Services.Monitoring;
-using System.Collections.Generic;
-
-using WinBoost.App.Localization;
-
+using System.Windows;
+using WinBoost.App.Commands;
+using WinBoost.App.Helpers;
 
 namespace WinBoost.App.ViewModels
 {
-    public class DashboardViewModel : INotifyPropertyChanged
+    public class DashboardViewModel :
+        INotifyPropertyChanged
     {
         private readonly SystemMonitorService
             _systemMonitorService;
 
         private readonly SystemMetricsHistoryService
             _metricsHistoryService;
+
+        private readonly PerformanceHistoryRecorder
+            _performanceHistoryRecorder;
 
         private readonly SystemHealthCalculator
             _systemHealthCalculator;
@@ -33,6 +40,13 @@ namespace WinBoost.App.ViewModels
             _refreshTimer;
 
         private bool _isRefreshingSystemInfo;
+        private bool _isLoadingHistory;
+
+        private int _selectedHistoryRangeIndex;
+
+        private DateTime
+            _lastPersistentHistoryRefreshUtc =
+            DateTime.MinValue;
 
         private string _cpuUsage = "0 %";
         private string _ramUsage = "0 %";
@@ -41,10 +55,16 @@ namespace WinBoost.App.ViewModels
         private string _uptime = "--";
         private string _cpuStatus = "Normal";
         private string _cpuTemperature = "--";
+
         private bool _isCpuTemperatureAvailable;
+
         private double _cpuUsageValue;
         private double _ramUsageValue;
         private double _diskUsageValue;
+
+        private IReadOnlyList<SystemMetricsHistoryPoint>
+            _displayedMetricsHistory =
+                Array.Empty<SystemMetricsHistoryPoint>();
 
         public DashboardViewModel()
         {
@@ -52,7 +72,14 @@ namespace WinBoost.App.ViewModels
                 new SystemMonitorService();
 
             _metricsHistoryService =
-                 new SystemMetricsHistoryService();
+                new SystemMetricsHistoryService();
+
+            _performanceHistoryRecorder =
+                new PerformanceHistoryRecorder();
+
+            ClearPerformanceHistoryCommand =
+                new AsyncRelayCommand(
+                    ClearPerformanceHistoryAsync);
 
             _systemHealthCalculator =
                 new SystemHealthCalculator();
@@ -67,7 +94,7 @@ namespace WinBoost.App.ViewModels
                 HealthStateService_HealthChanged;
 
             LanguageManager.Instance.LanguageChanged +=
-                  LanguageManager_LanguageChanged;
+                LanguageManager_LanguageChanged;
 
             _refreshTimer =
                 new DispatcherTimer
@@ -83,8 +110,8 @@ namespace WinBoost.App.ViewModels
         }
 
         private static string T(
-    string key,
-    params object[] arguments)
+            string key,
+            params object[] arguments)
         {
             return LocalizationHelper.Format(
                 key,
@@ -96,9 +123,77 @@ namespace WinBoost.App.ViewModels
             get;
         }
 
+        public AsyncRelayCommand
+            ClearPerformanceHistoryCommand
+        {
+            get;
+        }
+
         public IReadOnlyList<SystemMetricsHistoryPoint>
-             MetricsHistory =>
-             _metricsHistoryService.GetSnapshot();
+            MetricsHistory =>
+            _metricsHistoryService.GetSnapshot();
+
+        public IReadOnlyList<SystemMetricsHistoryPoint>
+            DisplayedMetricsHistory
+        {
+            get => _displayedMetricsHistory;
+
+            private set
+            {
+                _displayedMetricsHistory = value;
+
+                OnPropertyChanged();
+                OnPropertyChanged(
+                    nameof(HasDisplayedHistory));
+            }
+        }
+
+        public bool HasDisplayedHistory =>
+            DisplayedMetricsHistory.Count > 0;
+
+        public bool IsLoadingHistory
+        {
+            get => _isLoadingHistory;
+
+            private set
+            {
+                if (_isLoadingHistory == value)
+                {
+                    return;
+                }
+
+                _isLoadingHistory = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public int SelectedHistoryRangeIndex
+        {
+            get => _selectedHistoryRangeIndex;
+
+            set
+            {
+                if (value < 0 ||
+                    value > 3 ||
+                    _selectedHistoryRangeIndex == value)
+                {
+                    return;
+                }
+
+                _selectedHistoryRangeIndex = value;
+
+                OnPropertyChanged();
+                OnPropertyChanged(
+                    nameof(SelectedHistoryRange));
+
+                _ = LoadSelectedHistoryAsync();
+            }
+        }
+
+        public PerformanceHistoryRange
+            SelectedHistoryRange =>
+            (PerformanceHistoryRange)
+            SelectedHistoryRangeIndex;
 
         public double CpuUsageValue
         {
@@ -280,17 +375,18 @@ namespace WinBoost.App.ViewModels
         }
 
         public string CpuSummary =>
-       CpuUsageValue >= 85
-           ? T(
-               "DashboardCpuCritical",
-               CpuUsageValue.ToString("F0"))
-           : CpuUsageValue >= 60
-               ? T(
-                   "DashboardCpuHigh",
-                   CpuUsageValue.ToString("F0"))
-               : T(
-                   "DashboardCpuNormal",
-                   CpuUsageValue.ToString("F0"));
+            CpuUsageValue >= 85
+                ? T(
+                    "DashboardCpuCritical",
+                    CpuUsageValue.ToString("F0"))
+                : CpuUsageValue >= 60
+                    ? T(
+                        "DashboardCpuHigh",
+                        CpuUsageValue.ToString("F0"))
+                    : T(
+                        "DashboardCpuNormal",
+                        CpuUsageValue.ToString("F0"));
+
         public PackIconKind CpuSummaryIcon =>
             CpuUsageValue >= 85
                 ? PackIconKind.AlertCircle
@@ -306,17 +402,17 @@ namespace WinBoost.App.ViewModels
                     : Brushes.LimeGreen;
 
         public string RamSummary =>
-     RamUsageValue >= 90
-         ? T(
-             "DashboardRamCritical",
-             RamUsageValue.ToString("F0"))
-         : RamUsageValue >= 75
-             ? T(
-                 "DashboardRamHigh",
-                 RamUsageValue.ToString("F0"))
-             : T(
-                 "DashboardRamNormal",
-                 RamUsageValue.ToString("F0"));
+            RamUsageValue >= 90
+                ? T(
+                    "DashboardRamCritical",
+                    RamUsageValue.ToString("F0"))
+                : RamUsageValue >= 75
+                    ? T(
+                        "DashboardRamHigh",
+                        RamUsageValue.ToString("F0"))
+                    : T(
+                        "DashboardRamNormal",
+                        RamUsageValue.ToString("F0"));
 
         public PackIconKind RamSummaryIcon =>
             RamUsageValue >= 90
@@ -333,17 +429,18 @@ namespace WinBoost.App.ViewModels
                     : Brushes.LimeGreen;
 
         public string DiskSummary =>
-     DiskUsageValue >= 90
-         ? T(
-             "DashboardDiskCritical",
-             DiskUsageValue.ToString("F0"))
-         : DiskUsageValue >= 80
-             ? T(
-                 "DashboardDiskLow",
-                 DiskUsageValue.ToString("F0"))
-             : T(
-                 "DashboardDiskNormal",
-                 DiskUsageValue.ToString("F0"));
+            DiskUsageValue >= 90
+                ? T(
+                    "DashboardDiskCritical",
+                    DiskUsageValue.ToString("F0"))
+                : DiskUsageValue >= 80
+                    ? T(
+                        "DashboardDiskLow",
+                        DiskUsageValue.ToString("F0"))
+                    : T(
+                        "DashboardDiskNormal",
+                        DiskUsageValue.ToString("F0"));
+
         public PackIconKind DiskSummaryIcon =>
             DiskUsageValue >= 90
                 ? PackIconKind.AlertCircle
@@ -359,17 +456,18 @@ namespace WinBoost.App.ViewModels
                     : Brushes.LimeGreen;
 
         public string HealthSummaryText =>
-             HealthScore >= 85
-         ? T(
-             "DashboardHealthExcellent",
-             HealthScore)
-         : HealthScore >= 65
-             ? T(
-                 "DashboardHealthAttention",
-                 HealthScore)
-             : T(
-                 "DashboardHealthCritical",
-                 HealthScore);
+            HealthScore >= 85
+                ? T(
+                    "DashboardHealthExcellent",
+                    HealthScore)
+                : HealthScore >= 65
+                    ? T(
+                        "DashboardHealthAttention",
+                        HealthScore)
+                    : T(
+                        "DashboardHealthCritical",
+                        HealthScore);
+
         public PackIconKind HealthSummaryIcon =>
             HealthScore >= 85
                 ? PackIconKind.CheckCircle
@@ -433,8 +531,6 @@ namespace WinBoost.App.ViewModels
         public string HealthStatus =>
             HealthSummary.OverallHealthStatus;
 
-
-
         public void StartMonitoring()
         {
             if (_refreshTimer.IsEnabled)
@@ -445,6 +541,7 @@ namespace WinBoost.App.ViewModels
             _refreshTimer.Start();
 
             _ = UpdateSystemInfoAsync();
+            _ = LoadSelectedHistoryAsync();
         }
 
         public void StopMonitoring()
@@ -474,6 +571,21 @@ namespace WinBoost.App.ViewModels
                     await _systemMonitorService
                         .GetSystemMetricsAsync();
 
+                try
+                {
+                    await _performanceHistoryRecorder
+                        .RecordIfDueAsync(
+                            metrics.CpuUsage,
+                            metrics.RamUsage,
+                            metrics.DiskUsage,
+                            metrics.CpuTemperature);
+                }
+                catch
+                {
+                    // Istoricul persistent nu trebuie să
+                    // blocheze actualizarea Dashboard-ului.
+                }
+
                 CpuUsageValue =
                     metrics.CpuUsage;
 
@@ -484,11 +596,31 @@ namespace WinBoost.App.ViewModels
                     metrics.DiskUsage;
 
                 _metricsHistoryService.Add(
-                  metrics.CpuUsage,
-                   metrics.RamUsage,
-                   metrics.DiskUsage);
+                    metrics.CpuUsage,
+                    metrics.RamUsage,
+                    metrics.DiskUsage);
 
-                OnPropertyChanged(nameof(MetricsHistory));
+                OnPropertyChanged(
+                    nameof(MetricsHistory));
+
+                if (SelectedHistoryRange ==
+                    PerformanceHistoryRange
+                        .LiveFiveMinutes)
+                {
+                    DisplayedMetricsHistory =
+                        _metricsHistoryService
+                            .GetSnapshot();
+                }
+                else if (
+                    DateTime.UtcNow -
+                    _lastPersistentHistoryRefreshUtc >=
+                    TimeSpan.FromMinutes(1))
+                {
+                    _lastPersistentHistoryRefreshUtc =
+                        DateTime.UtcNow;
+
+                    _ = LoadSelectedHistoryAsync();
+                }
 
                 CpuStatus =
                     GetUsageStatus(
@@ -511,12 +643,13 @@ namespace WinBoost.App.ViewModels
                     metrics.Uptime;
 
                 IsCpuTemperatureAvailable =
-                   metrics.CpuTemperature.IsAvailable;
+                    metrics.CpuTemperature.IsAvailable;
 
                 CpuTemperature =
                     metrics.CpuTemperature.IsAvailable
                         ? $"{metrics.CpuTemperature.Celsius:F0} °C"
-                        : T("DashboardCpuTemperatureUnavailable");
+                        : T(
+                            "DashboardCpuTemperatureUnavailable");
 
                 UpdatePerformanceScore();
                 UpdateSystemSummary();
@@ -529,6 +662,153 @@ namespace WinBoost.App.ViewModels
             finally
             {
                 _isRefreshingSystemInfo = false;
+            }
+        }
+
+        private async Task
+            ClearPerformanceHistoryAsync()
+        {
+            bool confirmed =
+                NativeConfirmationDialog.Ask(
+                    Application.Current.MainWindow,
+                    T("DashboardHistoryClearTitle"),
+                    T("DashboardHistoryClearConfirmation"),
+                    T("CommonYes"),
+                    T("CommonNo"));
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            try
+            {
+                await _performanceHistoryRecorder
+                    .ClearHistoryAsync();
+
+                _lastPersistentHistoryRefreshUtc =
+                    DateTime.MinValue;
+
+                if (SelectedHistoryRange !=
+                    PerformanceHistoryRange
+                        .LiveFiveMinutes)
+                {
+                    DisplayedMetricsHistory =
+                        Array.Empty<
+                            SystemMetricsHistoryPoint>();
+                }
+
+                MessageBox.Show(
+                    Application.Current.MainWindow,
+                    T("DashboardHistoryClearSuccess"),
+                    T("DashboardHistoryClearSuccessTitle"),
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Information);
+            }
+            catch
+            {
+                MessageBox.Show(
+                    Application.Current.MainWindow,
+                    T("DashboardHistoryClearError"),
+                    T("CommonError"),
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+        private async Task LoadSelectedHistoryAsync()
+        {
+            PerformanceHistoryRange requestedRange =
+                SelectedHistoryRange;
+
+            if (requestedRange ==
+                PerformanceHistoryRange
+                    .LiveFiveMinutes)
+            {
+                DisplayedMetricsHistory =
+                    _metricsHistoryService
+                        .GetSnapshot();
+
+                return;
+            }
+
+            if (IsLoadingHistory)
+            {
+                return;
+            }
+
+            IsLoadingHistory = true;
+
+            try
+            {
+                DateTime toUtc =
+                    DateTime.UtcNow;
+
+                DateTime fromUtc =
+                    requestedRange switch
+                    {
+                        PerformanceHistoryRange.LastHour =>
+                            toUtc.AddHours(-1),
+
+                        PerformanceHistoryRange.Last24Hours =>
+                            toUtc.AddHours(-24),
+
+                        PerformanceHistoryRange.Last7Days =>
+                            toUtc.AddDays(-7),
+
+                        _ =>
+                            toUtc.AddMinutes(-5)
+                    };
+
+                IReadOnlyList<
+                    PerformanceHistoryRecord> records =
+                    await _performanceHistoryRecorder
+                        .GetRecordsAsync(
+                            fromUtc,
+                            toUtc);
+
+                if (SelectedHistoryRange !=
+                    requestedRange)
+                {
+                    return;
+                }
+
+                DisplayedMetricsHistory =
+                    records
+                        .Select(record =>
+                            new SystemMetricsHistoryPoint
+                            {
+                                Timestamp =
+                                    record.Timestamp
+                                        .ToLocalTime(),
+
+                                CpuUsage =
+                                    record.CpuUsage,
+
+                                RamUsage =
+                                    record.RamUsage,
+
+                                DiskUsage =
+                                    record.DiskUsage
+                            })
+                        .ToList();
+
+                _lastPersistentHistoryRefreshUtc =
+                    DateTime.UtcNow;
+            }
+            catch
+            {
+                if (SelectedHistoryRange ==
+                    requestedRange)
+                {
+                    DisplayedMetricsHistory =
+                        Array.Empty<
+                            SystemMetricsHistoryPoint>();
+                }
+            }
+            finally
+            {
+                IsLoadingHistory = false;
             }
         }
 
@@ -551,8 +831,10 @@ namespace WinBoost.App.ViewModels
             OnPropertyChanged(nameof(HealthSummaryBrush));
 
             OnPropertyChanged(nameof(OverallRecommendation));
-            OnPropertyChanged(nameof(RecommendationBackground));
+            OnPropertyChanged(
+                nameof(RecommendationBackground));
         }
+
         private void UpdatePerformanceScore()
         {
             int performanceScore =
@@ -577,10 +859,9 @@ namespace WinBoost.App.ViewModels
             OnPropertyChanged(
                 nameof(HealthStatus));
 
-          
-
             OnPropertyChanged(
                 nameof(HealthSummary));
+
             UpdateSystemSummary();
         }
 
@@ -604,8 +885,8 @@ namespace WinBoost.App.ViewModels
         }
 
         private void LanguageManager_LanguageChanged(
-    object? sender,
-    EventArgs e)
+            object? sender,
+            EventArgs e)
         {
             CpuStatus =
                 GetUsageStatus(
@@ -614,7 +895,8 @@ namespace WinBoost.App.ViewModels
             if (!IsCpuTemperatureAvailable)
             {
                 CpuTemperature =
-                    T("DashboardCpuTemperatureUnavailable");
+                    T(
+                        "DashboardCpuTemperatureUnavailable");
             }
 
             UpdateSystemSummary();

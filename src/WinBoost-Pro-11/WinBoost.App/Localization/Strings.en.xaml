@@ -1296,7 +1296,7 @@
 	</sys:String>
 
 	<sys:String x:Key="DashboardHistoryDescription">
-		CPU, RAM and disk usage over the last 5 minutes.
+		CPU, RAM and disk usage for the selected time range.
 	</sys:String>
 
 	<sys:String x:Key="DashboardCpuTemperatureLabel">
@@ -1305,6 +1305,50 @@
 
 	<sys:String x:Key="DashboardCpuTemperatureUnavailable">
 		Sensor unavailable — this system does not provide CPU temperature data.
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryRangeLive">
+		Live — 5 minutes
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryRangeHour">
+		Last hour
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryRange24Hours">
+		Last 24 hours
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryRange7Days">
+		Last 7 days
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryDiskLegend">
+		Disk
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearButton">
+		Clear history
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearTitle">
+		Clear history
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearConfirmation">
+		Are you sure you want to delete all saved performance history data?
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearSuccessTitle">
+		History cleared
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearSuccess">
+		The performance history was cleared.
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearError">
+		The performance history could not be cleared.
 	</sys:String>
 	
 </ResourceDictionary>

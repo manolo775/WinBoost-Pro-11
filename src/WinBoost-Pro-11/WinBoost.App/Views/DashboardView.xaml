@@ -94,7 +94,7 @@
 
 			<controls:MetricsHistoryChart
 				Grid.Row="4"
-				ItemsSource="{Binding MetricsHistory}"/>
+				ItemsSource="{Binding DisplayedMetricsHistory}"/>
 			
 			<!-- QUICK ACTIONS -->
 

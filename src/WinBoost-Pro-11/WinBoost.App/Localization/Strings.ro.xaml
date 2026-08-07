@@ -1303,7 +1303,7 @@
 	</sys:String>
 
 	<sys:String x:Key="DashboardHistoryDescription">
-		Evoluția utilizării CPU, RAM și disc în ultimele 5 minute.
+		Evoluția utilizării CPU, RAM și disc pentru intervalul selectat.
 	</sys:String>
 
 	<sys:String x:Key="DashboardCpuTemperatureLabel">
@@ -1312,6 +1312,50 @@
 
 	<sys:String x:Key="DashboardCpuTemperatureUnavailable">
 		Senzor indisponibil — acest sistem nu furnizează date despre temperatura procesorului.
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryRangeLive">
+		Live — 5 minute
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryRangeHour">
+		Ultima oră
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryRange24Hours">
+		Ultimele 24 ore
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryRange7Days">
+		Ultimele 7 zile
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryDiskLegend">
+		Disc
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearButton">
+		Șterge istoricul
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearTitle">
+		Ștergere istoric
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearConfirmation">
+		Sigur dorești să ștergi toate datele salvate din istoricul de performanță?
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearSuccessTitle">
+		Istoric șters
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearSuccess">
+		Istoricul de performanță a fost șters.
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryClearError">
+		Istoricul de performanță nu a putut fi șters.
 	</sys:String>
 	
 </ResourceDictionary>
