@@ -857,82 +857,82 @@
 
 							<!-- ANTET -->
 
-							<Grid Margin="0,0,0,8">
+							<Grid Margin="44,0,0,8">
 
 								<Grid.ColumnDefinitions>
 									<ColumnDefinition Width="350"/>
-									<ColumnDefinition Width="115"/>
-									<ColumnDefinition Width="150"/>
-									<ColumnDefinition Width="190"/>
-									<ColumnDefinition Width="80"/>
-									<ColumnDefinition Width="380"/>
+									<ColumnDefinition Width="120"/>
+									<ColumnDefinition Width="155"/>
+									<ColumnDefinition Width="220"/>
+									<ColumnDefinition Width="100"/>
+									<ColumnDefinition Width="470"/>
 								</Grid.ColumnDefinitions>
+
+								<!-- SERVICIU -->
 								<TextBlock
 									Grid.Column="0"
 									Text="{DynamicResource ServicesColumnService}"
+									VerticalAlignment="Center"
 									FontWeight="SemiBold"
 									Foreground="{StaticResource SecondaryTextBrush}"/>
 
+								<!-- STARE -->
 								<TextBlock
 									Grid.Column="1"
 									Text="{DynamicResource ServicesColumnStatus}"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center"
+									TextAlignment="Center"
 									FontWeight="SemiBold"
 									Foreground="{StaticResource SecondaryTextBrush}"/>
 
+								<!-- PORNIRE -->
 								<TextBlock
 									Grid.Column="2"
 									Text="{DynamicResource ServicesColumnStartup}"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center"
+									TextAlignment="Center"
 									FontWeight="SemiBold"
 									Foreground="{StaticResource SecondaryTextBrush}"/>
 
+								<!-- RECOMANDARE -->
 								<TextBlock
 									Grid.Column="3"
 									Text="{DynamicResource ServicesColumnRecommendation}"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center"
+									TextAlignment="Center"
 									FontWeight="SemiBold"
 									Foreground="{StaticResource SecondaryTextBrush}"/>
 
-								<Border
-		                        	Grid.Column="4"
-			                        Width="62"
-			                        Height="32"
-			                        HorizontalAlignment="Center"
-			                        VerticalAlignment="Center"
-		                        	CornerRadius="16"
-			                        Background="#252525"
-			                        BorderBrush="{Binding HealthScoreBrush}"
-		                        	BorderThickness="1">
-
-									<TextBlock
-										Text="{Binding HealthScoreText}"
-										HorizontalAlignment="Center"
-										VerticalAlignment="Center"
-										FontWeight="SemiBold"
-										Foreground="{Binding HealthScoreBrush}"/>
-
-								</Border>
-
+								<!-- SĂNĂTATE -->
 								<TextBlock
-									 Grid.Column="4"
-									 Text="{DynamicResource ServicesColumnHealth}"
-									 FontWeight="SemiBold"
-									 HorizontalAlignment="Center"
-									 Foreground="{StaticResource SecondaryTextBrush}"/>
+									Grid.Column="4"
+									Text="{DynamicResource ServicesColumnHealth}"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center"
+									TextAlignment="Center"
+									FontWeight="SemiBold"
+									Foreground="{StaticResource SecondaryTextBrush}"/>
 
+								<!-- ACȚIUNI -->
 								<TextBlock
-                              Grid.Column="5"
-                              Text="{DynamicResource ServicesColumnActions}"
-                              Margin="20,0,0,0"
-                              FontWeight="SemiBold"
-                              HorizontalAlignment="Center"
-                               TextAlignment="Center"
-                              Foreground="{StaticResource SecondaryTextBrush}"/>
+									Grid.Column="5"
+									Text="{DynamicResource ServicesColumnActions}"
+									HorizontalAlignment="Center"
+									VerticalAlignment="Center"
+									TextAlignment="Center"
+									FontWeight="SemiBold"
+									Foreground="{StaticResource SecondaryTextBrush}"/>
+
 							</Grid>
 
 							<Border
 								Height="1"
 								Margin="0,0,0,5"
 								Background="#454545"/>
-
+							
 							<!-- SERVICII -->
 
 							<ScrollViewer
@@ -953,15 +953,16 @@
 											CornerRadius="6"
 											Background="#303030">
 
-											<Grid>
-												<Grid.ColumnDefinitions>
-													<ColumnDefinition Width="350"/>
-													<ColumnDefinition Width="115"/>
-													<ColumnDefinition Width="150"/>
-													<ColumnDefinition Width="190"/>
-													<ColumnDefinition Width="80"/>
-													<ColumnDefinition Width="380"/>
-												</Grid.ColumnDefinitions>
+											<Grid>	
+											
+											<Grid.ColumnDefinitions>
+												<ColumnDefinition Width="350"/>
+												<ColumnDefinition Width="120"/>
+												<ColumnDefinition Width="155"/>
+												<ColumnDefinition Width="220"/>
+												<ColumnDefinition Width="100"/>
+												<ColumnDefinition Width="470"/>
+											</Grid.ColumnDefinitions>
 												<!-- SERVICIU -->
 
 												<StackPanel Grid.Column="0">
@@ -986,8 +987,10 @@
 												<TextBlock
 													Grid.Column="1"
 													Text="{Binding StartTypeText}"
-													Margin="6,0"
+													Margin="0"
+													HorizontalAlignment="Center"
 													VerticalAlignment="Center"
+													TextAlignment="Center"
 													TextWrapping="Wrap"
 													Foreground="{Binding StatusBrush}"/>
 
@@ -996,11 +999,13 @@
 												<TextBlock
 													Grid.Column="2"
 													Text="{Binding StatusText}"
-													Margin="6,0"
+													Margin="0"
+													HorizontalAlignment="Center"
 													VerticalAlignment="Center"
+													TextAlignment="Center"
 													TextWrapping="Wrap"
 													Foreground="{StaticResource SecondaryTextBrush}"/>
-
+												
 												<!-- RECOMANDARE -->
 
 												<Border
@@ -1053,11 +1058,11 @@
 												<!-- ACȚIUNI -->
 
 												<StackPanel
-		                                            Grid.Column="5"
-		                                            Margin="50,0,0,0"
-		                                            Orientation="Horizontal"
-		                                            HorizontalAlignment="Left"
-		                                            VerticalAlignment="Center">
+                                                      Grid.Column="5"
+                                                      Margin="0"
+                                                      Orientation="Horizontal"
+                                                      HorizontalAlignment="Center"
+                                                      VerticalAlignment="Center">
 
 													<!-- START -->
 

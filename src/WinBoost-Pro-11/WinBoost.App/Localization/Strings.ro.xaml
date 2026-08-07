@@ -202,7 +202,7 @@
 	</sys:String>
 
 	<sys:String x:Key="ServicesEstimatedGainValue">
-		+{0} Health
+		+{0} Sănătate
 	</sys:String>
 
 	<sys:String x:Key="ServicesNoEstimatedGain">
