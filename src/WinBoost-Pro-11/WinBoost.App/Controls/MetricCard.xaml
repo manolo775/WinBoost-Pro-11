@@ -1,17 +1,14 @@
 ﻿<UserControl x:Class="WinBoost.App.Controls.MetricCard"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-             MinWidth="320"
-             MinHeight="190">
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
 	<Border
-		x:Name="CardBorder"
-		Style="{StaticResource MetricCardBorderStyle}"
-		Padding="{StaticResource CardPadding}"
-		CornerRadius="{StaticResource CardCornerRadius}"
-		RenderTransformOrigin="0.5,0.5">
-
+        x:Name="CardBorder"
+        Style="{StaticResource MetricCardBorderStyle}"
+        Padding="{StaticResource CardPadding}"
+        CornerRadius="{StaticResource CardCornerRadius}"
+        RenderTransformOrigin="0.5,0.5">
 
 		<StackPanel>
 
@@ -36,26 +33,27 @@
 			</StackPanel>
 
 			<TextBlock
-                   Text="{Binding Value, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                   Margin="0,14,0,0"
-                   HorizontalAlignment="Center"
-                   TextAlignment="Center"
-                   FontSize="{StaticResource MetricValueFontSize}"
-                    FontWeight="Bold"
-                   Foreground="White"/>
+                Text="{Binding Value, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                Margin="0,14,0,0"
+                HorizontalAlignment="Center"
+                TextAlignment="Center"
+                FontSize="{StaticResource MetricValueFontSize}"
+                FontWeight="Bold"
+                Foreground="White"/>
 
 			<Grid
-		          Height="{StaticResource MetricProgressHeight}"
-		          Margin="0,14,0,0"
-		          Visibility="{Binding ShowProgressBar,
-                         RelativeSource={RelativeSource AncestorType=UserControl},
-                         Converter={StaticResource BooleanToVisibilityConverter}}">
+                Height="{StaticResource MetricProgressHeight}"
+                Margin="0,14,0,0"
+                Visibility="{Binding ShowProgressBar,
+                             RelativeSource={RelativeSource AncestorType=UserControl},
+                             Converter={StaticResource BooleanToVisibilityConverter}}">
 
 				<Border
                     Background="#444444"
                     CornerRadius="7"/>
 
 				<ProgressBar
+					x:Name="MetricProgressBar"
                     Minimum="0"
                     Maximum="100"
                     Value="{Binding ProgressValue, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -86,5 +84,4 @@
 		</StackPanel>
 
 	</Border>
-
 </UserControl>

@@ -406,7 +406,7 @@
 	</sys:String>
 
 	<sys:String x:Key="DashboardMetricUptimeTitle">
-		Timp de funcționare Windows
+		Timp funcționare
 	</sys:String>
 
 	<!-- QUICK ACTIONS -->
