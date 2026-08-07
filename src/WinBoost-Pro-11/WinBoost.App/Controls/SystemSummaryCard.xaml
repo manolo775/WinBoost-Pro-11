@@ -42,6 +42,38 @@
 
 			</StackPanel>
 
+			<!-- TEMPERATURĂ CPU -->
+
+			<Grid Margin="0,8,0,5">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="20"/>
+					<ColumnDefinition Width="*"/>
+				</Grid.ColumnDefinitions>
+
+				<materialDesign:PackIcon
+					Grid.Column="0"
+					Kind="Thermometer"
+					Width="20"
+					Height="20"
+					Foreground="#FFD740"/>
+
+				<StackPanel
+					Grid.Column="1"
+					Margin="10,0,0,0">
+
+					<TextBlock
+						Text="{DynamicResource DashboardCpuTemperatureLabel}"
+						Foreground="#BDBDBD"/>
+
+					<TextBlock
+						Margin="0,3,0,0"
+						Text="{Binding CpuTemperature}"
+						TextWrapping="Wrap"
+						Foreground="#FFD740"/>
+
+				</StackPanel>
+			</Grid>
+			
 			<!-- RAM -->
 
 			<StackPanel

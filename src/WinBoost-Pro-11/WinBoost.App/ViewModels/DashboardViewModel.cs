@@ -40,7 +40,8 @@ namespace WinBoost.App.ViewModels
         private string _diskUsage = "-- %";
         private string _uptime = "--";
         private string _cpuStatus = "Normal";
-
+        private string _cpuTemperature = "--";
+        private bool _isCpuTemperatureAvailable;
         private double _cpuUsageValue;
         private double _ramUsageValue;
         private double _diskUsageValue;
@@ -242,6 +243,38 @@ namespace WinBoost.App.ViewModels
                 }
 
                 _uptime = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public string CpuTemperature
+        {
+            get => _cpuTemperature;
+
+            set
+            {
+                if (_cpuTemperature == value)
+                {
+                    return;
+                }
+
+                _cpuTemperature = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public bool IsCpuTemperatureAvailable
+        {
+            get => _isCpuTemperatureAvailable;
+
+            set
+            {
+                if (_isCpuTemperatureAvailable == value)
+                {
+                    return;
+                }
+
+                _isCpuTemperatureAvailable = value;
                 OnPropertyChanged();
             }
         }
@@ -477,6 +510,14 @@ namespace WinBoost.App.ViewModels
                 Uptime =
                     metrics.Uptime;
 
+                IsCpuTemperatureAvailable =
+                   metrics.CpuTemperature.IsAvailable;
+
+                CpuTemperature =
+                    metrics.CpuTemperature.IsAvailable
+                        ? $"{metrics.CpuTemperature.Celsius:F0} °C"
+                        : T("DashboardCpuTemperatureUnavailable");
+
                 UpdatePerformanceScore();
                 UpdateSystemSummary();
             }
@@ -569,6 +610,12 @@ namespace WinBoost.App.ViewModels
             CpuStatus =
                 GetUsageStatus(
                     CpuUsageValue);
+
+            if (!IsCpuTemperatureAvailable)
+            {
+                CpuTemperature =
+                    T("DashboardCpuTemperatureUnavailable");
+            }
 
             UpdateSystemSummary();
         }

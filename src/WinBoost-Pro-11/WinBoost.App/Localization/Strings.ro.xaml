@@ -1305,5 +1305,13 @@
 	<sys:String x:Key="DashboardHistoryDescription">
 		Evoluția utilizării CPU, RAM și disc în ultimele 5 minute.
 	</sys:String>
+
+	<sys:String x:Key="DashboardCpuTemperatureLabel">
+		Temperatură CPU
+	</sys:String>
+
+	<sys:String x:Key="DashboardCpuTemperatureUnavailable">
+		Senzor indisponibil — acest sistem nu furnizează date despre temperatura procesorului.
+	</sys:String>
 	
 </ResourceDictionary>

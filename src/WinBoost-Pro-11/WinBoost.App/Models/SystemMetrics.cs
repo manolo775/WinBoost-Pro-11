@@ -13,5 +13,8 @@
         public float DiskUsage { get; set; }
 
         public string Uptime { get; set; } = string.Empty;
+
+        public CpuTemperatureInfo CpuTemperature { get; set; } =
+          new CpuTemperatureInfo();
     }
 }
