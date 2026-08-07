@@ -174,9 +174,11 @@ Value="{Binding HealthSummary.OverallHealthScore,
 					<StackPanel>
 
 						<TextBlock
-                            Text="{DynamicResource HealthCardPrivacy}"
+                           Text="{DynamicResource HealthCardPrivacy}"
                             HorizontalAlignment="Center"
-                            Foreground="#B8BCC4"/>
+                            TextAlignment="Center"
+                            TextWrapping="Wrap"
+                             Foreground="#B8BCC4"/>
 
 						<TextBlock
                             Text="{Binding HealthSummary.PrivacyScore,

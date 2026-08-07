@@ -1290,5 +1290,13 @@
 
 	<sys:String x:Key="CommonYes">Yes</sys:String>
 	<sys:String x:Key="CommonNo">No</sys:String>
+
+	<sys:String x:Key="DashboardHistoryTitle">
+		Performance history
+	</sys:String>
+
+	<sys:String x:Key="DashboardHistoryDescription">
+		CPU, RAM and disk usage over the last 5 minutes.
+	</sys:String>
 	
 </ResourceDictionary>

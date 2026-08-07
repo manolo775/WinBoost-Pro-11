@@ -21,6 +21,7 @@
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 
 			<!-- TITLU -->
@@ -86,13 +87,19 @@
                     ProgressValue="0"
                     ShowProgressBar="False"
                     Margin="10"/>
-
+				
 			</UniformGrid>
 
+			<!-- ISTORIC PERFORMANȚĂ -->
+
+			<controls:MetricsHistoryChart
+				Grid.Row="4"
+				ItemsSource="{Binding MetricsHistory}"/>
+			
 			<!-- QUICK ACTIONS -->
 
 			<controls:QuickActionsControl
-                Grid.Row="4"
+                Grid.Row="5"
                 Margin="50,15,50,0"/>
 
 		</Grid>

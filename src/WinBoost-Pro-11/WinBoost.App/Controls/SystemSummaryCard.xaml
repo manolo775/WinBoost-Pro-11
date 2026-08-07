@@ -102,15 +102,28 @@
 			<!-- RECOMANDARE -->
 
 			<Border
-                Margin="0,20,0,0"
-                Padding="15"
-                CornerRadius="8"
-                Background="{Binding RecommendationBackground}">
+				Margin="0,20,0,0"
+				CornerRadius="8"
+				Background="#2E243C">
 
-				<TextBlock
-                    Text="{Binding OverallRecommendation}"
-                    TextWrapping="Wrap"
-                    Foreground="White"/>
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="5"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+
+					<Border
+						Grid.Column="0"
+						Background="#FFD740"
+						CornerRadius="8,0,0,8"/>
+
+					<TextBlock
+						Grid.Column="1"
+						Margin="15"
+						Text="{Binding OverallRecommendation}"
+						TextWrapping="Wrap"
+						Foreground="#FFD740"/>
+				</Grid>
 
 			</Border>
 

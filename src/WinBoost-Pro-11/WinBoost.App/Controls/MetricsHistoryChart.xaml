@@ -1,0 +1,85 @@
+﻿<UserControl x:Class="WinBoost.App.Controls.MetricsHistoryChart"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Border
+        Margin="50,15,50,10"
+        Padding="20"
+        CornerRadius="10"
+        Background="#2B2B2B">
+
+		<StackPanel>
+
+			<TextBlock
+                Text="{DynamicResource DashboardHistoryTitle}"
+                FontSize="22"
+                FontWeight="Bold"
+                Foreground="White"/>
+
+			<TextBlock
+                Margin="0,6,0,16"
+                Text="{DynamicResource DashboardHistoryDescription}"
+                Foreground="#BDBDBD"/>
+
+			<StackPanel
+                Orientation="Horizontal"
+                Margin="0,0,0,12">
+
+				<StackPanel
+                    Orientation="Horizontal"
+                    Margin="0,0,20,0">
+
+					<Ellipse
+                        Width="10"
+                        Height="10"
+                        Margin="0,0,6,0"
+                        Fill="#00C853"/>
+
+					<TextBlock
+                        Text="CPU"
+                        Foreground="#E0E0E0"/>
+				</StackPanel>
+
+				<StackPanel
+                    Orientation="Horizontal"
+                    Margin="0,0,20,0">
+
+					<Ellipse
+                        Width="10"
+                        Height="10"
+                        Margin="0,0,6,0"
+                        Fill="#29B6F6"/>
+
+					<TextBlock
+                        Text="RAM"
+                        Foreground="#E0E0E0"/>
+				</StackPanel>
+
+				<StackPanel Orientation="Horizontal">
+
+					<Ellipse
+                        Width="10"
+                        Height="10"
+                        Margin="0,0,6,0"
+                        Fill="#FFD740"/>
+
+					<TextBlock
+                        Text="Disk"
+                        Foreground="#E0E0E0"/>
+				</StackPanel>
+
+			</StackPanel>
+
+			<Border
+                Height="180"
+                Background="#25272B"
+                CornerRadius="8">
+
+				<Canvas x:Name="ChartCanvas"/>
+
+			</Border>
+
+		</StackPanel>
+
+	</Border>
+</UserControl>

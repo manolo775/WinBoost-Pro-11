@@ -8,7 +8,7 @@ using System.Windows.Threading;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Monitoring;
-
+using System.Collections.Generic;
 
 using WinBoost.App.Localization;
 
@@ -19,6 +19,9 @@ namespace WinBoost.App.ViewModels
     {
         private readonly SystemMonitorService
             _systemMonitorService;
+
+        private readonly SystemMetricsHistoryService
+            _metricsHistoryService;
 
         private readonly SystemHealthCalculator
             _systemHealthCalculator;
@@ -46,6 +49,9 @@ namespace WinBoost.App.ViewModels
         {
             _systemMonitorService =
                 new SystemMonitorService();
+
+            _metricsHistoryService =
+                 new SystemMetricsHistoryService();
 
             _systemHealthCalculator =
                 new SystemHealthCalculator();
@@ -88,6 +94,10 @@ namespace WinBoost.App.ViewModels
         {
             get;
         }
+
+        public IReadOnlyList<SystemMetricsHistoryPoint>
+             MetricsHistory =>
+             _metricsHistoryService.GetSnapshot();
 
         public double CpuUsageValue
         {
@@ -316,7 +326,7 @@ namespace WinBoost.App.ViewModels
                     : Brushes.LimeGreen;
 
         public string HealthSummaryText =>
-     HealthScore >= 85
+             HealthScore >= 85
          ? T(
              "DashboardHealthExcellent",
              HealthScore)
@@ -439,6 +449,13 @@ namespace WinBoost.App.ViewModels
 
                 DiskUsageValue =
                     metrics.DiskUsage;
+
+                _metricsHistoryService.Add(
+                  metrics.CpuUsage,
+                   metrics.RamUsage,
+                   metrics.DiskUsage);
+
+                OnPropertyChanged(nameof(MetricsHistory));
 
                 CpuStatus =
                     GetUsageStatus(
