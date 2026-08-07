@@ -2,9 +2,10 @@
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Optimization;
-
+using WinBoost.App.Helpers;
 namespace WinBoost.App.Controls
 {
     public partial class QuickActionsControl : UserControl
@@ -35,6 +36,15 @@ namespace WinBoost.App.Controls
                 new OptimizationEngine();
         }
 
+        private static string T(
+            string key,
+            params object[] arguments)
+        {
+            return LocalizationHelper.Format(
+                key,
+                arguments);
+        }
+
         private void OpenStartupButton_Click(
             object sender,
             RoutedEventArgs e)
@@ -45,6 +55,19 @@ namespace WinBoost.App.Controls
             if (window is MainWindow mainWindow)
             {
                 mainWindow.NavigateToStartup();
+            }
+        }
+
+        private void OpenServicesButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            Window? window =
+                Window.GetWindow(this);
+
+            if (window is MainWindow mainWindow)
+            {
+                mainWindow.NavigateToServices();
             }
         }
 
@@ -63,8 +86,8 @@ namespace WinBoost.App.Controls
             CleanTempFilesButton.IsEnabled = false;
             OptimizeSystemButton.IsEnabled = false;
 
-            CleanTempFilesButton.Content =
-                "Se curăță...";
+            CleanTempFilesText.Text =
+                T("QuickActionsTempCleaning");
 
             try
             {
@@ -75,17 +98,19 @@ namespace WinBoost.App.Controls
                 string message =
                     result.IsSuccessful
                         ? $"{result.Message}\n\n" +
-                          $"Fișiere șterse: " +
-                          $"{result.DeletedFilesCount}\n" +
-                          $"Spațiu eliberat: " +
-                          $"{result.RecoveredSpaceText}"
+                          $"{T(
+                              "QuickActionsTempDeletedFiles",
+                              result.DeletedFilesCount)}\n" +
+                          $"{T(
+                              "QuickActionsTempRecoveredSpace",
+                              result.RecoveredSpaceText)}"
                         : result.Message;
 
                 MessageBox.Show(
                     message,
                     result.IsSuccessful
-                        ? "Curățare finalizată"
-                        : "Eroare la curățare",
+                        ? T("QuickActionsTempCleanSuccessTitle")
+                        : T("QuickActionsTempCleanErrorTitle"),
                     MessageBoxButton.OK,
                     result.IsSuccessful
                         ? MessageBoxImage.Information
@@ -94,16 +119,16 @@ namespace WinBoost.App.Controls
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Curățarea nu a putut fi finalizată:\n\n" +
-                    $"{ex.Message}",
-                    "Eroare",
+                    $"{T("QuickActionsTempCleanFailed")}\n\n{ex.Message}",
+                    T("CommonError"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
             finally
             {
-                CleanTempFilesButton.Content =
-                    "Clean Temp Files";
+                CleanTempFilesText.SetResourceReference(
+                    TextBlock.TextProperty,
+                    "QuickActionsTempFiles");
 
                 CleanTempFilesButton.IsEnabled = true;
                 OptimizeSystemButton.IsEnabled = true;
@@ -122,17 +147,18 @@ namespace WinBoost.App.Controls
                 return;
             }
 
-            MessageBoxResult startConfirmation =
-                MessageBox.Show(
-                    "WinBoost va executa optimizările disponibile.\n\n" +
-                    "În această etapă va curăța fișierele temporare " +
-                    "ale utilizatorului.\n\n" +
-                    "Dorești să continui?",
-                    "Confirmare optimizare",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
+            Window? window =
+                Window.GetWindow(this);
 
-            if (startConfirmation != MessageBoxResult.Yes)
+            bool confirmed =
+                NativeConfirmationDialog.Ask(
+                    window,
+                    T("QuickActionsOptimizationConfirmationTitle"),
+                    T("QuickActionsOptimizationConfirmationMessage"),
+                    T("CommonYes"),
+                    T("CommonNo"));
+
+            if (!confirmed)
             {
                 return;
             }
@@ -146,39 +172,32 @@ namespace WinBoost.App.Controls
             if (recycleBinStatus.IsSuccessful)
             {
                 recycleBinMessage =
-                    $"Coșul de reciclare conține:\n\n" +
-                    $"• Elemente: {recycleBinStatus.ItemCount}\n" +
-                    $"• Spațiu ocupat: " +
-                    $"{recycleBinStatus.TotalSizeText}\n\n" +
-                    $"Dorești să golești și Coșul de reciclare?\n\n" +
-                    $"Fișierele vor fi șterse definitiv și nu " +
-                    $"vor mai putea fi restaurate.";
+                    T(
+                        "QuickActionsRecycleBinMessage",
+                        recycleBinStatus.ItemCount,
+                        recycleBinStatus.TotalSizeText);
             }
             else
             {
                 recycleBinMessage =
-                    "Nu s-au putut citi informațiile despre " +
-                    "Coșul de reciclare.\n\n" +
-                    "Dorești totuși să încerci golirea acestuia?";
+                    T("QuickActionsRecycleBinReadFailed");
             }
 
-            MessageBoxResult recycleBinConfirmation =
-                MessageBox.Show(
-                    recycleBinMessage,
-                    "Golire Coș de reciclare",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
-
             bool emptyRecycleBin =
-                recycleBinConfirmation == MessageBoxResult.Yes;
+                NativeConfirmationDialog.Ask(
+                    window,
+                    T("QuickActionsRecycleBinTitle"),
+                    recycleBinMessage,
+                    T("CommonYes"),
+                    T("CommonNo"));
 
             _isOptimizingSystem = true;
 
             OptimizeSystemButton.IsEnabled = false;
             CleanTempFilesButton.IsEnabled = false;
 
-            OptimizeSystemButton.Content =
-                "Se optimizează...";
+            OptimizeSystemText.Text =
+                T("QuickActionsOptimizing");
 
             try
             {
@@ -195,8 +214,8 @@ namespace WinBoost.App.Controls
                 MessageBox.Show(
                     message,
                     report.IsSuccessful
-                        ? "Optimizare finalizată"
-                        : "Optimizare finalizată cu erori",
+                        ? T("QuickActionsOptimizationSuccessTitle")
+                        : T("QuickActionsOptimizationWarningTitle"),
                     MessageBoxButton.OK,
                     report.IsSuccessful
                         ? MessageBoxImage.Information
@@ -205,16 +224,16 @@ namespace WinBoost.App.Controls
             catch (Exception ex)
             {
                 MessageBox.Show(
-                    $"Optimizarea nu a putut fi finalizată:\n\n" +
-                    $"{ex.Message}",
-                    "Eroare",
+                    $"{T("QuickActionsOptimizationFailed")}\n\n{ex.Message}",
+                    T("CommonError"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
             finally
             {
-                OptimizeSystemButton.Content =
-                    "Optimize System";
+                OptimizeSystemText.SetResourceReference(
+                    TextBlock.TextProperty,
+                    "QuickActionsOptimize");
 
                 OptimizeSystemButton.IsEnabled = true;
                 CleanTempFilesButton.IsEnabled = true;
@@ -245,21 +264,25 @@ namespace WinBoost.App.Controls
             if (!recycleBinRequested)
             {
                 messageBuilder.AppendLine(
-                    "• Coșul de reciclare nu a fost golit.");
+                    T("QuickActionsRecycleBinNotEmptied"));
             }
 
             messageBuilder.AppendLine();
 
             messageBuilder.AppendLine(
-                $"Elemente eliminate: " +
-                $"{report.TotalDeletedFiles}");
+                T(
+                    "QuickActionsOptimizationDeletedItems",
+                    report.TotalDeletedFiles));
 
             messageBuilder.AppendLine(
-                $"Spațiu eliberat: " +
-                $"{report.RecoveredSpaceText}");
+                T(
+                    "QuickActionsOptimizationRecoveredSpace",
+                    report.RecoveredSpaceText));
 
             messageBuilder.AppendLine(
-                $"Durată: {report.DurationText}");
+                T(
+                    "QuickActionsOptimizationDuration",
+                    report.DurationText));
 
             return messageBuilder.ToString();
         }

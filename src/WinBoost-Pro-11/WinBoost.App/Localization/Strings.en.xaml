@@ -435,6 +435,19 @@
 		Optimize System
 	</sys:String>
 
+	<sys:String x:Key="QuickActionsTempCleanSuccessTitle">Cleanup completed</sys:String>
+	<sys:String x:Key="QuickActionsTempCleanErrorTitle">Cleanup error</sys:String>
+
+	<sys:String x:Key="QuickActionsTempDeletedFiles">
+		Files deleted: {0}
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsTempRecoveredSpace">
+		Space recovered: {0}
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsTempCleaning">Cleaning...</sys:String>
+	
 	<!-- UPTIME -->
 
 	<sys:String x:Key="UptimeDaysHours">
@@ -1191,5 +1204,91 @@
 	<sys:String x:Key="ServicesRecommendationReview">
 		Review
 	</sys:String>
+
+	<sys:String x:Key="TempFilesFolderMissing">
+		The user's temporary folder does not exist.
+	</sys:String>
+
+	<sys:String x:Key="TempFilesCleanupCompleted">
+		Cleanup completed. {0} files were deleted.
+	</sys:String>
+
+	<sys:String x:Key="TempFilesCleanupFailed">
+		Cleanup could not be completed: {0}
+	</sys:String>
+
+	<sys:String x:Key="CommonError">Error</sys:String>
+
+	<sys:String x:Key="QuickActionsTempCleanFailed">
+		Cleanup could not be completed:
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizing">
+		Optimizing...
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationConfirmationTitle">
+		Optimization confirmation
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationConfirmationMessage">
+		WinBoost will run the available optimizations.
+
+		At this stage, it will clean the user's temporary files.
+
+		Do you want to continue?
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsRecycleBinTitle">
+		Empty Recycle Bin
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsRecycleBinMessage">
+		The Recycle Bin contains:
+
+		• Items: {0}
+		• Used space: {1}
+
+		Do you also want to empty the Recycle Bin?
+
+		The files will be permanently deleted and cannot be restored.
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsRecycleBinReadFailed">
+		Recycle Bin information could not be read.
+
+		Do you still want to try emptying it?
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationSuccessTitle">
+		Optimization completed
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationWarningTitle">
+		Optimization completed with warnings
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationFailed">
+		Optimization could not be completed:
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsRecycleBinNotEmptied">
+		• The Recycle Bin was not emptied.
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationDeletedItems">
+		Items removed: {0}
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationRecoveredSpace">
+		Space recovered: {0}
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationDuration">
+		Duration: {0}
+	</sys:String>
+
+	<sys:String x:Key="CommonYes">Yes</sys:String>
+	<sys:String x:Key="CommonNo">No</sys:String>
 	
 </ResourceDictionary>

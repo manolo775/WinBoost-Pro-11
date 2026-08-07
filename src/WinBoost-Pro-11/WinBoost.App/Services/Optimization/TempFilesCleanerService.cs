@@ -3,7 +3,6 @@ using System.IO;
 using System.Threading.Tasks;
 using WinBoost.App.Localization;
 using WinBoost.App.Models;
-using WinBoost.App.Localization;
 
 namespace WinBoost.App.Services.Optimization
 {
@@ -13,7 +12,8 @@ namespace WinBoost.App.Services.Optimization
         {
             return Task.Run(() =>
             {
-                string tempPath = Path.GetTempPath();
+                string tempPath =
+                    Path.GetTempPath();
 
                 long deletedFilesCount = 0;
                 long recoveredBytes = 0;
@@ -24,16 +24,19 @@ namespace WinBoost.App.Services.Optimization
                     {
                         return new OptimizationResult
                         {
-
                             OperationId = "temp-files",
+
                             OperationName =
-                               LocalizationHelper.Get(
-                                  "OptimizationTemporaryFilesOperation"),
+                                LocalizationHelper.Get(
+                                    "OptimizationTemporaryFilesOperation"),
+
                             RequiresAdministrator = false,
 
                             IsSuccessful = true,
+
                             Message =
-                                "Folderul temporar al utilizatorului nu există."
+                                LocalizationHelper.Get(
+                                    "TempFilesFolderMissing")
                         };
                     }
 
@@ -44,37 +47,52 @@ namespace WinBoost.App.Services.Optimization
 
                     return new OptimizationResult
                     {
-
                         OperationId = "temp-files",
+
                         OperationName =
-                                    LocalizationHelper.Get(
-                                   "OptimizationTemporaryFilesOperation"),
+                            LocalizationHelper.Get(
+                                "OptimizationTemporaryFilesOperation"),
+
                         RequiresAdministrator = false,
 
                         IsSuccessful = true,
-                        DeletedFilesCount = deletedFilesCount,
-                        RecoveredBytes = recoveredBytes,
+
+                        DeletedFilesCount =
+                            deletedFilesCount,
+
+                        RecoveredBytes =
+                            recoveredBytes,
+
                         Message =
-                            $"Curățarea a fost finalizată. " +
-                            $"{deletedFilesCount} fișiere au fost eliminate."
+                            LocalizationHelper.Format(
+                                "TempFilesCleanupCompleted",
+                                deletedFilesCount)
                     };
                 }
                 catch (Exception ex)
                 {
                     return new OptimizationResult
                     {
-
                         OperationId = "temp-files",
+
                         OperationName =
-                                 LocalizationHelper.Get(
-                                 "OptimizationTemporaryFilesOperation"),
+                            LocalizationHelper.Get(
+                                "OptimizationTemporaryFilesOperation"),
+
                         RequiresAdministrator = false,
 
                         IsSuccessful = false,
-                        DeletedFilesCount = deletedFilesCount,
-                        RecoveredBytes = recoveredBytes,
+
+                        DeletedFilesCount =
+                            deletedFilesCount,
+
+                        RecoveredBytes =
+                            recoveredBytes,
+
                         Message =
-                            $"Curățarea nu a putut fi finalizată: {ex.Message}"
+                            LocalizationHelper.Format(
+                                "TempFilesCleanupFailed",
+                                ex.Message)
                     };
                 }
             });
@@ -86,7 +104,8 @@ namespace WinBoost.App.Services.Optimization
             ref long recoveredBytes)
         {
             foreach (string filePath
-                     in Directory.EnumerateFiles(directoryPath))
+                     in Directory.EnumerateFiles(
+                         directoryPath))
             {
                 TryDeleteFile(
                     filePath,
@@ -95,7 +114,8 @@ namespace WinBoost.App.Services.Optimization
             }
 
             foreach (string subdirectoryPath
-                     in Directory.EnumerateDirectories(directoryPath))
+                     in Directory.EnumerateDirectories(
+                         directoryPath))
             {
                 try
                 {
@@ -135,10 +155,12 @@ namespace WinBoost.App.Services.Optimization
                     filePath,
                     FileAttributes.Normal);
 
-                File.Delete(filePath);
+                File.Delete(
+                    filePath);
 
                 deletedFilesCount++;
-                recoveredBytes += fileLength;
+                recoveredBytes +=
+                    fileLength;
             }
             catch
             {

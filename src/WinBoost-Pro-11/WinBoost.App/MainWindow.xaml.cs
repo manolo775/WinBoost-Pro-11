@@ -19,7 +19,7 @@ namespace WinBoost.App
         private WindowsUpdateView? _windowsUpdateView;
         private AppsView? _appsView;
         private StartupView? _startupView;
-
+       
         private void LanguageComboBox_SelectionChanged(
      object sender,
      SelectionChangedEventArgs e)
@@ -140,6 +140,13 @@ namespace WinBoost.App
 
             MainContent.Content = _startupView;
             SetActiveButton(StartupButton);
+        }
+        public void NavigateToServices()
+        {
+            _servicesView ??= new ServicesView();
+
+            MainContent.Content = _servicesView;
+            SetActiveButton(ServicesButton);
         }
 
         private void SetActiveButton(Button activeButton)

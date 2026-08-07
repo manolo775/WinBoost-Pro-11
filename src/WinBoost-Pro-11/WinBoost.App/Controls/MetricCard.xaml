@@ -36,11 +36,13 @@
 			</StackPanel>
 
 			<TextBlock
-                Text="{Binding Value, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                Margin="0,14,0,0"
-                FontSize="{StaticResource MetricValueFontSize}"
-                FontWeight="Bold"
-                Foreground="White"/>
+                   Text="{Binding Value, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                   Margin="0,14,0,0"
+                   HorizontalAlignment="Center"
+                   TextAlignment="Center"
+                   FontSize="{StaticResource MetricValueFontSize}"
+                    FontWeight="Bold"
+                   Foreground="White"/>
 
 			<Grid
 		          Height="{StaticResource MetricProgressHeight}"

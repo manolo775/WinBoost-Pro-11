@@ -53,22 +53,23 @@
 				<!-- SERVICES MANAGER -->
 
 				<Button
-                    Height="52"
-                    Margin="8,0,0,8"
-                    IsEnabled="False">
+					x:Name="OpenServicesButton"
+					Height="52"
+					Margin="8,0,0,8"
+					Click="OpenServicesButton_Click">
 
 					<StackPanel Orientation="Horizontal">
 
 						<materialDesign:PackIcon
-                            Kind="Cog"
-                            Width="22"
-                            Height="22"
-                            Margin="0,0,10,0"
-                            Foreground="#4CAF50"/>
+							Kind="Cog"
+							Width="22"
+							Height="22"
+							Margin="0,0,10,0"
+							Foreground="#4CAF50"/>
 
 						<TextBlock
-                            Text="{DynamicResource QuickActionsServices}"
-                            VerticalAlignment="Center"/>
+							Text="{DynamicResource QuickActionsServices}"
+							VerticalAlignment="Center"/>
 
 					</StackPanel>
 
@@ -92,6 +93,7 @@
                             Foreground="#4CAF50"/>
 
 						<TextBlock
+                            x:Name="CleanTempFilesText"
                             Text="{DynamicResource QuickActionsTempFiles}"
                             VerticalAlignment="Center"/>
 
@@ -102,23 +104,24 @@
 				<!-- OPTIMIZE SYSTEM -->
 
 				<Button
-                    x:Name="OptimizeSystemButton"
-                    Height="52"
-                    Margin="8,8,0,0"
-                    Click="OptimizeSystemButton_Click">
+					x:Name="OptimizeSystemButton"
+					Height="52"
+					Margin="8,8,0,0"
+					Click="OptimizeSystemButton_Click">
 
 					<StackPanel Orientation="Horizontal">
 
 						<materialDesign:PackIcon
-                            Kind="Speedometer"
-                            Width="22"
-                            Height="22"
-                            Margin="0,0,10,0"
-                            Foreground="#4CAF50"/>
+							Kind="Speedometer"
+							Width="22"
+							Height="22"
+							Margin="0,0,10,0"
+							Foreground="#4CAF50"/>
 
 						<TextBlock
-                            Text="{DynamicResource QuickActionsOptimize}"
-                            VerticalAlignment="Center"/>
+							x:Name="OptimizeSystemText"
+							Text="{DynamicResource QuickActionsOptimize}"
+							VerticalAlignment="Center"/>
 
 					</StackPanel>
 

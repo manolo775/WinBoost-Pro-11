@@ -427,14 +427,27 @@
 		Manager servicii
 	</sys:String>
 
-	<sys:String x:Key="QuickActionsTempFiles">
-		Curăță fișiere temporare
-	</sys:String>
-
 	<sys:String x:Key="QuickActionsOptimize">
 		Optimizează sistemul
 	</sys:String>
 
+	<sys:String x:Key="QuickActionsTempFiles">
+		Curăță fișiere temporare
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsTempCleanSuccessTitle">Curățare finalizată</sys:String>
+	<sys:String x:Key="QuickActionsTempCleanErrorTitle">Eroare la curățare</sys:String>
+
+	<sys:String x:Key="QuickActionsTempDeletedFiles">
+		Fișiere șterse: {0}
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsTempRecoveredSpace">
+		Spațiu eliberat: {0}
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsTempCleaning">Se curăță...</sys:String>
+	
 	<!-- UPTIME -->
 
 	<sys:String x:Key="UptimeDaysHours">
@@ -1198,5 +1211,91 @@
 	<sys:String x:Key="ServicesRecommendationReview">
 		Verifică
 	</sys:String>
+
+	<sys:String x:Key="TempFilesFolderMissing">
+		Folderul temporar al utilizatorului nu există.
+	</sys:String>
+
+	<sys:String x:Key="TempFilesCleanupCompleted">
+		Curățarea a fost finalizată. {0} fișiere au fost eliminate.
+	</sys:String>
+
+	<sys:String x:Key="TempFilesCleanupFailed">
+		Curățarea nu a putut fi finalizată: {0}
+	</sys:String>
+
+	<sys:String x:Key="CommonError">Eroare</sys:String>
+
+	<sys:String x:Key="QuickActionsTempCleanFailed">
+		Curățarea nu a putut fi finalizată:
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizing">
+		Se optimizează...
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationConfirmationTitle">
+		Confirmare optimizare
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationConfirmationMessage">
+		WinBoost va executa optimizările disponibile.
+
+		În această etapă va curăța fișierele temporare ale utilizatorului.
+
+		Dorești să continui?
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsRecycleBinTitle">
+		Golire Coș de reciclare
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsRecycleBinMessage">
+		Coșul de reciclare conține:
+
+		• Elemente: {0}
+		• Spațiu ocupat: {1}
+
+		Dorești să golești și Coșul de reciclare?
+
+		Fișierele vor fi șterse definitiv și nu vor mai putea fi restaurate.
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsRecycleBinReadFailed">
+		Nu s-au putut citi informațiile despre Coșul de reciclare.
+
+		Dorești totuși să încerci golirea acestuia?
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationSuccessTitle">
+		Optimizare finalizată
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationWarningTitle">
+		Optimizare finalizată cu erori
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationFailed">
+		Optimizarea nu a putut fi finalizată:
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsRecycleBinNotEmptied">
+		• Coșul de reciclare nu a fost golit.
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationDeletedItems">
+		Elemente eliminate: {0}
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationRecoveredSpace">
+		Spațiu eliberat: {0}
+	</sys:String>
+
+	<sys:String x:Key="QuickActionsOptimizationDuration">
+		Durată: {0}
+	</sys:String>
+
+	<sys:String x:Key="CommonYes">Da</sys:String>
+	<sys:String x:Key="CommonNo">Nu</sys:String>
 	
 </ResourceDictionary>
