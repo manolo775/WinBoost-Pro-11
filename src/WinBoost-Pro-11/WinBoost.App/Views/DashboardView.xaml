@@ -1,22 +1,24 @@
-﻿<UserControl x:Class="WinBoost.App.Views.DashboardView"
-             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-             xmlns:controls="clr-namespace:WinBoost.App.Controls"
-             mc:Ignorable="d"
-             d:DesignHeight="800"
-             d:DesignWidth="900">
+﻿<UserControl
+    x:Class="WinBoost.App.Views.DashboardView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:controls="clr-namespace:WinBoost.App.Controls"
+    mc:Ignorable="d"
+    d:DesignHeight="800"
+    d:DesignWidth="900">
 
 	<ScrollViewer
-    Style="{StaticResource WinBoostPageScrollViewerStyle}">
-   
+        Style="{StaticResource WinBoostPageScrollViewerStyle}"
+        HorizontalScrollBarVisibility="Disabled">
 
 		<Grid
-			Margin="0,0,0,10"
-			Background="#1E1E1E">
+            Margin="0,0,0,10"
+            Background="#1E1E1E">
 
 			<Grid.RowDefinitions>
+				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
@@ -29,85 +31,92 @@
 			<!-- TITLU -->
 
 			<TextBlock
-				Grid.Row="0"
-				Text="Dashboard"
-				FontSize="32"
-				FontWeight="Bold"
-				Foreground="White"
-				Margin="40,20,40,0"
-				HorizontalAlignment="Left"
-				VerticalAlignment="Top"/>
+                Grid.Row="0"
+                Text="Dashboard"
+                Margin="40,20,40,0"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top"
+                FontSize="32"
+                FontWeight="Bold"
+                Foreground="White"/>
+
+			<!-- ALERTĂ DE PERFORMANȚĂ -->
+
+			<controls:PerformanceAlertCard
+                Grid.Row="1"/>
 
 			<!-- SYSTEM HEALTH -->
 
 			<controls:HealthCard
-				Grid.Row="1"
-				Margin="50,25,50,5"/>
+                Grid.Row="2"
+                Margin="50,25,50,5"/>
+
+			<!-- SYSTEM SUMMARY -->
 
 			<controls:SystemSummaryCard
-				Grid.Row="2"/>
+                Grid.Row="3"/>
 
 			<!-- CARDURI SISTEM -->
 
 			<UniformGrid
-				Grid.Row="3"
-				Rows="2"
-				Columns="2"
-				Margin="40,10,40,10">
+                Grid.Row="4"
+                Rows="2"
+                Columns="2"
+                Margin="40,10,40,10">
 
 				<controls:MetricCard
-					IconKind="Cpu64Bit"
-					Title="{DynamicResource DashboardMetricCpuTitle}"
-					Value="{Binding CpuUsage}"
-					Status="{Binding CpuStatus}"
-					ProgressValue="{Binding CpuUsageValue}"
-					Margin="10"/>
+                    IconKind="Cpu64Bit"
+                    Title="{DynamicResource DashboardMetricCpuTitle}"
+                    Value="{Binding CpuUsage}"
+                    Status="{Binding CpuStatus}"
+                    ProgressValue="{Binding CpuUsageValue}"
+                    Margin="10"/>
 
 				<controls:MetricCard
-					IconKind="Memory"
-					Title="{DynamicResource DashboardMetricRamTitle}"
-					Value="{Binding RamUsage}"
-					Subtitle="{Binding RamDetails}"
-					Status=""
-					ProgressValue="{Binding RamUsageValue}"
-					Margin="10"/>
+                    IconKind="Memory"
+                    Title="{DynamicResource DashboardMetricRamTitle}"
+                    Value="{Binding RamUsage}"
+                    Subtitle="{Binding RamDetails}"
+                    Status=""
+                    ProgressValue="{Binding RamUsageValue}"
+                    Margin="10"/>
 
 				<controls:MetricCard
-					IconKind="Harddisk"
-					Title="{DynamicResource DashboardMetricDiskTitle}"
-					Value="{Binding DiskUsage}"
-					Status=""
-					ProgressValue="{Binding DiskUsageValue}"
-					Margin="10"/>
+                    IconKind="Harddisk"
+                    Title="{DynamicResource DashboardMetricDiskTitle}"
+                    Value="{Binding DiskUsage}"
+                    Status=""
+                    ProgressValue="{Binding DiskUsageValue}"
+                    Margin="10"/>
 
 				<controls:MetricCard
-					IconKind="ClockOutline"
-					Title="{DynamicResource DashboardMetricUptimeTitle}"
-					Value="{Binding Uptime}"
-					Subtitle=""
-					Status=""
-					ProgressValue="0"
-					ShowProgressBar="False"
-					Margin="10"/>
+                    IconKind="ClockOutline"
+                    Title="{DynamicResource DashboardMetricUptimeTitle}"
+                    Value="{Binding Uptime}"
+                    Subtitle=""
+                    Status=""
+                    ProgressValue="0"
+                    ShowProgressBar="False"
+                    Margin="10"/>
 
 			</UniformGrid>
 
 			<!-- ISTORIC PERFORMANȚĂ -->
 
 			<controls:MetricsHistoryChart
-				Grid.Row="4"
-				ItemsSource="{Binding DisplayedMetricsHistory}"/>
+                Grid.Row="5"
+                ItemsSource="{Binding DisplayedMetricsHistory}"/>
 
 			<!-- ANALIZA PERFORMANȚEI -->
 
 			<controls:PerformanceAnalysisCard
-				Grid.Row="5"/>
+                Grid.Row="6"/>
 
 			<!-- QUICK ACTIONS -->
 
 			<controls:QuickActionsControl
-	        	Grid.Row="6"
-	        	Margin="50,15,50,15"/>
+                Grid.Row="7"
+                Margin="50,15,50,15"/>
 
 		</Grid>
 

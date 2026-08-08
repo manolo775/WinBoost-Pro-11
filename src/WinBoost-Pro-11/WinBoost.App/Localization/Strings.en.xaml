@@ -1462,5 +1462,91 @@
 	<sys:String x:Key="DashboardAnalysisRecommendationCpuTemperatureHigh">
 		CPU temperature is too high. The average is {0} °C and the maximum recorded value is {1} °C. Check system cooling, ventilation openings, and high-usage processes.
 	</sys:String>
+
+	<!-- PERFORMANCE ALERTS -->
+
+	<sys:String x:Key="PerformanceAlertTitle">
+		Performance alert
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertWarning">
+		Warning
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertCritical">
+		Critical alert
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertCpuWarning">
+		CPU usage is high: {0:0.0}% (threshold: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertCpuCritical">
+		CPU usage has reached a critical level: {0:0.0}% (threshold: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRamWarning">
+		RAM usage is high: {0:0.0}% (threshold: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRamCritical">
+		RAM usage has reached a critical level: {0:0.0}% (threshold: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertDiskWarning">
+		Disk usage is high: {0:0.0}% (threshold: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertDiskCritical">
+		Disk usage has reached a critical level: {0:0.0}% (threshold: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertTemperatureWarning">
+		CPU temperature is high: {0:0.0} °C (threshold: {1:0.0} °C).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertTemperatureCritical">
+		CPU temperature has reached a critical level: {0:0.0} °C (threshold: {1:0.0} °C).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertSustainedDuration">
+		The value has remained high for at least {0} seconds.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertDismiss">
+		Dismiss
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertCriticalSoundOption">
+		Sound for critical alerts
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertCriticalSoundDescription">
+		Play a sound when a critical alert is detected.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeatLabel">
+		Repeat critical alert
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeatNever">
+		Do not repeat
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeat5Minutes">
+		After 5 minutes
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeat15Minutes">
+		After 15 minutes
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeat30Minutes">
+		After 30 minutes
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeatDescription">
+		Select the repeat interval for critical alerts.
+	</sys:String>
 	
 </ResourceDictionary>

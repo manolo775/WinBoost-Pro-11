@@ -1469,5 +1469,91 @@
 	<sys:String x:Key="DashboardAnalysisRecommendationCpuTemperatureHigh">
 		Temperatura CPU este prea ridicată. Media este {0} °C, iar valoarea maximă înregistrată este {1} °C. Verifică răcirea sistemului, orificiile de ventilație și procesele cu utilizare mare.
 	</sys:String>
+
+	<!-- ALERTE DE PERFORMANȚĂ -->
+
+	<sys:String x:Key="PerformanceAlertTitle">
+		Alertă de performanță
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertWarning">
+		Avertizare
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertCritical">
+		Alertă critică
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertCpuWarning">
+		Utilizarea CPU este ridicată: {0:0.0}% (prag: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertCpuCritical">
+		Utilizarea CPU a atins un nivel critic: {0:0.0}% (prag: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRamWarning">
+		Utilizarea memoriei RAM este ridicată: {0:0.0}% (prag: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRamCritical">
+		Utilizarea memoriei RAM a atins un nivel critic: {0:0.0}% (prag: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertDiskWarning">
+		Utilizarea discului este ridicată: {0:0.0}% (prag: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertDiskCritical">
+		Utilizarea discului a atins un nivel critic: {0:0.0}% (prag: {1:0.0}%).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertTemperatureWarning">
+		Temperatura CPU este ridicată: {0:0.0} °C (prag: {1:0.0} °C).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertTemperatureCritical">
+		Temperatura CPU a atins un nivel critic: {0:0.0} °C (prag: {1:0.0} °C).
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertSustainedDuration">
+		Valoarea a rămas ridicată timp de cel puțin {0} secunde.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertDismiss">
+		Am înțeles
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertCriticalSoundOption">
+		Sunet pentru alertele critice
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertCriticalSoundDescription">
+		Redă un sunet când este detectată o alertă critică.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeatLabel">
+		Repetă alerta critică
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeatNever">
+		Nu repeta
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeat5Minutes">
+		După 5 minute
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeat15Minutes">
+		După 15 minute
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeat30Minutes">
+		După 30 de minute
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertRepeatDescription">
+		Selectează intervalul de repetare pentru alertele critice.
+	</sys:String>
 	
 </ResourceDictionary>

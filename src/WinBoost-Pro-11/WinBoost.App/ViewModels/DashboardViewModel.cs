@@ -1,14 +1,17 @@
 ﻿using MaterialDesignThemes.Wpf;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using WinBoost.App.Localization;
 using WinBoost.App.Models;
+using WinBoost.App.Services.Alerts;
 using WinBoost.App.Services.Health;
 using WinBoost.App.Services.History;
 using WinBoost.App.Services.Monitoring;
@@ -18,8 +21,7 @@ using WinBoost.App.Helpers;
 
 namespace WinBoost.App.ViewModels
 {
-    public class DashboardViewModel :
-        INotifyPropertyChanged
+    public class DashboardViewModel : INotifyPropertyChanged
     {
         private readonly SystemMonitorService
             _systemMonitorService;
@@ -36,6 +38,9 @@ namespace WinBoost.App.ViewModels
         private readonly
             PerformanceAnalysisRecommendationService
             _performanceAnalysisRecommendationService;
+
+        private readonly PerformanceAlertService
+            _performanceAlertService;
 
         private readonly SystemHealthCalculator
             _systemHealthCalculator;
@@ -96,6 +101,9 @@ namespace WinBoost.App.ViewModels
                             .Information
                 };
 
+        private PerformanceAlert?
+            _latestPerformanceAlert;
+
         public DashboardViewModel()
         {
             _systemMonitorService =
@@ -112,6 +120,18 @@ namespace WinBoost.App.ViewModels
 
             _performanceAnalysisRecommendationService =
                 new PerformanceAnalysisRecommendationService();
+
+            _performanceAlertService =
+                new PerformanceAlertService();
+
+            PerformanceAlerts =
+                new ObservableCollection<
+                    PerformanceAlert>();
+
+            DismissPerformanceAlertCommand =
+                new RelayCommand(
+                    DismissPerformanceAlert,
+                    _ => HasPerformanceAlert);
 
             ClearPerformanceHistoryCommand =
                 new AsyncRelayCommand(
@@ -164,6 +184,195 @@ namespace WinBoost.App.ViewModels
         {
             get;
         }
+
+        public ObservableCollection<PerformanceAlert>
+            PerformanceAlerts
+        {
+            get;
+        }
+
+        public RelayCommand
+            DismissPerformanceAlertCommand
+        {
+            get;
+        }
+
+        public PerformanceAlert?
+            LatestPerformanceAlert
+        {
+            get => _latestPerformanceAlert;
+
+            private set
+            {
+                if (ReferenceEquals(
+                    _latestPerformanceAlert,
+                    value))
+                {
+                    return;
+                }
+
+                _latestPerformanceAlert = value;
+
+                OnPropertyChanged();
+                OnPropertyChanged(
+                    nameof(HasPerformanceAlert));
+
+                OnPropertyChanged(
+                    nameof(PerformanceAlertTitle));
+
+                OnPropertyChanged(
+                    nameof(PerformanceAlertSeverityText));
+
+                OnPropertyChanged(
+                    nameof(PerformanceAlertMessage));
+
+                OnPropertyChanged(
+                    nameof(PerformanceAlertDurationText));
+
+                OnPropertyChanged(
+                    nameof(PerformanceAlertBrush));
+
+                OnPropertyChanged(
+                    nameof(PerformanceAlertBackground));
+
+                OnPropertyChanged(
+                    nameof(PerformanceAlertIcon));
+
+                CommandManager
+                    .InvalidateRequerySuggested();
+            }
+        }
+
+        public bool HasPerformanceAlert =>
+            LatestPerformanceAlert != null;
+
+        public bool IsCriticalAlertSoundEnabled
+        {
+            get =>
+                _performanceAlertService
+                    .Settings
+                    .EnableSoundForCriticalAlerts;
+
+            set
+            {
+                PerformanceAlertSettings settings =
+                    _performanceAlertService.Settings;
+
+                if (settings
+                    .EnableSoundForCriticalAlerts == value)
+                {
+                    return;
+                }
+
+                settings.EnableSoundForCriticalAlerts =
+                    value;
+
+                _performanceAlertService
+                    .UpdateSettings(
+                        settings);
+
+                OnPropertyChanged();
+            }
+        }
+
+        public int SelectedCriticalAlertRepeatIndex
+        {
+            get =>
+                _performanceAlertService
+                    .Settings
+                    .CriticalAlertRepeatIntervalMinutes
+                switch
+                {
+                    0 => 0,
+                    5 => 1,
+                    15 => 2,
+                    30 => 3,
+                    _ => 2
+                };
+
+            set
+            {
+                int repeatIntervalMinutes =
+                    value switch
+                    {
+                        0 => 0,
+                        1 => 5,
+                        2 => 15,
+                        3 => 30,
+                        _ => 15
+                    };
+
+                PerformanceAlertSettings settings =
+                    _performanceAlertService.Settings;
+
+                if (settings
+                    .CriticalAlertRepeatIntervalMinutes ==
+                    repeatIntervalMinutes)
+                {
+                    return;
+                }
+
+                settings
+                    .CriticalAlertRepeatIntervalMinutes =
+                        repeatIntervalMinutes;
+
+                _performanceAlertService
+                    .UpdateSettings(
+                        settings);
+
+                OnPropertyChanged();
+            }
+        }
+
+        public string PerformanceAlertTitle =>
+            T("PerformanceAlertTitle");
+
+        public string PerformanceAlertSeverityText =>
+            LatestPerformanceAlert?.Severity ==
+            PerformanceAlertSeverity.Critical
+                ? T("PerformanceAlertCritical")
+                : T("PerformanceAlertWarning");
+
+        public string PerformanceAlertMessage =>
+            GetPerformanceAlertMessage();
+
+        public string PerformanceAlertDurationText =>
+            LatestPerformanceAlert == null
+                ? string.Empty
+                : T(
+                    "PerformanceAlertSustainedDuration",
+                    Math.Max(
+                        1,
+                        (int)Math.Round(
+                            LatestPerformanceAlert
+                                .SustainedDuration
+                                .TotalSeconds)));
+
+        public Brush PerformanceAlertBrush =>
+            LatestPerformanceAlert?.Severity ==
+            PerformanceAlertSeverity.Critical
+                ? Brushes.OrangeRed
+                : Brushes.Gold;
+
+        public Brush PerformanceAlertBackground =>
+            LatestPerformanceAlert?.Severity ==
+            PerformanceAlertSeverity.Critical
+                ? new SolidColorBrush(
+                    Color.FromRgb(
+                        74,
+                        37,
+                        37))
+                : new SolidColorBrush(
+                    Color.FromRgb(
+                        74,
+                        61,
+                        34));
+
+        public PackIconKind PerformanceAlertIcon =>
+            LatestPerformanceAlert?.Severity ==
+            PerformanceAlertSeverity.Critical
+                ? PackIconKind.AlertCircle
+                : PackIconKind.Alert;
 
         public IReadOnlyList<SystemMetricsHistoryPoint>
             MetricsHistory =>
@@ -786,6 +995,9 @@ namespace WinBoost.App.ViewModels
                     await _systemMonitorService
                         .GetSystemMetricsAsync();
 
+                ProcessPerformanceAlerts(
+                    metrics);
+
                 try
                 {
                     await _performanceHistoryRecorder
@@ -1116,6 +1328,170 @@ namespace WinBoost.App.ViewModels
                             PerformanceHistoryRecord>());
         }
 
+        private void ProcessPerformanceAlerts(
+    SystemMetrics metrics)
+        {
+            try
+            {
+                IReadOnlyList<PerformanceAlert>
+                    newAlerts =
+                        _performanceAlertService
+                            .Evaluate(
+                                metrics);
+
+                foreach (PerformanceAlert alert
+                         in newAlerts)
+                {
+                    PerformanceAlerts.Insert(
+                        0,
+                        alert);
+                }
+
+                while (PerformanceAlerts.Count > 20)
+                {
+                    PerformanceAlerts.RemoveAt(
+                        PerformanceAlerts.Count - 1);
+                }
+
+                PerformanceAlert? mostImportantAlert =
+                    newAlerts
+                        .OrderByDescending(
+                            alert =>
+                                alert.Severity)
+                        .FirstOrDefault();
+
+                if (mostImportantAlert != null)
+                {
+                    LatestPerformanceAlert =
+                        mostImportantAlert;
+
+                    _ = PlayCriticalAlertSoundIfEnabledAsync(
+                       mostImportantAlert);
+                }
+            }
+            catch
+            {
+                // Alertele nu trebuie să blocheze
+                // monitorizarea principală.
+            }
+        }
+
+        private async Task
+    PlayCriticalAlertSoundIfEnabledAsync(
+        PerformanceAlert alert)
+        {
+            if (alert.Severity !=
+                PerformanceAlertSeverity.Critical)
+            {
+                return;
+            }
+
+            if (!_performanceAlertService
+                .Settings
+                .EnableSoundForCriticalAlerts)
+            {
+                return;
+            }
+
+            try
+            {
+                const int soundRepetitions = 3;
+
+                for (int index = 0;
+                     index < soundRepetitions;
+                     index++)
+                {
+                    System.Media.SystemSounds
+                        .Exclamation
+                        .Play();
+
+                    if (index <
+                        soundRepetitions - 1)
+                    {
+                        await Task.Delay(
+                            TimeSpan.FromSeconds(1));
+                    }
+                }
+            }
+            catch
+            {
+                // Lipsa sunetului nu trebuie să
+                // afecteze funcționarea aplicației.
+            }
+        }
+
+        private string GetPerformanceAlertMessage()
+        {
+            if (LatestPerformanceAlert == null)
+            {
+                return string.Empty;
+            }
+
+            string resourceKey =
+                (LatestPerformanceAlert.Type,
+                 LatestPerformanceAlert.Severity)
+                switch
+                {
+                    (
+                        PerformanceAlertType.CpuHigh,
+                        PerformanceAlertSeverity.Critical) =>
+                        "PerformanceAlertCpuCritical",
+
+                    (
+                        PerformanceAlertType.CpuHigh,
+                        _) =>
+                        "PerformanceAlertCpuWarning",
+
+                    (
+                        PerformanceAlertType.RamHigh,
+                        PerformanceAlertSeverity.Critical) =>
+                        "PerformanceAlertRamCritical",
+
+                    (
+                        PerformanceAlertType.RamHigh,
+                        _) =>
+                        "PerformanceAlertRamWarning",
+
+                    (
+                        PerformanceAlertType.DiskHigh,
+                        PerformanceAlertSeverity.Critical) =>
+                        "PerformanceAlertDiskCritical",
+
+                    (
+                        PerformanceAlertType.DiskHigh,
+                        _) =>
+                        "PerformanceAlertDiskWarning",
+
+                    (
+                        PerformanceAlertType
+                            .CpuTemperatureHigh,
+                        PerformanceAlertSeverity.Critical) =>
+                        "PerformanceAlertTemperatureCritical",
+
+                    _ =>
+                        "PerformanceAlertTemperatureWarning"
+                };
+
+            return T(
+                resourceKey,
+                LatestPerformanceAlert.CurrentValue,
+                LatestPerformanceAlert.Threshold);
+        }
+
+        private void DismissPerformanceAlert(
+            object? parameter)
+        {
+            if (LatestPerformanceAlert == null)
+            {
+                return;
+            }
+
+            LatestPerformanceAlert.IsAcknowledged =
+                true;
+
+            LatestPerformanceAlert = null;
+        }
+
         private static PerformanceHistoryAnalysis
             CreateEmptyPerformanceAnalysis()
         {
@@ -1415,6 +1791,18 @@ namespace WinBoost.App.ViewModels
             }
 
             UpdateSystemSummary();
+
+            OnPropertyChanged(
+                nameof(PerformanceAlertTitle));
+
+            OnPropertyChanged(
+                nameof(PerformanceAlertSeverityText));
+
+            OnPropertyChanged(
+                nameof(PerformanceAlertMessage));
+
+            OnPropertyChanged(
+                nameof(PerformanceAlertDurationText));
         }
 
         public event PropertyChangedEventHandler?

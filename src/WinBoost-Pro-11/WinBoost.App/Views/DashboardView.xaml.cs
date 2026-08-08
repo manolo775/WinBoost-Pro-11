@@ -6,17 +6,24 @@ namespace WinBoost.App.Views
 {
     public partial class DashboardView : UserControl
     {
-        private readonly DashboardViewModel _viewModel;
+        private readonly DashboardViewModel
+            _viewModel;
 
         public DashboardView()
         {
             InitializeComponent();
 
-            _viewModel = new DashboardViewModel();
-            DataContext = _viewModel;
+            _viewModel =
+                new DashboardViewModel();
 
-            Loaded += DashboardView_Loaded;
-            Unloaded += DashboardView_Unloaded;
+            DataContext =
+                _viewModel;
+
+            Loaded +=
+                DashboardView_Loaded;
+
+            Unloaded +=
+                DashboardView_Unloaded;
         }
 
         private void DashboardView_Loaded(
