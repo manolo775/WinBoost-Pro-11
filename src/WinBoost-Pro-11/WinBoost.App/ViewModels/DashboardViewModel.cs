@@ -30,6 +30,13 @@ namespace WinBoost.App.ViewModels
         private readonly PerformanceHistoryRecorder
             _performanceHistoryRecorder;
 
+        private readonly PerformanceHistoryAnalysisService
+            _performanceHistoryAnalysisService;
+
+        private readonly
+            PerformanceAnalysisRecommendationService
+            _performanceAnalysisRecommendationService;
+
         private readonly SystemHealthCalculator
             _systemHealthCalculator;
 
@@ -66,6 +73,29 @@ namespace WinBoost.App.ViewModels
             _displayedMetricsHistory =
                 Array.Empty<SystemMetricsHistoryPoint>();
 
+        private PerformanceHistoryAnalysis
+            _performanceAnalysis =
+                new PerformanceHistoryAnalysis
+                {
+                    CpuTrend = PerformanceTrend.Unknown,
+                    RamTrend = PerformanceTrend.Unknown,
+                    DiskTrend = PerformanceTrend.Unknown,
+                    OverallTrend = PerformanceTrend.Unknown
+                };
+
+        private PerformanceAnalysisRecommendation
+            _performanceRecommendation =
+                new PerformanceAnalysisRecommendation
+                {
+                    Type =
+                        PerformanceAnalysisRecommendationType
+                            .InsufficientData,
+
+                    Severity =
+                        PerformanceAnalysisSeverity
+                            .Information
+                };
+
         public DashboardViewModel()
         {
             _systemMonitorService =
@@ -76,6 +106,12 @@ namespace WinBoost.App.ViewModels
 
             _performanceHistoryRecorder =
                 new PerformanceHistoryRecorder();
+
+            _performanceHistoryAnalysisService =
+                new PerformanceHistoryAnalysisService();
+
+            _performanceAnalysisRecommendationService =
+                new PerformanceAnalysisRecommendationService();
 
             ClearPerformanceHistoryCommand =
                 new AsyncRelayCommand(
@@ -150,6 +186,185 @@ namespace WinBoost.App.ViewModels
 
         public bool HasDisplayedHistory =>
             DisplayedMetricsHistory.Count > 0;
+
+        public PerformanceHistoryAnalysis
+            PerformanceAnalysis
+        {
+            get => _performanceAnalysis;
+
+            private set
+            {
+                _performanceAnalysis = value;
+
+                PerformanceRecommendation =
+                    _performanceAnalysisRecommendationService
+                        .CreateRecommendation(
+                            value);
+
+                OnPropertyChanged();
+                OnPropertyChanged(
+                    nameof(HasPerformanceAnalysis));
+
+                NotifyPerformanceAnalysisProperties();
+            }
+        }
+
+        public bool HasPerformanceAnalysis =>
+            PerformanceAnalysis.HasEnoughData;
+
+        public bool HasCpuTemperatureAnalysis =>
+            PerformanceAnalysis
+                .AverageCpuTemperature
+                .HasValue &&
+            PerformanceAnalysis
+                .MinimumCpuTemperature
+                .HasValue &&
+            PerformanceAnalysis
+                .MaximumCpuTemperature
+                .HasValue;
+
+        public string CpuTemperatureAnalysisText =>
+            HasCpuTemperatureAnalysis
+                ? T(
+                    "DashboardAnalysisTemperatureStatistics",
+                    PerformanceAnalysis
+                        .AverageCpuTemperature!
+                        .Value
+                        .ToString("F1"),
+                    PerformanceAnalysis
+                        .MinimumCpuTemperature!
+                        .Value
+                        .ToString("F1"),
+                    PerformanceAnalysis
+                        .MaximumCpuTemperature!
+                        .Value
+                        .ToString("F1"))
+                : string.Empty;
+
+        public PerformanceAnalysisRecommendation
+            PerformanceRecommendation
+        {
+            get => _performanceRecommendation;
+
+            private set
+            {
+                _performanceRecommendation = value;
+
+                OnPropertyChanged();
+                OnPropertyChanged(
+                    nameof(PerformanceRecommendationText));
+
+                OnPropertyChanged(
+                    nameof(PerformanceRecommendationBrush));
+
+                OnPropertyChanged(
+                    nameof(PerformanceRecommendationBackground));
+            }
+        }
+
+        public string PerformanceRecommendationText =>
+            GetPerformanceRecommendationText();
+
+        public Brush PerformanceRecommendationBrush =>
+            PerformanceRecommendation.Severity switch
+            {
+                PerformanceAnalysisSeverity.Good =>
+                    Brushes.LimeGreen,
+
+                PerformanceAnalysisSeverity.Warning =>
+                    Brushes.Gold,
+
+                PerformanceAnalysisSeverity.Critical =>
+                    Brushes.OrangeRed,
+
+                _ =>
+                    Brushes.LightGray
+            };
+
+        public Brush
+            PerformanceRecommendationBackground =>
+            PerformanceRecommendation.Severity switch
+            {
+                PerformanceAnalysisSeverity.Good =>
+                    new SolidColorBrush(
+                        Color.FromRgb(
+                            31,
+                            58,
+                            36)),
+
+                PerformanceAnalysisSeverity.Warning =>
+                    new SolidColorBrush(
+                        Color.FromRgb(
+                            74,
+                            61,
+                            34)),
+
+                PerformanceAnalysisSeverity.Critical =>
+                    new SolidColorBrush(
+                        Color.FromRgb(
+                            74,
+                            37,
+                            37)),
+
+                _ =>
+                    new SolidColorBrush(
+                        Color.FromRgb(
+                            53,
+                            40,
+                            68))
+            };
+
+        public string AnalysisSampleCountText =>
+            T(
+                "DashboardAnalysisSamples",
+                PerformanceAnalysis.SampleCount);
+
+        public string CpuAnalysisTrendText =>
+            GetPerformanceTrendText(
+                PerformanceAnalysis.CpuTrend);
+
+        public string RamAnalysisTrendText =>
+            GetPerformanceTrendText(
+                PerformanceAnalysis.RamTrend);
+
+        public string DiskAnalysisTrendText =>
+            GetPerformanceTrendText(
+                PerformanceAnalysis.DiskTrend);
+
+        public string OverallAnalysisTrendText =>
+            GetPerformanceTrendText(
+                PerformanceAnalysis.OverallTrend);
+
+        public string CpuAnalysisChangeText =>
+            GetPerformanceChangeText(
+                PerformanceAnalysis.CpuTrend,
+                PerformanceAnalysis.CpuChange);
+
+        public string RamAnalysisChangeText =>
+            GetPerformanceChangeText(
+                PerformanceAnalysis.RamTrend,
+                PerformanceAnalysis.RamChange);
+
+        public string DiskAnalysisChangeText =>
+            GetPerformanceChangeText(
+                PerformanceAnalysis.DiskTrend,
+                PerformanceAnalysis.DiskChange);
+
+        public Brush CpuAnalysisTrendBrush =>
+            GetPerformanceTrendBrush(
+                PerformanceAnalysis.CpuTrend);
+
+        public Brush RamAnalysisTrendBrush =>
+            GetPerformanceTrendBrush(
+                PerformanceAnalysis.RamTrend);
+
+        public Brush DiskAnalysisTrendBrush =>
+            GetPerformanceTrendBrush(
+                PerformanceAnalysis.DiskTrend);
+
+        public Brush OverallAnalysisTrendBrush =>
+            GetPerformanceTrendBrush(
+                PerformanceAnalysis.OverallTrend);
 
         public bool IsLoadingHistory
         {
@@ -610,6 +825,8 @@ namespace WinBoost.App.ViewModels
                     DisplayedMetricsHistory =
                         _metricsHistoryService
                             .GetSnapshot();
+
+                    UpdateLivePerformanceAnalysis();
                 }
                 else if (
                     DateTime.UtcNow -
@@ -696,6 +913,9 @@ namespace WinBoost.App.ViewModels
                     DisplayedMetricsHistory =
                         Array.Empty<
                             SystemMetricsHistoryPoint>();
+
+                    PerformanceAnalysis =
+                        CreateEmptyPerformanceAnalysis();
                 }
 
                 MessageBox.Show(
@@ -729,6 +949,8 @@ namespace WinBoost.App.ViewModels
                     _metricsHistoryService
                         .GetSnapshot();
 
+                UpdateLivePerformanceAnalysis();
+
                 return;
             }
 
@@ -760,12 +982,43 @@ namespace WinBoost.App.ViewModels
                             toUtc.AddMinutes(-5)
                     };
 
+                TimeSpan rangeDuration =
+                    toUtc - fromUtc;
+
+                DateTime previousToUtc =
+                    fromUtc;
+
+                DateTime previousFromUtc =
+                    previousToUtc - rangeDuration;
+
+                Task<IReadOnlyList<
+                    PerformanceHistoryRecord>>
+                    currentRecordsTask =
+                        _performanceHistoryRecorder
+                            .GetRecordsAsync(
+                                fromUtc,
+                                toUtc);
+
+                Task<IReadOnlyList<
+                    PerformanceHistoryRecord>>
+                    previousRecordsTask =
+                        _performanceHistoryRecorder
+                            .GetRecordsAsync(
+                                previousFromUtc,
+                                previousToUtc);
+
+                await Task.WhenAll(
+                    currentRecordsTask,
+                    previousRecordsTask);
+
                 IReadOnlyList<
                     PerformanceHistoryRecord> records =
-                    await _performanceHistoryRecorder
-                        .GetRecordsAsync(
-                            fromUtc,
-                            toUtc);
+                    await currentRecordsTask;
+
+                IReadOnlyList<
+                    PerformanceHistoryRecord>
+                    previousRecords =
+                        await previousRecordsTask;
 
                 if (SelectedHistoryRange !=
                     requestedRange)
@@ -793,6 +1046,12 @@ namespace WinBoost.App.ViewModels
                             })
                         .ToList();
 
+                PerformanceAnalysis =
+                    _performanceHistoryAnalysisService
+                        .Analyze(
+                            records,
+                            previousRecords);
+
                 _lastPersistentHistoryRefreshUtc =
                     DateTime.UtcNow;
             }
@@ -804,12 +1063,258 @@ namespace WinBoost.App.ViewModels
                     DisplayedMetricsHistory =
                         Array.Empty<
                             SystemMetricsHistoryPoint>();
+
+                    PerformanceAnalysis =
+                        CreateEmptyPerformanceAnalysis();
                 }
             }
             finally
             {
                 IsLoadingHistory = false;
+
+                if (SelectedHistoryRange !=
+                    requestedRange)
+                {
+                    _ = LoadSelectedHistoryAsync();
+                }
             }
+        }
+
+        private void UpdateLivePerformanceAnalysis()
+        {
+            IReadOnlyList<SystemMetricsHistoryPoint>
+                livePoints =
+                    _metricsHistoryService
+                        .GetSnapshot();
+
+            List<PerformanceHistoryRecord>
+                liveRecords =
+                    livePoints
+                        .Select(point =>
+                            new PerformanceHistoryRecord
+                            {
+                                Timestamp =
+                                    point.Timestamp
+                                        .ToUniversalTime(),
+
+                                CpuUsage =
+                                    point.CpuUsage,
+
+                                RamUsage =
+                                    point.RamUsage,
+
+                                DiskUsage =
+                                    point.DiskUsage
+                            })
+                        .ToList();
+
+            PerformanceAnalysis =
+                _performanceHistoryAnalysisService
+                    .Analyze(
+                        liveRecords,
+                        Array.Empty<
+                            PerformanceHistoryRecord>());
+        }
+
+        private static PerformanceHistoryAnalysis
+            CreateEmptyPerformanceAnalysis()
+        {
+            return new PerformanceHistoryAnalysis
+            {
+                HasEnoughData = false,
+                SampleCount = 0,
+                CpuTrend = PerformanceTrend.Unknown,
+                RamTrend = PerformanceTrend.Unknown,
+                DiskTrend = PerformanceTrend.Unknown,
+                OverallTrend = PerformanceTrend.Unknown
+            };
+        }
+
+        private string
+            GetPerformanceRecommendationText()
+        {
+            return PerformanceRecommendation.Type switch
+            {
+                PerformanceAnalysisRecommendationType
+                    .Good =>
+                    T(
+                        "DashboardAnalysisRecommendationGood"),
+
+                PerformanceAnalysisRecommendationType
+                    .CpuHigh =>
+                    T(
+                        "DashboardAnalysisRecommendationCpuHigh",
+                        PerformanceAnalysis
+                            .AverageCpuUsage
+                            .ToString("F1")),
+
+                PerformanceAnalysisRecommendationType
+                    .CpuIncreasing =>
+                    T(
+                        "DashboardAnalysisRecommendationCpuIncreasing",
+                        Math.Abs(
+                                PerformanceAnalysis
+                                    .CpuChange)
+                            .ToString("F1")),
+
+                PerformanceAnalysisRecommendationType
+                    .CpuTemperatureHigh =>
+                    T(
+                        "DashboardAnalysisRecommendationCpuTemperatureHigh",
+                        PerformanceAnalysis
+                            .AverageCpuTemperature
+                            .GetValueOrDefault()
+                            .ToString("F1"),
+                        PerformanceAnalysis
+                            .MaximumCpuTemperature
+                            .GetValueOrDefault()
+                            .ToString("F1")),
+
+                PerformanceAnalysisRecommendationType
+                    .RamHigh =>
+                    T(
+                        "DashboardAnalysisRecommendationRamHigh",
+                        PerformanceAnalysis
+                            .AverageRamUsage
+                            .ToString("F1")),
+
+                PerformanceAnalysisRecommendationType
+                    .RamIncreasing =>
+                    T(
+                        "DashboardAnalysisRecommendationRamIncreasing",
+                        Math.Abs(
+                                PerformanceAnalysis
+                                    .RamChange)
+                            .ToString("F1")),
+
+                PerformanceAnalysisRecommendationType
+                    .DiskHigh =>
+                    T(
+                        "DashboardAnalysisRecommendationDiskHigh",
+                        PerformanceAnalysis
+                            .AverageDiskUsage
+                            .ToString("F1")),
+
+                PerformanceAnalysisRecommendationType
+                    .DiskIncreasing =>
+                    T(
+                        "DashboardAnalysisRecommendationDiskIncreasing",
+                        Math.Abs(
+                                PerformanceAnalysis
+                                    .DiskChange)
+                            .ToString("F1")),
+
+                PerformanceAnalysisRecommendationType
+                    .MultipleIssues =>
+                    T(
+                        "DashboardAnalysisRecommendationMultiple"),
+
+                _ =>
+                    T(
+                        "DashboardAnalysisRecommendationInsufficient")
+            };
+        }
+
+        private void
+            NotifyPerformanceAnalysisProperties()
+        {
+            OnPropertyChanged(
+                nameof(HasCpuTemperatureAnalysis));
+
+            OnPropertyChanged(
+                nameof(CpuTemperatureAnalysisText));
+
+            OnPropertyChanged(
+                nameof(AnalysisSampleCountText));
+
+            OnPropertyChanged(
+                nameof(CpuAnalysisTrendText));
+
+            OnPropertyChanged(
+                nameof(RamAnalysisTrendText));
+
+            OnPropertyChanged(
+                nameof(DiskAnalysisTrendText));
+
+            OnPropertyChanged(
+                nameof(OverallAnalysisTrendText));
+
+            OnPropertyChanged(
+                nameof(CpuAnalysisChangeText));
+
+            OnPropertyChanged(
+                nameof(RamAnalysisChangeText));
+
+            OnPropertyChanged(
+                nameof(DiskAnalysisChangeText));
+
+            OnPropertyChanged(
+                nameof(CpuAnalysisTrendBrush));
+
+            OnPropertyChanged(
+                nameof(RamAnalysisTrendBrush));
+
+            OnPropertyChanged(
+                nameof(DiskAnalysisTrendBrush));
+
+            OnPropertyChanged(
+                nameof(OverallAnalysisTrendBrush));
+        }
+
+        private static string GetPerformanceTrendText(
+            PerformanceTrend trend)
+        {
+            return trend switch
+            {
+                PerformanceTrend.Improving =>
+                    T(
+                        "DashboardAnalysisTrendImproving"),
+
+                PerformanceTrend.Stable =>
+                    T(
+                        "DashboardAnalysisTrendStable"),
+
+                PerformanceTrend.Degrading =>
+                    T(
+                        "DashboardAnalysisTrendDegrading"),
+
+                _ =>
+                    T(
+                        "DashboardAnalysisTrendUnknown")
+            };
+        }
+
+        private static string
+            GetPerformanceChangeText(
+                PerformanceTrend trend,
+                double change)
+        {
+            if (trend == PerformanceTrend.Unknown)
+            {
+                return "--";
+            }
+
+            return
+                $"{change:+0.0;-0.0;0.0} %";
+        }
+
+        private static Brush GetPerformanceTrendBrush(
+            PerformanceTrend trend)
+        {
+            return trend switch
+            {
+                PerformanceTrend.Improving =>
+                    Brushes.LimeGreen,
+
+                PerformanceTrend.Stable =>
+                    Brushes.Gold,
+
+                PerformanceTrend.Degrading =>
+                    Brushes.OrangeRed,
+
+                _ =>
+                    Brushes.LightGray
+            };
         }
 
         private void UpdateSystemSummary()
@@ -863,6 +1368,16 @@ namespace WinBoost.App.ViewModels
                 nameof(HealthSummary));
 
             UpdateSystemSummary();
+            NotifyPerformanceAnalysisProperties();
+
+            OnPropertyChanged(
+                nameof(PerformanceRecommendationText));
+
+            OnPropertyChanged(
+                nameof(PerformanceRecommendationBrush));
+
+            OnPropertyChanged(
+                nameof(PerformanceRecommendationBackground));
         }
 
         private static string GetUsageStatus(

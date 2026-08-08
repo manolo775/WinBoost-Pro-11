@@ -1,0 +1,555 @@
+﻿<UserControl
+    x:Class="WinBoost.App.Controls.PerformanceAnalysisCard"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+	<Border
+        Margin="50,15,50,10"
+        Padding="20"
+        CornerRadius="10"
+        Background="#2B2B2B">
+
+		<StackPanel>
+
+			<!-- TITLU ȘI SELECTAREA PERIOADEI -->
+
+			<Grid Margin="0,0,0,18">
+
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="*"/>
+					<ColumnDefinition Width="Auto"/>
+				</Grid.ColumnDefinitions>
+
+				<StackPanel Grid.Column="0">
+
+					<TextBlock
+						Text="{DynamicResource DashboardAnalysisTitle}"
+						FontSize="22"
+						FontWeight="Bold"
+						Foreground="White"/>
+
+					<TextBlock
+						Margin="0,6,15,0"
+						Text="{DynamicResource DashboardAnalysisDescription}"
+						TextWrapping="Wrap"
+						Foreground="#BDBDBD"/>
+
+				</StackPanel>
+
+				<ComboBox
+					Grid.Column="1"
+					Width="170"
+					Height="36"
+					VerticalAlignment="Top"
+					SelectedIndex="{Binding SelectedHistoryRangeIndex,
+                                Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}">
+
+					<ComboBoxItem
+						Content="{DynamicResource DashboardHistoryRangeLive}"/>
+
+					<ComboBoxItem
+						Content="{DynamicResource DashboardHistoryRangeHour}"/>
+
+					<ComboBoxItem
+						Content="{DynamicResource DashboardHistoryRange24Hours}"/>
+
+					<ComboBoxItem
+						Content="{DynamicResource DashboardHistoryRange7Days}"/>
+
+				</ComboBox>
+
+			</Grid>
+
+			<!-- MESAJ FĂRĂ DATE -->
+
+			<TextBlock
+                Text="{DynamicResource DashboardAnalysisNoData}"
+                TextWrapping="Wrap"
+                Foreground="#FFD740">
+
+				<TextBlock.Style>
+					<Style TargetType="TextBlock">
+						<Setter
+                            Property="Visibility"
+                            Value="Collapsed"/>
+
+						<Style.Triggers>
+							<DataTrigger
+                                Binding="{Binding HasPerformanceAnalysis}"
+                                Value="False">
+
+								<Setter
+                                    Property="Visibility"
+                                    Value="Visible"/>
+
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</TextBlock.Style>
+
+			</TextBlock>
+
+			<!-- STATISTICI -->
+
+			<UniformGrid Columns="3">
+
+				<UniformGrid.Style>
+					<Style TargetType="UniformGrid">
+						<Setter
+                            Property="Visibility"
+                            Value="Collapsed"/>
+
+						<Style.Triggers>
+							<DataTrigger
+                                Binding="{Binding HasPerformanceAnalysis}"
+                                Value="True">
+
+								<Setter
+                                    Property="Visibility"
+                                    Value="Visible"/>
+
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</UniformGrid.Style>
+
+				<!-- CPU -->
+
+				<Border
+                    Margin="4"
+                    Padding="14"
+                    CornerRadius="8"
+                    Background="#25272B">
+
+					<StackPanel>
+
+						<TextBlock
+                            Text="{DynamicResource DashboardAnalysisCpu}"
+                            HorizontalAlignment="Center"
+                            FontSize="17"
+                            FontWeight="SemiBold"
+                            Foreground="#00C853"/>
+
+						<TextBlock
+                            Margin="0,10,0,12"
+                            Text="{Binding PerformanceAnalysis.AverageCpuUsage,
+                                           StringFormat={}{0:F1} %}"
+                            HorizontalAlignment="Center"
+                            FontSize="28"
+                            FontWeight="Bold"
+                            Foreground="White"/>
+
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+
+							<StackPanel Grid.Column="0">
+
+								<TextBlock
+                                    Text="{DynamicResource DashboardAnalysisMinimum}"
+                                    HorizontalAlignment="Center"
+                                    Foreground="#BDBDBD"/>
+
+								<TextBlock
+                                    Margin="0,4,0,0"
+                                    Text="{Binding PerformanceAnalysis.MinimumCpuUsage,
+                                                   StringFormat={}{0:F1} %}"
+                                    HorizontalAlignment="Center"
+                                    FontWeight="SemiBold"
+                                    Foreground="White"/>
+
+							</StackPanel>
+
+							<StackPanel Grid.Column="1">
+
+								<TextBlock
+                                    Text="{DynamicResource DashboardAnalysisMaximum}"
+                                    HorizontalAlignment="Center"
+                                    Foreground="#BDBDBD"/>
+
+								<TextBlock
+                                    Margin="0,4,0,0"
+                                    Text="{Binding PerformanceAnalysis.MaximumCpuUsage,
+                                                   StringFormat={}{0:F1} %}"
+                                    HorizontalAlignment="Center"
+                                    FontWeight="SemiBold"
+                                    Foreground="White"/>
+
+							</StackPanel>
+						</Grid>
+
+						<Border
+							Margin="0,14,0,0"
+							Padding="8"
+							CornerRadius="6"
+							Background="#202226">
+
+							<StackPanel>
+
+								<TextBlock
+									Text="{Binding CpuAnalysisTrendText}"
+									HorizontalAlignment="Center"
+									TextAlignment="Center"
+									TextWrapping="Wrap"
+									FontWeight="SemiBold"
+									Foreground="{Binding CpuAnalysisTrendBrush}"/>
+
+								<TextBlock
+									Margin="0,4,0,0"
+									Text="{Binding CpuAnalysisChangeText}"
+									HorizontalAlignment="Center"
+									Foreground="{Binding CpuAnalysisTrendBrush}"/>
+
+							</StackPanel>
+
+						</Border>
+
+					</StackPanel>
+				</Border>
+
+				<!-- RAM -->
+
+				<Border
+                    Margin="4"
+                    Padding="14"
+                    CornerRadius="8"
+                    Background="#25272B">
+
+					<StackPanel>
+
+						<TextBlock
+                            Text="{DynamicResource DashboardAnalysisRam}"
+                            HorizontalAlignment="Center"
+                            FontSize="17"
+                            FontWeight="SemiBold"
+                            Foreground="#29B6F6"/>
+
+						<TextBlock
+                            Margin="0,10,0,12"
+                            Text="{Binding PerformanceAnalysis.AverageRamUsage,
+                                           StringFormat={}{0:F1} %}"
+                            HorizontalAlignment="Center"
+                            FontSize="28"
+                            FontWeight="Bold"
+                            Foreground="White"/>
+
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+
+							<StackPanel Grid.Column="0">
+
+								<TextBlock
+                                    Text="{DynamicResource DashboardAnalysisMinimum}"
+                                    HorizontalAlignment="Center"
+                                    Foreground="#BDBDBD"/>
+
+								<TextBlock
+                                    Margin="0,4,0,0"
+                                    Text="{Binding PerformanceAnalysis.MinimumRamUsage,
+                                                   StringFormat={}{0:F1} %}"
+                                    HorizontalAlignment="Center"
+                                    FontWeight="SemiBold"
+                                    Foreground="White"/>
+
+							</StackPanel>
+
+							<StackPanel Grid.Column="1">
+
+								<TextBlock
+                                    Text="{DynamicResource DashboardAnalysisMaximum}"
+                                    HorizontalAlignment="Center"
+                                    Foreground="#BDBDBD"/>
+
+								<TextBlock
+                                    Margin="0,4,0,0"
+                                    Text="{Binding PerformanceAnalysis.MaximumRamUsage,
+                                                   StringFormat={}{0:F1} %}"
+                                    HorizontalAlignment="Center"
+                                    FontWeight="SemiBold"
+                                    Foreground="White"/>
+
+							</StackPanel>
+						</Grid>
+
+						<Border
+							Margin="0,14,0,0"
+							Padding="8"
+							CornerRadius="6"
+							Background="#202226">
+
+							<StackPanel>
+
+								<TextBlock
+									Text="{Binding RamAnalysisTrendText}"
+									HorizontalAlignment="Center"
+									TextAlignment="Center"
+									TextWrapping="Wrap"
+									FontWeight="SemiBold"
+									Foreground="{Binding RamAnalysisTrendBrush}"/>
+
+								<TextBlock
+									Margin="0,4,0,0"
+									Text="{Binding RamAnalysisChangeText}"
+									HorizontalAlignment="Center"
+									Foreground="{Binding RamAnalysisTrendBrush}"/>
+
+							</StackPanel>
+
+						</Border>
+
+					</StackPanel>
+				</Border>
+
+				<!-- DISC -->
+
+				<Border
+                    Margin="4"
+                    Padding="14"
+                    CornerRadius="8"
+                    Background="#25272B">
+
+					<StackPanel>
+
+						<TextBlock
+                            Text="{DynamicResource DashboardAnalysisDisk}"
+                            HorizontalAlignment="Center"
+                            FontSize="17"
+                            FontWeight="SemiBold"
+                            Foreground="#FFD740"/>
+
+						<TextBlock
+                            Margin="0,10,0,12"
+                            Text="{Binding PerformanceAnalysis.AverageDiskUsage,
+                                           StringFormat={}{0:F1} %}"
+                            HorizontalAlignment="Center"
+                            FontSize="28"
+                            FontWeight="Bold"
+                            Foreground="White"/>
+
+						<Grid>
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+
+							<StackPanel Grid.Column="0">
+
+								<TextBlock
+                                    Text="{DynamicResource DashboardAnalysisMinimum}"
+                                    HorizontalAlignment="Center"
+                                    Foreground="#BDBDBD"/>
+
+								<TextBlock
+                                    Margin="0,4,0,0"
+                                    Text="{Binding PerformanceAnalysis.MinimumDiskUsage,
+                                                   StringFormat={}{0:F1} %}"
+                                    HorizontalAlignment="Center"
+                                    FontWeight="SemiBold"
+                                    Foreground="White"/>
+
+							</StackPanel>
+
+							<StackPanel Grid.Column="1">
+
+								<TextBlock
+                                    Text="{DynamicResource DashboardAnalysisMaximum}"
+                                    HorizontalAlignment="Center"
+                                    Foreground="#BDBDBD"/>
+
+								<TextBlock
+                                    Margin="0,4,0,0"
+                                    Text="{Binding PerformanceAnalysis.MaximumDiskUsage,
+                                                   StringFormat={}{0:F1} %}"
+                                    HorizontalAlignment="Center"
+                                    FontWeight="SemiBold"
+                                    Foreground="White"/>
+
+							</StackPanel>
+						</Grid>
+
+						<Border
+							Margin="0,14,0,0"
+							Padding="8"
+							CornerRadius="6"
+							Background="#202226">
+
+							<StackPanel>
+
+								<TextBlock
+									Text="{Binding DiskAnalysisTrendText}"
+									HorizontalAlignment="Center"
+									TextAlignment="Center"
+									TextWrapping="Wrap"
+									FontWeight="SemiBold"
+									Foreground="{Binding DiskAnalysisTrendBrush}"/>
+
+								<TextBlock
+									Margin="0,4,0,0"
+									Text="{Binding DiskAnalysisChangeText}"
+									HorizontalAlignment="Center"
+									Foreground="{Binding DiskAnalysisTrendBrush}"/>
+
+							</StackPanel>
+
+						</Border>
+
+					</StackPanel>
+				</Border>
+
+			</UniformGrid>
+
+			<!-- TEMPERATURĂ CPU OPȚIONALĂ -->
+
+			<Border
+				Margin="4,12,4,0"
+				Padding="14"
+				CornerRadius="8"
+				Background="#25272B">
+
+				<Border.Style>
+					<Style TargetType="Border">
+						<Setter
+							Property="Visibility"
+							Value="Collapsed"/>
+
+						<Style.Triggers>
+							<DataTrigger
+								Binding="{Binding HasCpuTemperatureAnalysis}"
+								Value="True">
+
+								<Setter
+									Property="Visibility"
+									Value="Visible"/>
+
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</Border.Style>
+
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="Auto"/>
+						<ColumnDefinition Width="*"/>
+					</Grid.ColumnDefinitions>
+
+					<TextBlock
+						Grid.Column="0"
+						Margin="0,0,18,0"
+						Text="{DynamicResource DashboardAnalysisTemperatureTitle}"
+						VerticalAlignment="Center"
+						FontSize="16"
+						FontWeight="SemiBold"
+						Foreground="#FF7043"/>
+
+					<TextBlock
+						Grid.Column="1"
+						Text="{Binding CpuTemperatureAnalysisText}"
+						VerticalAlignment="Center"
+						TextAlignment="Right"
+						TextWrapping="Wrap"
+						Foreground="White"/>
+
+				</Grid>
+
+			</Border>
+
+			<!-- REZULTAT GENERAL -->
+
+			<Border
+				Margin="4,14,4,0"
+				Padding="14"
+				CornerRadius="8"
+				Background="#352844">
+
+				<Border.Style>
+					<Style TargetType="Border">
+						<Setter
+							Property="Visibility"
+							Value="Collapsed"/>
+
+						<Style.Triggers>
+							<DataTrigger
+								Binding="{Binding HasPerformanceAnalysis}"
+								Value="True">
+
+								<Setter
+									Property="Visibility"
+									Value="Visible"/>
+
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</Border.Style>
+
+				<Grid>
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="*"/>
+						<ColumnDefinition Width="Auto"/>
+					</Grid.ColumnDefinitions>
+
+					<StackPanel Grid.Column="0">
+
+						<TextBlock
+							Text="{DynamicResource DashboardAnalysisComparedWithPrevious}"
+							TextWrapping="Wrap"
+							Foreground="#BDBDBD"/>
+
+						<TextBlock
+							Margin="0,5,15,0"
+							Text="{Binding OverallAnalysisTrendText}"
+							TextWrapping="Wrap"
+							FontSize="17"
+							FontWeight="SemiBold"
+							Foreground="{Binding OverallAnalysisTrendBrush}"/>
+
+					</StackPanel>
+
+					<TextBlock
+						Grid.Column="1"
+						Text="{Binding AnalysisSampleCountText}"
+						VerticalAlignment="Center"
+						Foreground="#FFD740"/>
+
+				</Grid>
+
+			</Border>
+
+			<!-- RECOMANDARE AUTOMATĂ -->
+
+			<Border
+				Margin="4,12,4,0"
+				Padding="14"
+				CornerRadius="8"
+				BorderThickness="4,0,0,0"
+				BorderBrush="{Binding PerformanceRecommendationBrush}"
+				Background="{Binding PerformanceRecommendationBackground}">
+
+				<StackPanel>
+
+					<TextBlock
+						Text="{DynamicResource DashboardAnalysisRecommendationTitle}"
+						FontSize="16"
+						FontWeight="SemiBold"
+						Foreground="{Binding PerformanceRecommendationBrush}"/>
+
+					<TextBlock
+						Margin="0,6,0,0"
+						Text="{Binding PerformanceRecommendationText}"
+						TextWrapping="Wrap"
+						Foreground="White"/>
+
+				</StackPanel>
+
+			</Border>
+
+		</StackPanel>
+
+	</Border>
+
+</UserControl>

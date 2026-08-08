@@ -10,20 +10,22 @@ namespace WinBoost.App.Services.History
     {
         private static readonly TimeSpan
             RecordingInterval =
-            TimeSpan.FromMinutes(1);
+                TimeSpan.FromMinutes(1);
 
         private static readonly TimeSpan
             RetentionPeriod =
-            TimeSpan.FromDays(7);
+                TimeSpan.FromDays(14);
+
+        private static readonly SemaphoreSlim
+            DatabaseSemaphore =
+                new(1, 1);
+
+        private static DateTime
+            _lastRecordedUtc =
+                DateTime.MinValue;
 
         private readonly PerformanceHistoryDatabase
             _database;
-
-        private readonly SemaphoreSlim _semaphore =
-            new(1, 1);
-
-        private DateTime _lastRecordedUtc =
-            DateTime.MinValue;
 
         public PerformanceHistoryRecorder()
         {
@@ -46,11 +48,12 @@ namespace WinBoost.App.Services.History
                 return;
             }
 
-            await _semaphore.WaitAsync();
+            await DatabaseSemaphore.WaitAsync();
 
             try
             {
-                nowUtc = DateTime.UtcNow;
+                nowUtc =
+                    DateTime.UtcNow;
 
                 if (nowUtc - _lastRecordedUtc <
                     RecordingInterval)
@@ -58,15 +61,20 @@ namespace WinBoost.App.Services.History
                     return;
                 }
 
-                _lastRecordedUtc = nowUtc;
-
                 var record =
                     new PerformanceHistoryRecord
                     {
-                        Timestamp = nowUtc,
-                        CpuUsage = cpuUsage,
-                        RamUsage = ramUsage,
-                        DiskUsage = diskUsage,
+                        Timestamp =
+                            nowUtc,
+
+                        CpuUsage =
+                            cpuUsage,
+
+                        RamUsage =
+                            ramUsage,
+
+                        DiskUsage =
+                            diskUsage,
 
                         CpuTemperature =
                             cpuTemperature.IsAvailable
@@ -82,32 +90,53 @@ namespace WinBoost.App.Services.History
                         nowUtc.Subtract(
                             RetentionPeriod));
                 });
+
+                _lastRecordedUtc =
+                    nowUtc;
             }
             finally
             {
-                _semaphore.Release();
+                DatabaseSemaphore.Release();
             }
         }
 
-        public Task<
+        public async Task<
             IReadOnlyList<PerformanceHistoryRecord>>
             GetRecordsAsync(
                 DateTime from,
                 DateTime to)
         {
-            return Task.Run(() =>
-                _database.GetRecords(
-                    from,
-                    to));
+            await DatabaseSemaphore.WaitAsync();
+
+            try
+            {
+                return await Task.Run(() =>
+                    _database.GetRecords(
+                        from,
+                        to));
+            }
+            finally
+            {
+                DatabaseSemaphore.Release();
+            }
         }
 
         public async Task ClearHistoryAsync()
         {
-            await Task.Run(() =>
-                _database.DeleteAll());
+            await DatabaseSemaphore.WaitAsync();
 
-            _lastRecordedUtc =
-                DateTime.MinValue;
+            try
+            {
+                await Task.Run(() =>
+                    _database.DeleteAll());
+
+                _lastRecordedUtc =
+                    DateTime.MinValue;
+            }
+            finally
+            {
+                DatabaseSemaphore.Release();
+            }
         }
     }
 }

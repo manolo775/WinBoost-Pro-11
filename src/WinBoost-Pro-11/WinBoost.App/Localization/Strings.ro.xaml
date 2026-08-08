@@ -1357,5 +1357,117 @@
 	<sys:String x:Key="DashboardHistoryClearError">
 		Istoricul de performanță nu a putut fi șters.
 	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTitle">
+		Analiza performanței
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisDescription">
+		Statistici și comparație pentru perioada selectată.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisNoData">
+		Nu există încă suficiente date pentru analiză.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisCpu">
+		CPU
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRam">
+		RAM
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisDisk">
+		Disc
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisAverage">
+		Medie
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisMinimum">
+		Minim
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisMaximum">
+		Maxim
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisSamples">
+		Măsurători: {0}
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisComparedWithPrevious">
+		Comparativ cu perioada anterioară
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTrendImproving">
+		În îmbunătățire
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTrendStable">
+		Stabil
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTrendDegrading">
+		În degradare
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTrendUnknown">
+		Date insuficiente pentru comparație
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationTitle">
+		Recomandare
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationInsufficient">
+		Continuă monitorizarea pentru a permite aplicației să genereze o recomandare bazată pe istoricul sistemului.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationGood">
+		Performanța sistemului este stabilă. Nu sunt necesare acțiuni suplimentare în acest moment.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationCpuHigh">
+		Utilizarea medie CPU este ridicată ({0}%). Verifică procesele cu utilizare mare și închide aplicațiile de care nu ai nevoie.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationCpuIncreasing">
+		Utilizarea CPU a crescut cu {0} puncte procentuale față de perioada precedentă. Verifică aplicațiile care rulează în fundal.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationRamHigh">
+		Utilizarea medie RAM este foarte ridicată ({0}%). Închide aplicațiile cu consum mare și verifică programele care pornesc automat.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationRamIncreasing">
+		Utilizarea RAM a crescut cu {0} puncte procentuale față de perioada precedentă. Verifică aplicațiile care consumă tot mai multă memorie.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationDiskHigh">
+		Spațiul utilizat pe disc este foarte ridicat ({0}%). Șterge fișierele inutile și verifică aplicațiile care ocupă mult spațiu.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationDiskIncreasing">
+		Utilizarea discului a crescut cu {0} puncte procentuale față de perioada precedentă. Verifică fișierele noi și spațiul disponibil.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationMultiple">
+		Mai mulți indicatori de performanță necesită atenție. Verifică procesele active, memoria disponibilă și spațiul liber pe disc.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTemperatureTitle">
+		Temperatura CPU
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTemperatureStatistics">
+		Medie: {0} °C • Minim: {1} °C • Maxim: {2} °C
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationCpuTemperatureHigh">
+		Temperatura CPU este prea ridicată. Media este {0} °C, iar valoarea maximă înregistrată este {1} °C. Verifică răcirea sistemului, orificiile de ventilație și procesele cu utilizare mare.
+	</sys:String>
 	
 </ResourceDictionary>

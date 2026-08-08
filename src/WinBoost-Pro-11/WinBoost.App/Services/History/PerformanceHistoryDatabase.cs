@@ -10,10 +10,14 @@ namespace WinBoost.App.Services.History
     public sealed class PerformanceHistoryDatabase
     {
         private const string DatabaseFileName =
-      "performance-history.litedb";
+            "performance-history.litedb";
 
         private const string CollectionName =
             "performance_history";
+
+        private static readonly object
+            DatabaseSyncRoot =
+                new();
 
         private readonly string _databasePath;
 
@@ -43,89 +47,121 @@ namespace WinBoost.App.Services.History
         public void Save(
             PerformanceHistoryRecord record)
         {
-            using var database =
-                new LiteDatabase(
-                    _databasePath);
+            lock (DatabaseSyncRoot)
+            {
+                using LiteDatabase database =
+                    OpenDatabase();
 
-            ILiteCollection<PerformanceHistoryRecord>
-                collection =
-                database.GetCollection<
-                    PerformanceHistoryRecord>(
-                    CollectionName);
+                ILiteCollection<
+                    PerformanceHistoryRecord>
+                    collection =
+                        GetCollection(database);
 
-            collection.Insert(record);
+                collection.Insert(record);
+            }
         }
 
-        public IReadOnlyList<PerformanceHistoryRecord>
-            GetRecords(
-                DateTime from,
-                DateTime to)
+        public IReadOnlyList<
+            PerformanceHistoryRecord> GetRecords(
+            DateTime from,
+            DateTime to)
         {
-            using var database =
-                new LiteDatabase(
-                    _databasePath);
+            lock (DatabaseSyncRoot)
+            {
+                using LiteDatabase database =
+                    OpenDatabase();
 
-            ILiteCollection<PerformanceHistoryRecord>
-                collection =
-                database.GetCollection<
-                    PerformanceHistoryRecord>(
-                    CollectionName);
+                ILiteCollection<
+                    PerformanceHistoryRecord>
+                    collection =
+                        GetCollection(database);
 
-            return collection
-                .Find(record =>
-                    record.Timestamp >= from &&
-                    record.Timestamp <= to)
-                .OrderBy(record =>
-                    record.Timestamp)
-                .ToList();
+                return collection
+                    .Find(record =>
+                        record.Timestamp >= from &&
+                        record.Timestamp <= to)
+                    .OrderBy(record =>
+                        record.Timestamp)
+                    .ToList();
+            }
         }
 
         public void DeleteAll()
         {
-            using var database =
-                new LiteDatabase(
-                    _databasePath);
+            lock (DatabaseSyncRoot)
+            {
+                using LiteDatabase database =
+                    OpenDatabase();
 
-            ILiteCollection<PerformanceHistoryRecord>
-                collection =
-                database.GetCollection<
-                    PerformanceHistoryRecord>(
-                    CollectionName);
+                ILiteCollection<
+                    PerformanceHistoryRecord>
+                    collection =
+                        GetCollection(database);
 
-            collection.DeleteAll();
+                collection.DeleteAll();
+            }
         }
 
         public void DeleteOlderThan(
             DateTime threshold)
         {
-            using var database =
-                new LiteDatabase(
-                    _databasePath);
+            lock (DatabaseSyncRoot)
+            {
+                using LiteDatabase database =
+                    OpenDatabase();
 
-            ILiteCollection<PerformanceHistoryRecord>
-                collection =
-                database.GetCollection<
-                    PerformanceHistoryRecord>(
-                    CollectionName);
+                ILiteCollection<
+                    PerformanceHistoryRecord>
+                    collection =
+                        GetCollection(database);
 
-            collection.DeleteMany(record =>
-                record.Timestamp < threshold);
+                collection.DeleteMany(record =>
+                    record.Timestamp < threshold);
+            }
         }
 
         private void InitializeDatabase()
         {
-            using var database =
-                new LiteDatabase(
-                    _databasePath);
+            lock (DatabaseSyncRoot)
+            {
+                using LiteDatabase database =
+                    OpenDatabase();
 
-            ILiteCollection<PerformanceHistoryRecord>
-                collection =
-                database.GetCollection<
-                    PerformanceHistoryRecord>(
+                ILiteCollection<
+                    PerformanceHistoryRecord>
+                    collection =
+                        GetCollection(database);
+
+                collection.EnsureIndex(
+                    record =>
+                        record.Timestamp);
+            }
+        }
+
+        private LiteDatabase OpenDatabase()
+        {
+            var connectionString =
+                new ConnectionString
+                {
+                    Filename =
+                        _databasePath,
+
+                    Connection =
+                        ConnectionType.Shared
+                };
+
+            return new LiteDatabase(
+                connectionString);
+        }
+
+        private static ILiteCollection<
+            PerformanceHistoryRecord>
+            GetCollection(
+                LiteDatabase database)
+        {
+            return database.GetCollection<
+                PerformanceHistoryRecord>(
                     CollectionName);
-
-            collection.EnsureIndex(
-                record => record.Timestamp);
         }
     }
 }

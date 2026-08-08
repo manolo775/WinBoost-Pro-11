@@ -1350,5 +1350,117 @@
 	<sys:String x:Key="DashboardHistoryClearError">
 		The performance history could not be cleared.
 	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTitle">
+		Performance analysis
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisDescription">
+		Statistics and comparison for the selected time range.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisNoData">
+		There is not enough data available for analysis yet.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisCpu">
+		CPU
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRam">
+		RAM
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisDisk">
+		Disk
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisAverage">
+		Average
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisMinimum">
+		Minimum
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisMaximum">
+		Maximum
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisSamples">
+		Measurements: {0}
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisComparedWithPrevious">
+		Compared with the previous period
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTrendImproving">
+		Improving
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTrendStable">
+		Stable
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTrendDegrading">
+		Degrading
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTrendUnknown">
+		Insufficient data for comparison
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationTitle">
+		Recommendation
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationInsufficient">
+		Continue monitoring to allow the application to generate a recommendation based on system history.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationGood">
+		System performance is stable. No additional action is required at this time.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationCpuHigh">
+		Average CPU usage is high ({0}%). Check high-usage processes and close applications you do not need.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationCpuIncreasing">
+		CPU usage increased by {0} percentage points compared with the previous period. Check applications running in the background.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationRamHigh">
+		Average RAM usage is very high ({0}%). Close memory-intensive applications and review programs that start automatically.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationRamIncreasing">
+		RAM usage increased by {0} percentage points compared with the previous period. Check applications using increasing amounts of memory.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationDiskHigh">
+		Disk usage is very high ({0}%). Remove unnecessary files and review applications using large amounts of storage.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationDiskIncreasing">
+		Disk usage increased by {0} percentage points compared with the previous period. Review new files and available disk space.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationMultiple">
+		Multiple performance indicators require attention. Review active processes, available memory, and free disk space.
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTemperatureTitle">
+		CPU temperature
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisTemperatureStatistics">
+		Average: {0} °C • Minimum: {1} °C • Maximum: {2} °C
+	</sys:String>
+
+	<sys:String x:Key="DashboardAnalysisRecommendationCpuTemperatureHigh">
+		CPU temperature is too high. The average is {0} °C and the maximum recorded value is {1} °C. Check system cooling, ventilation openings, and high-usage processes.
+	</sys:String>
 	
 </ResourceDictionary>
