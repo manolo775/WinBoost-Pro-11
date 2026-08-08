@@ -293,8 +293,32 @@
 
 				</Button>
 
-			</StackPanel>
+				<!-- SETTINGS -->
 
+				<Button
+					x:Name="SettingsButton"
+					Style="{StaticResource SidebarButtonStyle}"
+					Click="SettingsButton_Click">
+
+					<StackPanel Orientation="Horizontal">
+
+						<materialDesign:PackIcon
+							Kind="Tune"
+							Width="20"
+							Height="20"
+							Margin="0,0,12,0"
+							Foreground="#4CAF50"/>
+
+						<TextBlock
+							Text="{DynamicResource MenuSettings}"
+							VerticalAlignment="Center"/>
+
+					</StackPanel>
+
+				</Button>
+				
+			</StackPanel>
+				
 			<!-- ZONA PRINCIPALĂ -->
 
 			<Border

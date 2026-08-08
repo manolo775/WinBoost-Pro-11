@@ -1563,5 +1563,232 @@
 	<sys:String x:Key="PerformanceAlertViewDetails">
 		Vezi detalii
 	</sys:String>
+
+	<sys:String x:Key="MenuSettings">
+		Setări
+	</sys:String>
+
+	<sys:String x:Key="SettingsTitle">
+		Setări
+	</sys:String>
+
+	<sys:String x:Key="SettingsDescription">
+		Configurează preferințele WinBoost, alertele și istoricul de performanță.
+	</sys:String>
+
+	<!-- SETTINGS -->
+
+	<sys:String x:Key="SettingsAlertsTitle">
+		Alerte de performanță
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertsDescription">
+		Configurează modul în care WinBoost te informează despre problemele de performanță.
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertsEnabled">
+		Activează alertele de performanță
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertsEnabledDescription">
+		Primește notificări atunci când utilizarea procesorului, memoriei, discului sau temperatura procesorului rămâne ridicată.
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuThresholdsTitle">
+		Praguri procesor
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuThresholdsDescription">
+		Alege nivelurile la care WinBoost afișează o avertizare sau o alertă critică pentru utilizarea procesorului.
+	</sys:String>
+
+	<sys:String x:Key="SettingsWarningThreshold">
+		Prag de avertizare
+	</sys:String>
+
+	<sys:String x:Key="SettingsCriticalThreshold">
+		Prag critic
+	</sys:String>
+
+	<sys:String x:Key="SettingsRamThresholdsTitle">
+		Praguri memorie RAM
+	</sys:String>
+
+	<sys:String x:Key="SettingsRamThresholdsDescription">
+		Alege nivelurile la care WinBoost afișează o avertizare sau o alertă critică pentru utilizarea memoriei RAM.
+	</sys:String>
+
+	<sys:String x:Key="SettingsDiskThresholdsTitle">
+		Praguri utilizare disc
+	</sys:String>
+
+	<sys:String x:Key="SettingsDiskThresholdsDescription">
+		Alege nivelurile la care WinBoost afișează o avertizare sau o alertă critică atunci când spațiul utilizat pe disc este ridicat.
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuTemperatureThresholdsTitle">
+		Praguri temperatură procesor
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuTemperatureThresholdsDescription">
+		Configurează nivelurile pentru alertele de temperatură. Acestea vor fi folosite numai pe calculatoarele care oferă date de la senzorul procesorului.
+	</sys:String>
+
+	<sys:String x:Key="SettingsTemperatureUnit">
+		°C
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertTimingTitle">
+		Durata alertelor
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertTimingDescription">
+		Alege cât timp trebuie să rămână o valoare peste prag înainte ca WinBoost să afișeze o alertă.
+	</sys:String>
+
+	<sys:String x:Key="SettingsSustainedDuration">
+		Durata minimă înainte de alertă
+	</sys:String>
+
+	<sys:String x:Key="SettingsSeconds">
+		secunde
+	</sys:String>
+
+
+	<sys:String x:Key="SettingsCriticalAlertsTitle">
+		Alerte critice
+	</sys:String>
+
+	<sys:String x:Key="SettingsCriticalAlertsDescription">
+		Configurează sunetul și repetarea alertelor atunci când o problemă de performanță este critică.
+	</sys:String>
+
+	<sys:String x:Key="SettingsCriticalAlertSound">
+		Redă sunet pentru alertele critice
+	</sys:String>
+
+	<sys:String x:Key="SettingsCriticalAlertRepeat">
+		Repetă alerta critică
+	</sys:String>
+
+	<sys:String x:Key="SettingsRepeatNever">
+		Nu repeta
+	</sys:String>
+
+	<sys:String x:Key="SettingsRepeatAfter5Minutes">
+		După 5 minute
+	</sys:String>
+
+	<sys:String x:Key="SettingsRepeatAfter15Minutes">
+		După 15 minute
+	</sys:String>
+
+	<sys:String x:Key="SettingsRepeatAfter30Minutes">
+		După 30 de minute
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertSourcesTitle">
+		Tipuri de alerte
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertSourcesDescription">
+		Alege ce tipuri de probleme de performanță pot genera alerte.
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuAlertsEnabled">
+		Alerte utilizare procesor
+	</sys:String>
+
+	<sys:String x:Key="SettingsRamAlertsEnabled">
+		Alerte utilizare memorie RAM
+	</sys:String>
+
+	<sys:String x:Key="SettingsDiskAlertsEnabled">
+		Alerte utilizare disc
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuTemperatureAlertsEnabled">
+		Alerte temperatură procesor
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistoryTitle">
+		Istoric de performanță
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistoryDescription">
+		Alege cât timp păstrează WinBoost măsurătorile de performanță pe acest calculator.
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistoryRetention">
+		Păstrează istoricul timp de
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistory7Days">
+		7 zile
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistory14Days">
+		14 zile
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistory30Days">
+		30 de zile
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistory90Days">
+		90 de zile
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistory">
+		Șterge istoricul
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistoryDescription">
+		Elimină definitiv toate măsurătorile de performanță salvate pe acest calculator.
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistoryConfirmTitle">
+		Confirmă ștergerea istoricului
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistoryConfirmMessage">
+		Sigur dorești să ștergi definitiv tot istoricul de performanță?
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistorySuccessTitle">
+		Istoric șters
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistorySuccessMessage">
+		Istoricul de performanță a fost șters.
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetTitle">
+		Restabilește setările recomandate
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetDescription">
+		Revine la pragurile și opțiunile recomandate de WinBoost. Istoricul de performanță nu va fi șters.
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetButton">
+		Restabilește valorile implicite
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetConfirmTitle">
+		Confirmă restabilirea setărilor
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetConfirmMessage">
+		Sigur dorești să restabilești toate setările recomandate?
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetSuccessTitle">
+		Setări restabilite
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetSuccessMessage">
+		Setările recomandate au fost restabilite.
+	</sys:String>
 	
 </ResourceDictionary>

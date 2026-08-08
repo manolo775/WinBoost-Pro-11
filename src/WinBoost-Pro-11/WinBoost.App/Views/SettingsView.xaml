@@ -1,0 +1,882 @@
+﻿<UserControl
+    x:Class="WinBoost.App.Views.SettingsView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    mc:Ignorable="d"
+    d:DesignHeight="800"
+    d:DesignWidth="900">
+
+	<ScrollViewer
+    Style="{StaticResource WinBoostPageScrollViewerStyle}"
+    HorizontalScrollBarVisibility="Disabled">
+
+		<Grid
+			Margin="0,0,0,20"
+			Background="#1E1E1E">
+
+			<StackPanel Margin="40,20,40,0">
+
+				<TextBlock
+					Text="{DynamicResource SettingsTitle}"
+					FontSize="32"
+					FontWeight="Bold"
+					Foreground="White"/>
+
+				<TextBlock
+					Margin="0,8,0,0"
+					Text="{DynamicResource SettingsDescription}"
+					FontSize="15"
+					TextWrapping="Wrap"
+					Foreground="#BDBDBD"/>
+
+				<!-- ALERTE -->
+
+				<Border
+					Margin="0,28,0,0"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}"
+					Cursor="Hand"
+					RenderTransformOrigin="0.5,0.5"
+					MouseLeftButtonUp="AlertsCard_MouseLeftButtonUp">
+
+					<StackPanel>
+
+						<TextBlock
+							Text="{DynamicResource SettingsAlertsTitle}"
+							FontSize="20"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<TextBlock
+							Margin="0,6,0,18"
+							Text="{DynamicResource SettingsAlertsDescription}"
+							TextWrapping="Wrap"
+							Foreground="#BDBDBD"/>
+
+						<CheckBox
+							IsChecked="{Binding AlertsEnabled,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"
+							Foreground="White">
+
+							<StackPanel>
+
+								<TextBlock
+									Text="{DynamicResource SettingsAlertsEnabled}"
+									FontSize="16"
+									FontWeight="SemiBold"
+									Foreground="White"/>
+
+								<TextBlock
+									Margin="0,4,0,0"
+									Text="{DynamicResource SettingsAlertsEnabledDescription}"
+									TextWrapping="Wrap"
+									Foreground="#BDBDBD"/>
+
+							</StackPanel>
+
+						</CheckBox>
+
+					</StackPanel>
+
+				</Border>
+
+				<!-- PROCESOR -->
+
+				<Border
+					Margin="0,18,0,0"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}">
+
+					<StackPanel>
+
+						<TextBlock
+							Text="{DynamicResource SettingsCpuThresholdsTitle}"
+							FontSize="20"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<TextBlock
+							Margin="0,6,0,20"
+							Text="{DynamicResource SettingsCpuThresholdsDescription}"
+							TextWrapping="Wrap"
+							Foreground="#BDBDBD"/>
+
+						<TextBlock
+							Text="{DynamicResource SettingsWarningThreshold}"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<Grid Margin="0,8,0,18">
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="60"/>
+							</Grid.ColumnDefinitions>
+
+							<Slider
+								Grid.Column="0"
+								Minimum="1"
+								Maximum="100"
+								TickFrequency="1"
+								IsSnapToTickEnabled="True"
+								Value="{Binding CpuWarningThreshold,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"/>
+
+							<TextBlock
+								Grid.Column="1"
+								Text="{Binding CpuWarningThreshold,
+                                           StringFormat={}{0:0}%}"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Center"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="#FFD740"/>
+
+						</Grid>
+
+						<TextBlock
+							Text="{DynamicResource SettingsCriticalThreshold}"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<Grid Margin="0,8,0,0">
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="60"/>
+							</Grid.ColumnDefinitions>
+
+							<Slider
+								Grid.Column="0"
+								Minimum="1"
+								Maximum="100"
+								TickFrequency="1"
+								IsSnapToTickEnabled="True"
+								Value="{Binding CpuCriticalThreshold,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"/>
+
+							<TextBlock
+								Grid.Column="1"
+								Text="{Binding CpuCriticalThreshold,
+                                           StringFormat={}{0:0}%}"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Center"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="#FF5722"/>
+
+						</Grid>
+
+					</StackPanel>
+
+				</Border>
+
+				<!-- MEMORIE RAM -->
+
+				<Border
+					Margin="0,18,0,0"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}">
+
+					<StackPanel>
+
+						<TextBlock
+							Text="{DynamicResource SettingsRamThresholdsTitle}"
+							FontSize="20"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<TextBlock
+							Margin="0,6,0,20"
+							Text="{DynamicResource SettingsRamThresholdsDescription}"
+							TextWrapping="Wrap"
+							Foreground="#BDBDBD"/>
+
+						<TextBlock
+							Text="{DynamicResource SettingsWarningThreshold}"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<Grid Margin="0,8,0,18">
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="60"/>
+							</Grid.ColumnDefinitions>
+
+							<Slider
+								Grid.Column="0"
+								Minimum="1"
+								Maximum="100"
+								TickFrequency="1"
+								IsSnapToTickEnabled="True"
+								Value="{Binding RamWarningThreshold,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"/>
+
+							<TextBlock
+								Grid.Column="1"
+								Text="{Binding RamWarningThreshold,
+                                           StringFormat={}{0:0}%}"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Center"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="#FFD740"/>
+
+						</Grid>
+
+						<TextBlock
+							Text="{DynamicResource SettingsCriticalThreshold}"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<Grid Margin="0,8,0,0">
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="60"/>
+							</Grid.ColumnDefinitions>
+
+							<Slider
+								Grid.Column="0"
+								Minimum="1"
+								Maximum="100"
+								TickFrequency="1"
+								IsSnapToTickEnabled="True"
+								Value="{Binding RamCriticalThreshold,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"/>
+
+							<TextBlock
+								Grid.Column="1"
+								Text="{Binding RamCriticalThreshold,
+                                           StringFormat={}{0:0}%}"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Center"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="#FF5722"/>
+
+						</Grid>
+
+					</StackPanel>
+
+				</Border>
+
+				<!-- DISC -->
+
+				<Border
+					Margin="0,18,0,20"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}">
+
+					<StackPanel>
+
+						<TextBlock
+							Text="{DynamicResource SettingsDiskThresholdsTitle}"
+							FontSize="20"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<TextBlock
+							Margin="0,6,0,20"
+							Text="{DynamicResource SettingsDiskThresholdsDescription}"
+							TextWrapping="Wrap"
+							Foreground="#BDBDBD"/>
+
+						<TextBlock
+							Text="{DynamicResource SettingsWarningThreshold}"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<Grid Margin="0,8,0,18">
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="60"/>
+							</Grid.ColumnDefinitions>
+
+							<Slider
+								Grid.Column="0"
+								Minimum="1"
+								Maximum="100"
+								TickFrequency="1"
+								IsSnapToTickEnabled="True"
+								Value="{Binding DiskWarningThreshold,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"/>
+
+							<TextBlock
+								Grid.Column="1"
+								Text="{Binding DiskWarningThreshold,
+                                           StringFormat={}{0:0}%}"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Center"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="#FFD740"/>
+
+						</Grid>
+
+						<TextBlock
+							Text="{DynamicResource SettingsCriticalThreshold}"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<Grid Margin="0,8,0,0">
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="60"/>
+							</Grid.ColumnDefinitions>
+
+							<Slider
+								Grid.Column="0"
+								Minimum="1"
+								Maximum="100"
+								TickFrequency="1"
+								IsSnapToTickEnabled="True"
+								Value="{Binding DiskCriticalThreshold,
+                                            Mode=TwoWay,
+                                            UpdateSourceTrigger=PropertyChanged}"/>
+
+							<TextBlock
+								Grid.Column="1"
+								Text="{Binding DiskCriticalThreshold,
+                                           StringFormat={}{0:0}%}"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Center"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="#FF5722"/>
+
+						</Grid>
+
+					</StackPanel>
+
+				</Border>
+
+				<!-- TEMPERATURĂ PROCESOR -->
+
+				<Border
+					Margin="0,18,0,20"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}">
+
+					<StackPanel>
+
+						<TextBlock
+							Text="{DynamicResource SettingsCpuTemperatureThresholdsTitle}"
+							FontSize="20"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<TextBlock
+							Margin="0,6,0,20"
+							Text="{DynamicResource SettingsCpuTemperatureThresholdsDescription}"
+							TextWrapping="Wrap"
+							Foreground="#BDBDBD"/>
+
+						<TextBlock
+							Text="{DynamicResource SettingsWarningThreshold}"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<Grid Margin="0,8,0,18">
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="70"/>
+							</Grid.ColumnDefinitions>
+
+							<Slider
+								Grid.Column="0"
+								Minimum="30"
+								Maximum="110"
+								TickFrequency="1"
+								IsSnapToTickEnabled="True"
+								Value="{Binding CpuTemperatureWarningThreshold,
+                                Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}"/>
+
+							<TextBlock
+								Grid.Column="1"
+								Text="{Binding CpuTemperatureWarningThreshold,
+                               StringFormat={}{0:0} °C}"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Center"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="#FFD740"/>
+
+						</Grid>
+
+						<TextBlock
+							Text="{DynamicResource SettingsCriticalThreshold}"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<Grid Margin="0,8,0,0">
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="70"/>
+							</Grid.ColumnDefinitions>
+
+							<Slider
+								Grid.Column="0"
+								Minimum="30"
+								Maximum="110"
+								TickFrequency="1"
+								IsSnapToTickEnabled="True"
+								Value="{Binding CpuTemperatureCriticalThreshold,
+                                Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}"/>
+
+							<TextBlock
+								Grid.Column="1"
+								Text="{Binding CpuTemperatureCriticalThreshold,
+                               StringFormat={}{0:0} °C}"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Center"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="#FF5722"/>
+
+						</Grid>
+
+					</StackPanel>
+
+				</Border>
+
+				<!-- DURATA MINIMĂ A ALERTEI -->
+
+				<Border
+					Margin="0,18,0,20"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}">
+
+					<StackPanel>
+
+						<TextBlock
+							Text="{DynamicResource SettingsAlertTimingTitle}"
+							FontSize="20"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<TextBlock
+							Margin="0,6,0,20"
+							Text="{DynamicResource SettingsAlertTimingDescription}"
+							TextWrapping="Wrap"
+							Foreground="#BDBDBD"/>
+
+						<TextBlock
+							Text="{DynamicResource SettingsSustainedDuration}"
+							FontSize="16"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<Grid Margin="0,8,0,0">
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="120"/>
+							</Grid.ColumnDefinitions>
+
+							<Slider
+								Grid.Column="0"
+								Minimum="5"
+								Maximum="300"
+								TickFrequency="5"
+								IsSnapToTickEnabled="True"
+								Value="{Binding SustainedDurationSeconds,
+                                Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}"/>
+
+							<StackPanel
+								Grid.Column="1"
+								Orientation="Horizontal"
+								HorizontalAlignment="Right"
+								VerticalAlignment="Center">
+
+								<TextBlock
+									Text="{Binding SustainedDurationSeconds}"
+									FontSize="16"
+									FontWeight="SemiBold"
+									Foreground="#4CAF50"/>
+
+								<TextBlock
+									Margin="5,0,0,0"
+									Text="{DynamicResource SettingsSeconds}"
+									FontSize="16"
+									Foreground="#BDBDBD"/>
+
+							</StackPanel>
+
+						</Grid>
+
+					</StackPanel>
+
+				</Border>
+
+				<!-- ALERTE CRITICE -->
+
+				<Border
+					Margin="0,18,0,20"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}">
+
+					<StackPanel>
+
+						<TextBlock
+							Text="{DynamicResource SettingsCriticalAlertsTitle}"
+							FontSize="20"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<TextBlock
+							Margin="0,6,0,20"
+							Text="{DynamicResource SettingsCriticalAlertsDescription}"
+							TextWrapping="Wrap"
+							Foreground="#BDBDBD"/>
+
+						<CheckBox
+							IsChecked="{Binding EnableSoundForCriticalAlerts,
+                                Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}"
+							Foreground="White">
+
+							<TextBlock
+								Text="{DynamicResource SettingsCriticalAlertSound}"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="White"/>
+
+						</CheckBox>
+
+						<Grid Margin="0,22,0,0">
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="180"/>
+							</Grid.ColumnDefinitions>
+
+							<TextBlock
+								Grid.Column="0"
+								Text="{DynamicResource SettingsCriticalAlertRepeat}"
+								VerticalAlignment="Center"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="White"/>
+
+							<ComboBox
+								Grid.Column="1"
+								Height="34"
+								SelectedValuePath="Tag"
+								SelectedValue="{Binding CriticalAlertRepeatIntervalMinutes,
+                                        Mode=TwoWay,
+                                        UpdateSourceTrigger=PropertyChanged}"
+								Foreground="Black"
+								Background="White"
+								VerticalContentAlignment="Center">
+
+								<ComboBoxItem
+									Tag="0"
+									Content="{DynamicResource SettingsRepeatNever}"/>
+
+								<ComboBoxItem
+									Tag="5"
+									Content="{DynamicResource SettingsRepeatAfter5Minutes}"/>
+
+								<ComboBoxItem
+									Tag="15"
+									Content="{DynamicResource SettingsRepeatAfter15Minutes}"/>
+
+								<ComboBoxItem
+									Tag="30"
+									Content="{DynamicResource SettingsRepeatAfter30Minutes}"/>
+
+							</ComboBox>
+
+						</Grid>
+
+					</StackPanel>
+
+				</Border>
+
+				<!-- TIPURI DE ALERTE -->
+
+				<Border
+					Margin="0,18,0,20"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}">
+
+					<StackPanel>
+
+						<TextBlock
+							Text="{DynamicResource SettingsAlertSourcesTitle}"
+							FontSize="20"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<TextBlock
+							Margin="0,6,0,18"
+							Text="{DynamicResource SettingsAlertSourcesDescription}"
+							TextWrapping="Wrap"
+							Foreground="#BDBDBD"/>
+
+						<CheckBox
+							Margin="0,0,0,12"
+							IsChecked="{Binding CpuAlertsEnabled,
+                                Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}"
+							Foreground="White">
+
+							<TextBlock
+								Text="{DynamicResource SettingsCpuAlertsEnabled}"
+								FontSize="16"
+								Foreground="White"/>
+
+						</CheckBox>
+
+						<CheckBox
+							Margin="0,0,0,12"
+							IsChecked="{Binding RamAlertsEnabled,
+                                Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}"
+							Foreground="White">
+
+							<TextBlock
+								Text="{DynamicResource SettingsRamAlertsEnabled}"
+								FontSize="16"
+								Foreground="White"/>
+
+						</CheckBox>
+
+						<CheckBox
+							Margin="0,0,0,12"
+							IsChecked="{Binding DiskAlertsEnabled,
+                                Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}"
+							Foreground="White">
+
+							<TextBlock
+								Text="{DynamicResource SettingsDiskAlertsEnabled}"
+								FontSize="16"
+								Foreground="White"/>
+
+						</CheckBox>
+
+						<CheckBox
+							IsChecked="{Binding CpuTemperatureAlertsEnabled,
+                                Mode=TwoWay,
+                                UpdateSourceTrigger=PropertyChanged}"
+							Foreground="White">
+
+							<TextBlock
+								Text="{DynamicResource SettingsCpuTemperatureAlertsEnabled}"
+								FontSize="16"
+								Foreground="White"/>
+
+						</CheckBox>
+
+					</StackPanel>
+
+				</Border>
+
+				<!-- ISTORIC PERFORMANȚĂ -->
+
+				<Border
+					Margin="0,18,0,20"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}">
+
+					<StackPanel>
+
+						<TextBlock
+							Text="{DynamicResource SettingsHistoryTitle}"
+							FontSize="20"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<TextBlock
+							Margin="0,6,0,20"
+							Text="{DynamicResource SettingsHistoryDescription}"
+							TextWrapping="Wrap"
+							Foreground="#BDBDBD"/>
+
+						<Grid>
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="180"/>
+							</Grid.ColumnDefinitions>
+
+							<TextBlock
+								Grid.Column="0"
+								Text="{DynamicResource SettingsHistoryRetention}"
+								VerticalAlignment="Center"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="White"/>
+
+							<ComboBox
+								Grid.Column="1"
+								Height="34"
+								SelectedValuePath="Tag"
+								SelectedValue="{Binding HistoryRetentionDays,
+                                        Mode=TwoWay,
+                                        UpdateSourceTrigger=PropertyChanged}"
+								Foreground="Black"
+								Background="White"
+								VerticalContentAlignment="Center">
+
+								<ComboBoxItem
+									Tag="7"
+									Content="{DynamicResource SettingsHistory7Days}"/>
+
+								<ComboBoxItem
+									Tag="14"
+									Content="{DynamicResource SettingsHistory14Days}"/>
+
+								<ComboBoxItem
+									Tag="30"
+									Content="{DynamicResource SettingsHistory30Days}"/>
+
+								<ComboBoxItem
+									Tag="90"
+									Content="{DynamicResource SettingsHistory90Days}"/>
+
+							</ComboBox>
+
+						</Grid>
+
+						<Border
+    Margin="0,22,0,0"
+    Padding="16"
+    Background="#25272B"
+    CornerRadius="8">
+
+							<Grid>
+
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+
+								<TextBlock
+									Grid.Column="0"
+									Margin="0,0,18,0"
+									Text="{DynamicResource SettingsClearHistoryDescription}"
+									TextWrapping="Wrap"
+									VerticalAlignment="Center"
+									Foreground="#BDBDBD"/>
+
+								<Button
+									Grid.Column="1"
+									MinWidth="145"
+									Height="36"
+									Padding="12,5"
+									Content="{DynamicResource SettingsClearHistory}"
+									Command="{Binding ClearHistoryCommand}"
+									Background="#7F1D1D"
+									Foreground="White"
+									BorderBrush="#EF5350"
+									BorderThickness="1"/>
+
+							</Grid>
+
+						</Border>
+
+						<!-- RESTABILIRE SETĂRI -->
+
+						<Border
+							Margin="0,18,0,20"
+							Padding="22"
+							Background="#2D3035"
+							CornerRadius="12"
+							Style="{StaticResource MetricCardBorderStyle}">
+
+							<Grid>
+
+								<Grid.ColumnDefinitions>
+									<ColumnDefinition Width="*"/>
+									<ColumnDefinition Width="Auto"/>
+								</Grid.ColumnDefinitions>
+
+								<StackPanel Grid.Column="0">
+
+									<TextBlock
+										Text="{DynamicResource SettingsResetTitle}"
+										FontSize="20"
+										FontWeight="SemiBold"
+										Foreground="White"/>
+
+									<TextBlock
+										Margin="0,6,18,0"
+										Text="{DynamicResource SettingsResetDescription}"
+										TextWrapping="Wrap"
+										Foreground="#BDBDBD"/>
+
+								</StackPanel>
+
+								<Button
+									Grid.Column="1"
+									MinWidth="180"
+									Height="38"
+									Padding="12,5"
+									VerticalAlignment="Center"
+									Content="{DynamicResource SettingsResetButton}"
+									Command="{Binding ResetSettingsCommand}"
+									Background="#25272B"
+									Foreground="White"
+									BorderBrush="#FFD740"
+									BorderThickness="1"/>
+
+							</Grid>
+
+						</Border>
+						
+					</StackPanel>
+
+				</Border>
+				
+			</StackPanel>
+
+		</Grid>
+
+	</ScrollViewer>
+
+</UserControl>

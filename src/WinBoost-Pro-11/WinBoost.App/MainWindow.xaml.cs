@@ -32,6 +32,8 @@ namespace WinBoost.App
         private StartupView?
             _startupView;
 
+        private SettingsView? _settingsView;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -90,14 +92,16 @@ namespace WinBoost.App
         }
 
         private void DashboardButton_Click(
-            object sender,
-            RoutedEventArgs e)
+         object sender,
+         RoutedEventArgs e)
         {
-            MainContent.Content =
-                _dashboardView;
+            NavigateToDashboard();
+        }
 
-            SetActiveButton(
-                DashboardButton);
+        public void NavigateToDashboard()
+        {
+            MainContent.Content = _dashboardView;
+            SetActiveButton(DashboardButton);
         }
 
         private void PerformanceButton_Click(
@@ -185,6 +189,13 @@ namespace WinBoost.App
             NavigateToStartup();
         }
 
+        private void SettingsButton_Click(
+              object sender,
+                 RoutedEventArgs e)
+        {
+            NavigateToSettings();
+        }
+
         public void NavigateToStartup()
         {
             _startupView ??=
@@ -195,6 +206,14 @@ namespace WinBoost.App
 
             SetActiveButton(
                 StartupButton);
+        }
+
+        public void NavigateToSettings()
+        {
+            _settingsView ??= new SettingsView();
+
+            MainContent.Content = _settingsView;
+            SetActiveButton(SettingsButton);
         }
 
         public void NavigateToServices()
@@ -223,6 +242,9 @@ namespace WinBoost.App
             PrivacyButton.Style =
                 (Style)FindResource(
                     "SidebarButtonStyle");
+
+            SettingsButton.Style =
+                  (Style)FindResource("SidebarButtonStyle");
 
             ServicesButton.Style =
                 (Style)FindResource(

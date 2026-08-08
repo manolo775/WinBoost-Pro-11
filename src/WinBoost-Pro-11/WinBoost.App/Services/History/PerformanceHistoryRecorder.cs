@@ -10,27 +10,29 @@ namespace WinBoost.App.Services.History
     {
         private static readonly TimeSpan
             RecordingInterval =
-                TimeSpan.FromMinutes(1);
-
-        private static readonly TimeSpan
-            RetentionPeriod =
-                TimeSpan.FromDays(14);
+            TimeSpan.FromMinutes(1);
 
         private static readonly SemaphoreSlim
             DatabaseSemaphore =
-                new(1, 1);
+            new(1, 1);
 
         private static DateTime
             _lastRecordedUtc =
-                DateTime.MinValue;
+            DateTime.MinValue;
 
         private readonly PerformanceHistoryDatabase
             _database;
+
+        private readonly PerformanceHistorySettingsService
+            _settingsService;
 
         public PerformanceHistoryRecorder()
         {
             _database =
                 new PerformanceHistoryDatabase();
+
+            _settingsService =
+                new PerformanceHistorySettingsService();
         }
 
         public async Task RecordIfDueAsync(
@@ -61,6 +63,9 @@ namespace WinBoost.App.Services.History
                     return;
                 }
 
+                TimeSpan retentionPeriod =
+                    GetRetentionPeriod();
+
                 var record =
                     new PerformanceHistoryRecord
                     {
@@ -88,7 +93,7 @@ namespace WinBoost.App.Services.History
 
                     _database.DeleteOlderThan(
                         nowUtc.Subtract(
-                            RetentionPeriod));
+                            retentionPeriod));
                 });
 
                 _lastRecordedUtc =
@@ -137,6 +142,23 @@ namespace WinBoost.App.Services.History
             {
                 DatabaseSemaphore.Release();
             }
+        }
+
+        private TimeSpan GetRetentionPeriod()
+        {
+            int retentionDays =
+                _settingsService
+                    .Load()
+                    .RetentionDays;
+
+            retentionDays =
+                Math.Clamp(
+                    retentionDays,
+                    1,
+                    365);
+
+            return TimeSpan.FromDays(
+                retentionDays);
         }
     }
 }

@@ -1556,5 +1556,231 @@
 	<sys:String x:Key="PerformanceAlertViewDetails">
 		View details
 	</sys:String>
+
+	<sys:String x:Key="MenuSettings">
+		Settings
+	</sys:String>
+
+	<sys:String x:Key="SettingsTitle">
+		Settings
+	</sys:String>
+
+	<sys:String x:Key="SettingsDescription">
+		Configure WinBoost preferences, alerts, and performance history.
+	</sys:String>
+
+	<!-- SETTINGS -->
+
+	<sys:String x:Key="SettingsAlertsTitle">
+		Performance alerts
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertsDescription">
+		Configure how WinBoost informs you about performance issues.
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertsEnabled">
+		Enable performance alerts
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertsEnabledDescription">
+		Receive notifications when CPU, memory, disk usage, or CPU temperature remains high.
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuThresholdsTitle">
+		CPU thresholds
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuThresholdsDescription">
+		Choose the levels at which WinBoost shows a warning or a critical alert for CPU usage.
+	</sys:String>
+
+	<sys:String x:Key="SettingsWarningThreshold">
+		Warning threshold
+	</sys:String>
+
+	<sys:String x:Key="SettingsCriticalThreshold">
+		Critical threshold
+	</sys:String>
+
+	<sys:String x:Key="SettingsRamThresholdsTitle">
+		RAM thresholds
+	</sys:String>
+
+	<sys:String x:Key="SettingsRamThresholdsDescription">
+		Choose the levels at which WinBoost shows a warning or a critical alert for RAM usage.
+	</sys:String>
+
+	<sys:String x:Key="SettingsDiskThresholdsTitle">
+		Disk usage thresholds
+	</sys:String>
+
+	<sys:String x:Key="SettingsDiskThresholdsDescription">
+		Choose the levels at which WinBoost shows a warning or a critical alert when disk usage is high.
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuTemperatureThresholdsTitle">
+		CPU temperature thresholds
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuTemperatureThresholdsDescription">
+		Configure temperature alert levels. They are used only on computers that provide CPU sensor data.
+	</sys:String>
+
+	<sys:String x:Key="SettingsTemperatureUnit">
+		°C
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertTimingTitle">
+		Alert timing
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertTimingDescription">
+		Choose how long a value must remain above its threshold before WinBoost displays an alert.
+	</sys:String>
+
+	<sys:String x:Key="SettingsSustainedDuration">
+		Minimum duration before alert
+	</sys:String>
+
+	<sys:String x:Key="SettingsSeconds">
+		seconds
+	</sys:String>
+
+	<sys:String x:Key="SettingsCriticalAlertsTitle">
+		Critical alerts
+	</sys:String>
+
+	<sys:String x:Key="SettingsCriticalAlertsDescription">
+		Configure sound and repeated alerts when a performance issue is critical.
+	</sys:String>
+
+	<sys:String x:Key="SettingsCriticalAlertSound">
+		Play sound for critical alerts
+	</sys:String>
+
+	<sys:String x:Key="SettingsCriticalAlertRepeat">
+		Repeat critical alert
+	</sys:String>
+
+	<sys:String x:Key="SettingsRepeatNever">
+		Do not repeat
+	</sys:String>
+
+	<sys:String x:Key="SettingsRepeatAfter5Minutes">
+		After 5 minutes
+	</sys:String>
+
+	<sys:String x:Key="SettingsRepeatAfter15Minutes">
+		After 15 minutes
+	</sys:String>
+
+	<sys:String x:Key="SettingsRepeatAfter30Minutes">
+		After 30 minutes
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertSourcesTitle">
+		Alert types
+	</sys:String>
+
+	<sys:String x:Key="SettingsAlertSourcesDescription">
+		Choose which performance issues can generate alerts.
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuAlertsEnabled">
+		CPU usage alerts
+	</sys:String>
+
+	<sys:String x:Key="SettingsRamAlertsEnabled">
+		RAM usage alerts
+	</sys:String>
+
+	<sys:String x:Key="SettingsDiskAlertsEnabled">
+		Disk usage alerts
+	</sys:String>
+
+	<sys:String x:Key="SettingsCpuTemperatureAlertsEnabled">
+		CPU temperature alerts
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistoryTitle">
+		Performance history
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistoryDescription">
+		Choose how long WinBoost keeps performance measurements on this computer.
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistoryRetention">
+		Keep history for
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistory7Days">
+		7 days
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistory14Days">
+		14 days
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistory30Days">
+		30 days
+	</sys:String>
+
+	<sys:String x:Key="SettingsHistory90Days">
+		90 days
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistory">
+		Clear history
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistoryDescription">
+		Permanently remove all performance measurements saved on this computer.
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistoryConfirmTitle">
+		Confirm history deletion
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistoryConfirmMessage">
+		Are you sure you want to permanently delete all performance history?
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistorySuccessTitle">
+		History cleared
+	</sys:String>
+
+	<sys:String x:Key="SettingsClearHistorySuccessMessage">
+		Performance history has been cleared.
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetTitle">
+		Restore recommended settings
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetDescription">
+		Return to WinBoost's recommended thresholds and options. Performance history will not be deleted.
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetButton">
+		Restore defaults
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetConfirmTitle">
+		Confirm settings restore
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetConfirmMessage">
+		Are you sure you want to restore all recommended settings?
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetSuccessTitle">
+		Settings restored
+	</sys:String>
+
+	<sys:String x:Key="SettingsResetSuccessMessage">
+		Recommended settings have been restored.
+	</sys:String>
 	
 </ResourceDictionary>
