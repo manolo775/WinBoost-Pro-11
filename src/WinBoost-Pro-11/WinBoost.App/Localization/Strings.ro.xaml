@@ -1555,5 +1555,13 @@
 	<sys:String x:Key="PerformanceAlertRepeatDescription">
 		Selectează intervalul de repetare pentru alertele critice.
 	</sys:String>
+
+	<sys:String x:Key="DashboardOpenPerformanceDetails">
+		Vezi detaliile performanței
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertViewDetails">
+		Vezi detalii
+	</sys:String>
 	
 </ResourceDictionary>

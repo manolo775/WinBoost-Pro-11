@@ -2,27 +2,57 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using WinBoost.App.Views;
 using WinBoost.App.Localization;
-using AppLanguage = WinBoost.App.Localization.Language;
-
+using WinBoost.App.Views;
+using AppLanguage =
+    WinBoost.App.Localization.Language;
 
 namespace WinBoost.App
 {
     public partial class MainWindow : Window
     {
-        private readonly DashboardView _dashboardView;
+        private readonly DashboardView
+            _dashboardView;
 
-        private PerformanceView? _performanceView;
-        private PrivacyView? _privacyView;
-        private ServicesView? _servicesView;
-        private WindowsUpdateView? _windowsUpdateView;
-        private AppsView? _appsView;
-        private StartupView? _startupView;
-       
-        private void LanguageComboBox_SelectionChanged(
-     object sender,
-     SelectionChangedEventArgs e)
+        private PerformanceView?
+            _performanceView;
+
+        private PrivacyView?
+            _privacyView;
+
+        private ServicesView?
+            _servicesView;
+
+        private WindowsUpdateView?
+            _windowsUpdateView;
+
+        private AppsView?
+            _appsView;
+
+        private StartupView?
+            _startupView;
+
+        public MainWindow()
+        {
+            InitializeComponent();
+
+            _dashboardView =
+                new DashboardView();
+
+            MainContent.Content =
+                _dashboardView;
+
+            SetActiveButton(
+                DashboardButton);
+
+            ContentRendered +=
+                MainWindow_ContentRendered;
+        }
+
+        private void
+            LanguageComboBox_SelectionChanged(
+                object sender,
+                SelectionChangedEventArgs e)
         {
             if (sender is not ComboBox comboBox)
             {
@@ -43,28 +73,18 @@ namespace WinBoost.App
                 selectedLanguage);
         }
 
-        public MainWindow()
-        {
-            InitializeComponent();
-
-            _dashboardView = new DashboardView();
-
-            MainContent.Content = _dashboardView;
-            SetActiveButton(DashboardButton);
-
-            ContentRendered += MainWindow_ContentRendered;
-        }
-
         private void MainWindow_ContentRendered(
             object? sender,
             EventArgs e)
         {
-            ContentRendered -= MainWindow_ContentRendered;
+            ContentRendered -=
+                MainWindow_ContentRendered;
 
             Dispatcher.BeginInvoke(
                 new Action(() =>
                 {
-                    _performanceView ??= new PerformanceView();
+                    _performanceView ??=
+                        new PerformanceView();
                 }),
                 DispatcherPriority.ApplicationIdle);
         }
@@ -73,58 +93,89 @@ namespace WinBoost.App
             object sender,
             RoutedEventArgs e)
         {
-            MainContent.Content = _dashboardView;
-            SetActiveButton(DashboardButton);
+            MainContent.Content =
+                _dashboardView;
+
+            SetActiveButton(
+                DashboardButton);
         }
 
         private void PerformanceButton_Click(
             object sender,
             RoutedEventArgs e)
         {
-            _performanceView ??= new PerformanceView();
+            NavigateToPerformance();
+        }
 
-            MainContent.Content = _performanceView;
-            SetActiveButton(PerformanceButton);
+        public void NavigateToPerformance()
+        {
+            _performanceView ??=
+                new PerformanceView();
+
+            MainContent.Content =
+                _performanceView;
+
+            SetActiveButton(
+                PerformanceButton);
         }
 
         private void PrivacyButton_Click(
-            object sender,
-            RoutedEventArgs e)
+     object sender,
+     RoutedEventArgs e)
         {
-            _privacyView ??= new PrivacyView();
+            NavigateToPrivacy();
+        }
 
-            MainContent.Content = _privacyView;
-            SetActiveButton(PrivacyButton);
+        public void NavigateToPrivacy()
+        {
+            _privacyView ??=
+                new PrivacyView();
+
+            MainContent.Content =
+                _privacyView;
+
+            SetActiveButton(
+                PrivacyButton);
         }
 
         private void ServicesButton_Click(
             object sender,
             RoutedEventArgs e)
         {
-            _servicesView ??= new ServicesView();
-
-            MainContent.Content = _servicesView;
-            SetActiveButton(ServicesButton);
+            NavigateToServices();
         }
 
         private void WindowsUpdateButton_Click(
             object sender,
             RoutedEventArgs e)
         {
-            _windowsUpdateView ??= new WindowsUpdateView();
+            NavigateToWindowsUpdate();
+        }
 
-            MainContent.Content = _windowsUpdateView;
-            SetActiveButton(WindowsUpdateButton);
+        public void NavigateToWindowsUpdate()
+        {
+            _windowsUpdateView ??=
+                new WindowsUpdateView();
+
+            MainContent.Content =
+                _windowsUpdateView;
+
+            SetActiveButton(
+                WindowsUpdateButton);
         }
 
         private void AppsButton_Click(
             object sender,
             RoutedEventArgs e)
         {
-            _appsView ??= new AppsView();
+            _appsView ??=
+                new AppsView();
 
-            MainContent.Content = _appsView;
-            SetActiveButton(AppsButton);
+            MainContent.Content =
+                _appsView;
+
+            SetActiveButton(
+                AppsButton);
         }
 
         private void StartupButton_Click(
@@ -136,44 +187,62 @@ namespace WinBoost.App
 
         public void NavigateToStartup()
         {
-            _startupView ??= new StartupView();
+            _startupView ??=
+                new StartupView();
 
-            MainContent.Content = _startupView;
-            SetActiveButton(StartupButton);
+            MainContent.Content =
+                _startupView;
+
+            SetActiveButton(
+                StartupButton);
         }
+
         public void NavigateToServices()
         {
-            _servicesView ??= new ServicesView();
+            _servicesView ??=
+                new ServicesView();
 
-            MainContent.Content = _servicesView;
-            SetActiveButton(ServicesButton);
+            MainContent.Content =
+                _servicesView;
+
+            SetActiveButton(
+                ServicesButton);
         }
 
-        private void SetActiveButton(Button activeButton)
+        private void SetActiveButton(
+            Button activeButton)
         {
             DashboardButton.Style =
-                (Style)FindResource("SidebarButtonStyle");
+                (Style)FindResource(
+                    "SidebarButtonStyle");
 
             PerformanceButton.Style =
-                (Style)FindResource("SidebarButtonStyle");
+                (Style)FindResource(
+                    "SidebarButtonStyle");
 
             PrivacyButton.Style =
-                (Style)FindResource("SidebarButtonStyle");
+                (Style)FindResource(
+                    "SidebarButtonStyle");
 
             ServicesButton.Style =
-                (Style)FindResource("SidebarButtonStyle");
+                (Style)FindResource(
+                    "SidebarButtonStyle");
 
             WindowsUpdateButton.Style =
-                (Style)FindResource("SidebarButtonStyle");
+                (Style)FindResource(
+                    "SidebarButtonStyle");
 
             AppsButton.Style =
-                (Style)FindResource("SidebarButtonStyle");
+                (Style)FindResource(
+                    "SidebarButtonStyle");
 
             StartupButton.Style =
-                (Style)FindResource("SidebarButtonStyle");
+                (Style)FindResource(
+                    "SidebarButtonStyle");
 
             activeButton.Style =
-                (Style)FindResource("SidebarActiveButtonStyle");
+                (Style)FindResource(
+                    "SidebarActiveButtonStyle");
         }
     }
 }

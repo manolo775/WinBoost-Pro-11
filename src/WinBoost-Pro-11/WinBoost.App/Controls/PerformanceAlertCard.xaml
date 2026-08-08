@@ -217,18 +217,36 @@
 
 			<!-- ÎNCHIDERE ALERTĂ -->
 
-			<Button
-                Grid.Column="2"
-                MinWidth="110"
-                Height="38"
-                Padding="12,5"
-                VerticalAlignment="Center"
-                Content="{DynamicResource PerformanceAlertDismiss}"
-                Command="{Binding DismissPerformanceAlertCommand}"
-                Background="#25272B"
-                Foreground="White"
-                BorderBrush="{Binding PerformanceAlertBrush}"
-                BorderThickness="1"/>
+			<!-- ACȚIUNI ALERTĂ -->
+
+			<StackPanel
+				Grid.Column="2"
+				VerticalAlignment="Center">
+
+				<Button
+					MinWidth="110"
+					Height="38"
+					Padding="12,5"
+					Content="{DynamicResource PerformanceAlertViewDetails}"
+					Click="ViewDetailsButton_Click"
+					Background="#25272B"
+					Foreground="White"
+					BorderBrush="{Binding PerformanceAlertBrush}"
+					BorderThickness="1"/>
+
+				<Button
+					MinWidth="110"
+					Height="38"
+					Margin="0,8,0,0"
+					Padding="12,5"
+					Content="{DynamicResource PerformanceAlertDismiss}"
+					Command="{Binding DismissPerformanceAlertCommand}"
+					Background="#25272B"
+					Foreground="White"
+					BorderBrush="{Binding PerformanceAlertBrush}"
+					BorderThickness="1"/>
+
+			</StackPanel>
 
 		</Grid>
 

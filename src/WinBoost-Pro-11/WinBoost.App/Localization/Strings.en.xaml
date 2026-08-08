@@ -1548,5 +1548,13 @@
 	<sys:String x:Key="PerformanceAlertRepeatDescription">
 		Select the repeat interval for critical alerts.
 	</sys:String>
+
+	<sys:String x:Key="DashboardOpenPerformanceDetails">
+		View performance details
+	</sys:String>
+
+	<sys:String x:Key="PerformanceAlertViewDetails">
+		View details
+	</sys:String>
 	
 </ResourceDictionary>

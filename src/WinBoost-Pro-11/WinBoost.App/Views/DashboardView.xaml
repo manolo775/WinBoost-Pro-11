@@ -42,14 +42,19 @@
 
 			<!-- ALERTĂ DE PERFORMANȚĂ -->
 
-			<controls:PerformanceAlertCard
-                Grid.Row="1"/>
-
+			      <controls:PerformanceAlertCard
+		              Grid.Row="1"
+		             DetailsRequested="PerformanceAlertCard_DetailsRequested"/>
 			<!-- SYSTEM HEALTH -->
 
 			<controls:HealthCard
-                Grid.Row="2"
-                Margin="50,25,50,5"/>
+		            Grid.Row="2"
+		            Margin="50,25,50,5"
+		            PerformanceRequested="HealthCard_PerformanceRequested"
+		            ServicesRequested="HealthCard_ServicesRequested"
+		            StartupRequested="HealthCard_StartupRequested"
+		            PrivacyRequested="HealthCard_PrivacyRequested"
+		            WindowsUpdateRequested="HealthCard_WindowsUpdateRequested"/>
 
 			<!-- SYSTEM SUMMARY -->
 
@@ -70,6 +75,9 @@
                     Value="{Binding CpuUsage}"
                     Status="{Binding CpuStatus}"
                     ProgressValue="{Binding CpuUsageValue}"
+					IsClickable="True"
+                    Click="PerformanceMetricCard_Click"
+                    ToolTip="{DynamicResource DashboardOpenPerformanceDetails}"
                     Margin="10"/>
 
 				<controls:MetricCard
@@ -79,6 +87,9 @@
                     Subtitle="{Binding RamDetails}"
                     Status=""
                     ProgressValue="{Binding RamUsageValue}"
+					IsClickable="True"
+                    Click="PerformanceMetricCard_Click"
+                    ToolTip="{DynamicResource DashboardOpenPerformanceDetails}"
                     Margin="10"/>
 
 				<controls:MetricCard
@@ -87,6 +98,9 @@
                     Value="{Binding DiskUsage}"
                     Status=""
                     ProgressValue="{Binding DiskUsageValue}"
+					IsClickable="True"
+                    Click="PerformanceMetricCard_Click"
+                    ToolTip="{DynamicResource DashboardOpenPerformanceDetails}"
                     Margin="10"/>
 
 				<controls:MetricCard

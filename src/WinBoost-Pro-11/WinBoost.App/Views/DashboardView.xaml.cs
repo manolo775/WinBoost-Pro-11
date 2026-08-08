@@ -39,5 +39,85 @@ namespace WinBoost.App.Views
         {
             _viewModel.StopMonitoring();
         }
+
+        private void PerformanceMetricCard_Click(
+             object sender,
+              RoutedEventArgs e)
+        {
+            Window? window =
+                Window.GetWindow(this);
+
+            if (window is MainWindow mainWindow)
+            {
+                mainWindow.NavigateToPerformance();
+            }
+        }
+
+        private void HealthCard_PerformanceRequested(
+    object sender,
+    RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this) is
+                MainWindow mainWindow)
+            {
+                mainWindow.NavigateToPerformance();
+            }
+        }
+
+        private void HealthCard_ServicesRequested(
+            object sender,
+            RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this) is
+                MainWindow mainWindow)
+            {
+                mainWindow.NavigateToServices();
+            }
+        }
+
+        private void HealthCard_StartupRequested(
+            object sender,
+            RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this) is
+                MainWindow mainWindow)
+            {
+                mainWindow.NavigateToStartup();
+            }
+        }
+
+        private void HealthCard_PrivacyRequested(
+            object sender,
+            RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this) is
+                MainWindow mainWindow)
+            {
+                mainWindow.NavigateToPrivacy();
+            }
+        }
+
+        private void HealthCard_WindowsUpdateRequested(
+            object sender,
+            RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this) is
+                MainWindow mainWindow)
+            {
+                mainWindow.NavigateToWindowsUpdate();
+            }
+        }
+
+        private void PerformanceAlertCard_DetailsRequested(
+    object sender,
+    RoutedEventArgs e)
+        {
+            if (Window.GetWindow(this) is
+                MainWindow mainWindow)
+            {
+                mainWindow.NavigateToPerformance();
+            }
+        }
+
     }
 }

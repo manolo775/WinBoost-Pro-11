@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Animation;
 using MaterialDesignThemes.Wpf;
 
@@ -10,9 +12,13 @@ namespace WinBoost.App.Controls
         public MetricCard()
         {
             InitializeComponent();
+
+            UpdateInteractiveState(
+                IsClickable);
         }
 
-        public static readonly DependencyProperty TitleProperty =
+        public static readonly DependencyProperty
+            TitleProperty =
             DependencyProperty.Register(
                 nameof(Title),
                 typeof(string),
@@ -25,7 +31,8 @@ namespace WinBoost.App.Controls
             set => SetValue(TitleProperty, value);
         }
 
-        public static readonly DependencyProperty ValueProperty =
+        public static readonly DependencyProperty
+            ValueProperty =
             DependencyProperty.Register(
                 nameof(Value),
                 typeof(string),
@@ -38,7 +45,8 @@ namespace WinBoost.App.Controls
             set => SetValue(ValueProperty, value);
         }
 
-        public static readonly DependencyProperty StatusProperty =
+        public static readonly DependencyProperty
+            StatusProperty =
             DependencyProperty.Register(
                 nameof(Status),
                 typeof(string),
@@ -51,7 +59,8 @@ namespace WinBoost.App.Controls
             set => SetValue(StatusProperty, value);
         }
 
-        public static readonly DependencyProperty ProgressValueProperty =
+        public static readonly DependencyProperty
+            ProgressValueProperty =
             DependencyProperty.Register(
                 nameof(ProgressValue),
                 typeof(double),
@@ -62,11 +71,18 @@ namespace WinBoost.App.Controls
 
         public double ProgressValue
         {
-            get => (double)GetValue(ProgressValueProperty);
-            set => SetValue(ProgressValueProperty, value);
+            get =>
+                (double)GetValue(
+                    ProgressValueProperty);
+
+            set =>
+                SetValue(
+                    ProgressValueProperty,
+                    value);
         }
 
-        public static readonly DependencyProperty IconKindProperty =
+        public static readonly DependencyProperty
+            IconKindProperty =
             DependencyProperty.Register(
                 nameof(IconKind),
                 typeof(PackIconKind),
@@ -76,21 +92,35 @@ namespace WinBoost.App.Controls
 
         public PackIconKind IconKind
         {
-            get => (PackIconKind)GetValue(IconKindProperty);
-            set => SetValue(IconKindProperty, value);
+            get =>
+                (PackIconKind)GetValue(
+                    IconKindProperty);
+
+            set =>
+                SetValue(
+                    IconKindProperty,
+                    value);
         }
 
-        public static readonly DependencyProperty SubtitleProperty =
+        public static readonly DependencyProperty
+            SubtitleProperty =
             DependencyProperty.Register(
                 nameof(Subtitle),
                 typeof(string),
                 typeof(MetricCard),
-                new PropertyMetadata(string.Empty));
+                new PropertyMetadata(
+                    string.Empty));
 
         public string Subtitle
         {
-            get => (string)GetValue(SubtitleProperty);
-            set => SetValue(SubtitleProperty, value);
+            get =>
+                (string)GetValue(
+                    SubtitleProperty);
+
+            set =>
+                SetValue(
+                    SubtitleProperty,
+                    value);
         }
 
         public static readonly DependencyProperty
@@ -103,19 +133,66 @@ namespace WinBoost.App.Controls
 
         public bool ShowProgressBar
         {
-            get => (bool)GetValue(
-                ShowProgressBarProperty);
+            get =>
+                (bool)GetValue(
+                    ShowProgressBarProperty);
 
-            set => SetValue(
-                ShowProgressBarProperty,
-                value);
+            set =>
+                SetValue(
+                    ShowProgressBarProperty,
+                    value);
+        }
+
+        public static readonly DependencyProperty
+            IsClickableProperty =
+            DependencyProperty.Register(
+                nameof(IsClickable),
+                typeof(bool),
+                typeof(MetricCard),
+                new PropertyMetadata(
+                    false,
+                    OnIsClickableChanged));
+
+        public bool IsClickable
+        {
+            get =>
+                (bool)GetValue(
+                    IsClickableProperty);
+
+            set =>
+                SetValue(
+                    IsClickableProperty,
+                    value);
+        }
+
+        public static readonly RoutedEvent
+            ClickEvent =
+            EventManager.RegisterRoutedEvent(
+                nameof(Click),
+                RoutingStrategy.Bubble,
+                typeof(RoutedEventHandler),
+                typeof(MetricCard));
+
+        public event RoutedEventHandler Click
+        {
+            add =>
+                AddHandler(
+                    ClickEvent,
+                    value);
+
+            remove =>
+                RemoveHandler(
+                    ClickEvent,
+                    value);
         }
 
         private static void OnProgressValueChanged(
             DependencyObject dependencyObject,
-            DependencyPropertyChangedEventArgs eventArgs)
+            DependencyPropertyChangedEventArgs
+                eventArgs)
         {
-            if (dependencyObject is not MetricCard card ||
+            if (dependencyObject
+                    is not MetricCard card ||
                 card.MetricProgressBar == null)
             {
                 return;
@@ -130,22 +207,145 @@ namespace WinBoost.App.Controls
             var animation =
                 new DoubleAnimation
                 {
-                    From = currentValue,
-                    To = newValue,
+                    From =
+                        currentValue,
+
+                    To =
+                        newValue,
+
                     Duration =
                         new Duration(
-                            System.TimeSpan.FromMilliseconds(450)),
+                            TimeSpan
+                                .FromMilliseconds(
+                                    450)),
+
                     EasingFunction =
                         new CubicEase
                         {
-                            EasingMode = EasingMode.EaseOut
+                            EasingMode =
+                                EasingMode.EaseOut
                         }
                 };
 
-            card.MetricProgressBar.BeginAnimation(
-                ProgressBar.ValueProperty,
-                animation,
-                HandoffBehavior.SnapshotAndReplace);
+            card.MetricProgressBar
+                .BeginAnimation(
+                    ProgressBar.ValueProperty,
+                    animation,
+                    HandoffBehavior
+                        .SnapshotAndReplace);
+        }
+
+        private static void OnIsClickableChanged(
+            DependencyObject dependencyObject,
+            DependencyPropertyChangedEventArgs
+                eventArgs)
+        {
+            if (dependencyObject
+                is not MetricCard card)
+            {
+                return;
+            }
+
+            card.UpdateInteractiveState(
+                (bool)eventArgs.NewValue);
+        }
+
+        private void UpdateInteractiveState(
+            bool isClickable)
+        {
+            Focusable =
+                isClickable;
+
+            Cursor =
+                isClickable
+                    ? Cursors.Hand
+                    : Cursors.Arrow;
+
+            KeyboardNavigation.SetIsTabStop(
+                this,
+                isClickable);
+        }
+
+        private void
+            MetricCard_PreviewMouseLeftButtonDown(
+                object sender,
+                MouseButtonEventArgs e)
+        {
+            if (!IsClickable)
+            {
+                return;
+            }
+
+            Focus();
+        }
+
+        private void MetricCard_MouseLeftButtonUp(
+            object sender,
+            MouseButtonEventArgs e)
+        {
+            if (!IsClickable)
+            {
+                return;
+            }
+
+            RaiseClick();
+
+            e.Handled =
+                true;
+        }
+
+        private void MetricCard_PreviewKeyDown(
+            object sender,
+            KeyEventArgs e)
+        {
+            if (!IsClickable ||
+                e.IsRepeat)
+            {
+                return;
+            }
+
+            if (e.Key != Key.Enter &&
+                e.Key != Key.Space)
+            {
+                return;
+            }
+
+            RaiseClick();
+
+            e.Handled =
+                true;
+        }
+
+        private void RaiseClick()
+        {
+            PlayClickAnimation();
+
+            RaiseEvent(
+                new RoutedEventArgs(
+                    ClickEvent,
+                    this));
+        }
+
+        private void PlayClickAnimation()
+        {
+            var animation =
+                new DoubleAnimation
+                {
+                    To =
+                        0.72,
+
+                    Duration =
+                        TimeSpan
+                            .FromMilliseconds(
+                                80),
+
+                    AutoReverse =
+                        true
+                };
+
+            CardBorder.BeginAnimation(
+                OpacityProperty,
+                animation);
         }
     }
 }
