@@ -108,29 +108,35 @@ namespace WinBoost.App.Services.Apps
                     return;
 
                 applications.Add(
-                    new InstalledAppInfo
-                    {
-                        DisplayName = displayName,
+    new InstalledAppInfo
+    {
+        DisplayName = displayName,
 
-                        Publisher =
-                            ReadValue(
-                                applicationKey,
-                                "Publisher",
-                                "Necunoscut"),
+        Publisher =
+            ReadValue(
+                applicationKey,
+                "Publisher",
+                "Necunoscut"),
 
-                        Version =
-                            ReadValue(
-                                applicationKey,
-                                "DisplayVersion",
-                                "—"),
+        Version =
+            ReadValue(
+                applicationKey,
+                "DisplayVersion",
+                "—"),
 
-                        InstallDate =
-                            FormatInstallDate(
-                                ReadValue(
-                                    applicationKey,
-                                    "InstallDate",
-                                    string.Empty))
-                    });
+        InstallDate =
+            FormatInstallDate(
+                ReadValue(
+                    applicationKey,
+                    "InstallDate",
+                    string.Empty)),
+
+        InstallLocation =
+            ReadValue(
+                applicationKey,
+                "InstallLocation",
+                string.Empty)
+    });
             }
             catch
             {

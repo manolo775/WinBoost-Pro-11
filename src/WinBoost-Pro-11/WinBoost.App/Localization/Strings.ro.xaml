@@ -1818,4 +1818,136 @@
 		Utilizare RAM
 	</sys:String>
 
+	<sys:String x:Key="AppsTitle">Aplicații</sys:String>
+	<sys:String x:Key="AppsDescription">Scanează și afișează aplicațiile instalate în Windows.</sys:String>
+
+	<sys:String x:Key="AppsScanTitle">Verificare aplicații instalate</sys:String>
+	<sys:String x:Key="AppsScanInformation">Scanarea este informativă și nu dezinstalează nicio aplicație.</sys:String>
+
+	<sys:String x:Key="AppsListTitle">Aplicații instalate</sys:String>
+	<sys:String x:Key="AppsListDescription">Aici vor apărea aplicațiile identificate în urma scanării.</sys:String>
+
+	<sys:String x:Key="AppsSearchLabel">Caută:</sys:String>
+
+	<sys:String x:Key="AppsColumnName">Aplicație</sys:String>
+	<sys:String x:Key="AppsColumnPublisher">Producător</sys:String>
+	<sys:String x:Key="AppsColumnVersion">Versiune</sys:String>
+	<sys:String x:Key="AppsColumnInstallDate">Data instalării</sys:String>
+
+	<sys:String x:Key="AppsScanInitialStatus">
+		Apasă Scan Apps pentru a căuta aplicațiile instalate.
+	</sys:String>
+
+	<sys:String x:Key="AppsScanInProgress">
+		Se caută aplicațiile instalate...
+	</sys:String>
+
+	<sys:String x:Key="AppsScanCompleted">
+		Scanare finalizată: {0} aplicații găsite.
+	</sys:String>
+
+	<sys:String x:Key="AppsScanFailed">
+		Scanarea nu a putut fi finalizată: {0}
+	</sys:String>
+
+	<sys:String x:Key="AppsScanBadgeNotChecked">Neverificat</sys:String>
+	<sys:String x:Key="AppsScanBadgeScanning">Se verifică</sys:String>
+	<sys:String x:Key="AppsScanBadgeCompleted">Verificat</sys:String>
+	<sys:String x:Key="AppsScanBadgeError">Eroare</sys:String>
+
+	<sys:String x:Key="AppsScanButton">Scanează aplicații</sys:String>
+	<sys:String x:Key="AppsScanningButton">Se scanează...</sys:String>
+
+	<sys:String x:Key="AppsSortLabel">
+		Sortează după:
+	</sys:String>
+
+	<sys:String x:Key="AppsSortName">
+		Nume aplicație
+	</sys:String>
+
+	<sys:String x:Key="AppsSortPublisher">
+		Producător
+	</sys:String>
+
+	<sys:String x:Key="AppsSortInstallDate">
+		Data instalării
+	</sys:String>
+
+	<sys:String x:Key="AppsDetailsTitle">
+		Detalii aplicație
+	</sys:String>
+
+	<sys:String x:Key="AppsDetailsPublisher">
+		Producător
+	</sys:String>
+
+	<sys:String x:Key="AppsDetailsVersion">
+		Versiune
+	</sys:String>
+
+	<sys:String x:Key="AppsDetailsInstallDate">
+		Data instalării
+	</sys:String>
+
+	<sys:String x:Key="AppsOpenLocation">
+		Deschide locația aplicației
+	</sys:String>
+
+	<sys:String x:Key="AppsCheckUpdate">
+		Verifică actualizarea
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateChecking">
+		Se verifică actualizarea prin winget...
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateUnavailable">
+		Aplicația nu poate fi asociată cu catalogul winget.
+	</sys:String>
+
+	<sys:String x:Key="AppsWingetUnavailable">
+		winget nu este disponibil pe acest sistem.
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateNow">
+		Actualizează acum
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateUpdating">
+		Se instalează actualizarea prin winget...
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateCompleted">
+		Actualizarea a fost instalată cu succes.
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateConfirmationTitle">
+		Confirmă actualizarea
+	</sys:String>
+  
+	<sys:String x:Key="AppsUpdateConfirmationMessage">
+		Dorești să actualizezi aplicația „{0}” prin winget?
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateConfirmYes">
+		Actualizează
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateConfirmNo">
+		Anulează
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateAvailable">
+		Este disponibilă o actualizare prin winget.
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateUpToDate">
+		Aplicația este deja actualizată.
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateFailed">
+		Verificarea actualizării nu a putut fi finalizată.
+	</sys:String>
+
 </ResourceDictionary>

@@ -1809,5 +1809,136 @@
 	<sys:String x:Key="PerformanceProcessesSortMemory">
 		RAM usage
 	</sys:String>
+
+	<sys:String x:Key="AppsTitle">Apps</sys:String>
+	<sys:String x:Key="AppsDescription">Scan and display applications installed in Windows.</sys:String>
+
+	<sys:String x:Key="AppsScanTitle">Installed Apps Check</sys:String>
+	<sys:String x:Key="AppsScanInformation">The scan is informational and does not uninstall any applications.</sys:String>
+
+	<sys:String x:Key="AppsListTitle">Installed apps</sys:String>
+	<sys:String x:Key="AppsListDescription">Applications identified during the scan will appear here.</sys:String>
+
+	<sys:String x:Key="AppsSearchLabel">Search:</sys:String>
+
+	<sys:String x:Key="AppsColumnName">Application</sys:String>
+	<sys:String x:Key="AppsColumnPublisher">Publisher</sys:String>
+	<sys:String x:Key="AppsColumnVersion">Version</sys:String>
+	<sys:String x:Key="AppsColumnInstallDate">Installed</sys:String>
+
+	<sys:String x:Key="AppsScanInitialStatus">
+		Click Scan Apps to search for installed applications.
+	</sys:String>
+
+	<sys:String x:Key="AppsScanInProgress">
+		Searching for installed applications...
+	</sys:String>
+
+	<sys:String x:Key="AppsScanCompleted">
+		Scan completed: {0} applications found.
+	</sys:String>
+
+	<sys:String x:Key="AppsScanFailed">
+		The scan could not be completed: {0}
+	</sys:String>
+
+	<sys:String x:Key="AppsScanBadgeNotChecked">Not checked</sys:String>
+	<sys:String x:Key="AppsScanBadgeScanning">Checking</sys:String>
+	<sys:String x:Key="AppsScanBadgeCompleted">Checked</sys:String>
+	<sys:String x:Key="AppsScanBadgeError">Error</sys:String>
+
+	<sys:String x:Key="AppsScanButton">Scan Apps</sys:String>
+	<sys:String x:Key="AppsScanningButton">Scanning...</sys:String>
+
+	<sys:String x:Key="AppsSortLabel">
+		Sort by:
+	</sys:String>
+
+	<sys:String x:Key="AppsSortName">
+		Application name
+	</sys:String>
+
+	<sys:String x:Key="AppsSortPublisher">
+		Publisher
+	</sys:String>
+
+	<sys:String x:Key="AppsSortInstallDate">
+		Install date
+	</sys:String>
+
+	<sys:String x:Key="AppsDetailsTitle">
+		Application details
+	</sys:String>
+
+	<sys:String x:Key="AppsDetailsPublisher">
+		Publisher
+	</sys:String>
+
+	<sys:String x:Key="AppsDetailsVersion">
+		Version
+	</sys:String>
+
+	<sys:String x:Key="AppsDetailsInstallDate">
+		Install date
+	</sys:String>
+
+	<sys:String x:Key="AppsOpenLocation">
+		Open application location
+	</sys:String>
+
+	<sys:String x:Key="AppsCheckUpdate">
+		Check for updates
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateNow">
+		Update now
+	</sys:String>
 	
+	<sys:String x:Key="AppsUpdateAvailable">
+		An update is available through winget.
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateUnavailable">
+		The application could not be associated with the winget catalog.
+	</sys:String>
+
+	<sys:String x:Key="AppsWingetUnavailable">
+		winget is not available on this system.
+	</sys:String>
+
+		<sys:String x:Key="AppsUpdateUpdating">
+		Installing the update through winget...
+	</sys:String>
+
+			<sys:String x:Key="AppsUpdateCompleted">
+		The update was installed successfully.
+	</sys:String>
+
+				<sys:String x:Key="AppsUpdateConfirmationTitle">
+		Confirm update
+	</sys:String>
+
+					<sys:String x:Key="AppsUpdateConfirmationMessage">
+		Do you want to update “{0}” through winget?
+	</sys:String>
+
+						<sys:String x:Key="AppsUpdateConfirmYes">
+		Update
+	</sys:String>		
+						<sys:String x:Key="AppsUpdateConfirmNo">
+		Cancel
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateChecking">
+		Checking for updates through winget...
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateUpToDate">
+		The application is already up to date.
+	</sys:String>
+
+	<sys:String x:Key="AppsUpdateFailed">
+		The update check could not be completed.
+	</sys:String>
+
 </ResourceDictionary>
