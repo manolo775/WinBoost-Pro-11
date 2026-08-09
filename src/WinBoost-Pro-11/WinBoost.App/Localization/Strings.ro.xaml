@@ -514,9 +514,8 @@
 		Proces
 	</sys:String>
 
-	<sys:String x:Key="PerformanceColumnPid">
-		PID
-	</sys:String>
+	<!-- Strings.ro.xaml -->
+	<sys:String x:Key="PerformanceColumnPid">ID proces</sys:String>
 
 	<sys:String x:Key="PerformanceColumnCpu">
 		CPU
@@ -1790,5 +1789,33 @@
 	<sys:String x:Key="SettingsResetSuccessMessage">
 		Setările recomandate au fost restabilite.
 	</sys:String>
-	
+
+	<sys:String x:Key="PerformanceProcessesRefresh">
+		Actualizează
+	</sys:String>
+
+	<sys:String x:Key="PerformanceProcessesNotUpdated">
+		Încă nu a fost actualizat.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceProcessesLastUpdated">
+		Ultima actualizare: {0}
+	</sys:String>
+
+	<sys:String x:Key="PerformanceOpenProcessLocation">
+		Deschide locația fișierului
+	</sys:String>
+
+	<sys:String x:Key="PerformanceProcessesSortBy">
+		Sortează după:
+	</sys:String>
+
+	<sys:String x:Key="PerformanceProcessesSortCpu">
+		Utilizare CPU
+	</sys:String>
+
+	<sys:String x:Key="PerformanceProcessesSortMemory">
+		Utilizare RAM
+	</sys:String>
+
 </ResourceDictionary>

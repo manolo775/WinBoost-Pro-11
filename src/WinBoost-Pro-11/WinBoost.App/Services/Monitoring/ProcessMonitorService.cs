@@ -9,84 +9,148 @@ namespace WinBoost.App.Services.Monitoring
 {
     public sealed class ProcessMonitorService
     {
-        public Task<List<ProcessInfo>> GetTopProcessesAsync(
-            int numberOfProcesses = 5)
+        public Task<List<ProcessInfo>>
+            GetTopProcessesAsync(
+                int numberOfProcesses = 5,
+                ProcessSortMode sortMode =
+                    ProcessSortMode.Cpu)
         {
-            return Task.Run(async () =>
-            {
-                var samples = new List<ProcessSample>();
-
-                foreach (Process process in Process.GetProcesses())
+            return Task.Run(
+                async () =>
                 {
-                    try
+                    var samples =
+                        new List<ProcessSample>();
+
+                    foreach (Process process
+                             in Process.GetProcesses())
                     {
-                        samples.Add(
-                            new ProcessSample(
-                                process,
-                                process.TotalProcessorTime));
-                    }
-                    catch
-                    {
-                        process.Dispose();
-                    }
-                }
-
-                Stopwatch stopwatch = Stopwatch.StartNew();
-
-                await Task.Delay(1000).ConfigureAwait(false);
-
-                stopwatch.Stop();
-
-                var results = new List<ProcessInfo>();
-
-                foreach (ProcessSample sample in samples)
-                {
-                    try
-                    {
-                        sample.Process.Refresh();
-
-                        TimeSpan cpuDifference =
-                            sample.Process.TotalProcessorTime -
-                            sample.InitialCpuTime;
-
-                        double cpuUsage =
-                            cpuDifference.TotalMilliseconds /
-                            (stopwatch.Elapsed.TotalMilliseconds *
-                             Environment.ProcessorCount) *
-                            100;
-
-                        cpuUsage =
-                            Math.Clamp(cpuUsage, 0, 100);
-
-                        double memoryUsageMb =
-                            sample.Process.WorkingSet64 /
-                            1024d /
-                            1024d;
-
-                        results.Add(new ProcessInfo
+                        try
                         {
-                            ProcessId = sample.Process.Id,
-                            Name = sample.Process.ProcessName,
-                            CpuUsage = cpuUsage,
-                            MemoryUsageMb = memoryUsageMb
-                        });
+                            samples.Add(
+                                new ProcessSample(
+                                    process,
+                                    process
+                                        .TotalProcessorTime));
+                        }
+                        catch
+                        {
+                            process.Dispose();
+                        }
                     }
-                    catch
-                    {
-                        // Procesul s-a închis sau accesul este restricționat.
-                    }
-                    finally
-                    {
-                        sample.Process.Dispose();
-                    }
-                }
 
-                return results
-                    .OrderByDescending(process => process.CpuUsage)
-                    .ThenByDescending(process => process.MemoryUsageMb)
-                    .Take(numberOfProcesses)
-                    .ToList();
-            });
+                    Stopwatch stopwatch =
+                        Stopwatch.StartNew();
+
+                    await Task.Delay(1000)
+                        .ConfigureAwait(false);
+
+                    stopwatch.Stop();
+
+                    var results =
+                        new List<ProcessInfo>();
+
+                    foreach (ProcessSample sample
+                             in samples)
+                    {
+                        try
+                        {
+                            sample.Process.Refresh();
+
+                            TimeSpan cpuDifference =
+                                sample.Process
+                                    .TotalProcessorTime -
+                                sample.InitialCpuTime;
+
+                            double cpuUsage =
+                                cpuDifference
+                                    .TotalMilliseconds /
+                                (stopwatch
+                                    .Elapsed
+                                    .TotalMilliseconds *
+                                 Environment
+                                    .ProcessorCount) *
+                                100;
+
+                            cpuUsage =
+                                Math.Clamp(
+                                    cpuUsage,
+                                    0,
+                                    100);
+
+                            double memoryUsageMb =
+                                sample.Process
+                                    .WorkingSet64 /
+                                1024d /
+                                1024d;
+
+                            results.Add(
+                                new ProcessInfo
+                                {
+                                    ProcessId =
+                                        sample.Process.Id,
+
+                                    Name =
+                                        sample.Process.ProcessName,
+
+                                    CpuUsage =
+                                        cpuUsage,
+
+                                    MemoryUsageMb =
+                                        memoryUsageMb,
+
+                                    ExecutablePath =
+                                        GetExecutablePath(
+                                            sample.Process)
+                                });
+                        }
+                        catch
+                        {
+                            // Procesul s-a închis sau accesul
+                            // la datele sale este restricționat.
+                        }
+                        finally
+                        {
+                            sample.Process.Dispose();
+                        }
+                    }
+
+                    return sortMode ==
+                           ProcessSortMode.Memory
+                        ? results
+                            .OrderByDescending(
+                                process =>
+                                    process.MemoryUsageMb)
+                            .ThenByDescending(
+                                process =>
+                                    process.CpuUsage)
+                            .Take(numberOfProcesses)
+                            .ToList()
+                        : results
+                            .OrderByDescending(
+                                process =>
+                                    process.CpuUsage)
+                            .ThenByDescending(
+                                process =>
+                                    process.MemoryUsageMb)
+                            .Take(numberOfProcesses)
+                            .ToList();
+                });
+        }
+
+        private static string GetExecutablePath(
+            Process process)
+        {
+            try
+            {
+                return process.MainModule?.FileName
+                    ?? string.Empty;
+            }
+            catch
+            {
+                // Procesele protejate nu permit accesul
+                // la locația executabilului.
+                return string.Empty;
+            }
         }
 
         private sealed record ProcessSample(

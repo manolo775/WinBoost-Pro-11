@@ -2,13 +2,39 @@
 {
     public sealed class ProcessInfo
     {
-        public int ProcessId { get; set; }
+        public int ProcessId
+        {
+            get;
+            set;
+        }
 
-        public string Name { get; set; } = string.Empty;
+        public string Name
+        {
+            get;
+            set;
+        } = string.Empty;
 
-        public double CpuUsage { get; set; }
+        public double CpuUsage
+        {
+            get;
+            set;
+        }
 
-        public double MemoryUsageMb { get; set; }
+        public double MemoryUsageMb
+        {
+            get;
+            set;
+        }
+
+        public string ExecutablePath
+        {
+            get;
+            set;
+        } = string.Empty;
+
+        public bool HasExecutablePath =>
+            !string.IsNullOrWhiteSpace(
+                ExecutablePath);
 
         public string CpuUsageText =>
             $"{CpuUsage:F1} %";

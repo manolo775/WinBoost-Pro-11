@@ -5,49 +5,148 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Threading;
+using MaterialDesignThemes.Wpf;
 using WinBoost.App.Commands;
 using WinBoost.App.Localization;
 using WinBoost.App.Models;
+using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Monitoring;
 using WinBoost.App.Services.Optimization;
-using MaterialDesignThemes.Wpf;
-using System.Windows.Media;
 using WinBoost.App.Services.Startup;
-using WinBoost.App.Services.Health;
 
 namespace WinBoost.App.ViewModels
 {
     public class PerformanceViewModel : DashboardViewModel
     {
         private readonly ProcessMonitorService _processMonitorService;
+        private readonly ProcessActionsService _processActionsService;
         private readonly TempFileService _tempFileService;
         private readonly DispatcherTimer _processRefreshTimer;
-        private readonly StartupAppsScanner
-                         _startupAppsScanner;
-        private readonly OptimizationCoordinator
-                          _optimizationCoordinator;
+        private readonly StartupAppsScanner _startupAppsScanner;
+        private readonly OptimizationCoordinator _optimizationCoordinator;
+
+        private readonly OptimizationSummaryViewModel
+            _optimizationSummaryViewModel;
+
+        private readonly OptimizationHistoryViewModel
+            _optimizationHistoryViewModel;
+
+        private readonly OptimizationLogViewModel
+            _optimizationLogViewModel;
 
         private bool _isRefreshingProcesses;
+        private ProcessInfo? _selectedProcess;
+        private ProcessSortMode _selectedProcessSortMode =
+                 ProcessSortMode.Cpu;
+        private DateTime? _lastProcessesUpdatedLocal;
+
+        private string _processesLastUpdatedText =
+            LocalizationHelper.Get(
+                "PerformanceProcessesNotUpdated");
+
         private bool _isAnalyzing;
         private bool _isApplyingOptimizations;
 
         private string _optimizationStatus =
-            LocalizationHelper.Get("PerformanceAnalyzePrompt");
-        private int _performanceAnalyzerScore = 100;
+            LocalizationHelper.Get(
+                "PerformanceAnalyzePrompt");
 
+        private int _performanceAnalyzerScore = 100;
         private int _optimizationProgress;
 
         private string _currentOptimizationOperation =
             string.Empty;
 
-        private readonly OptimizationSummaryViewModel
-                    _optimizationSummaryViewModel;
-        private readonly OptimizationHistoryViewModel
-                    _optimizationHistoryViewModel;
+        public PerformanceViewModel()
+        {
+            _processMonitorService =
+                new ProcessMonitorService();
 
-        private readonly OptimizationLogViewModel
-            _optimizationLogViewModel;
+            _processActionsService =
+                new ProcessActionsService();
+
+            _tempFileService =
+                new TempFileService();
+
+            _startupAppsScanner =
+                new StartupAppsScanner();
+
+            _optimizationCoordinator =
+                new OptimizationCoordinator();
+
+            _optimizationSummaryViewModel =
+                new OptimizationSummaryViewModel();
+
+            _optimizationHistoryViewModel =
+                new OptimizationHistoryViewModel();
+
+            _optimizationLogViewModel =
+                new OptimizationLogViewModel();
+
+            _optimizationCoordinator
+                .Engine
+                .ProgressChanged +=
+                OptimizationEngine_ProgressChanged;
+
+            TopProcesses =
+                new ObservableCollection<ProcessInfo>();
+
+            Recommendations =
+                new ObservableCollection<
+                    OptimizationRecommendation>();
+
+            RecommendationItems =
+                new ObservableCollection<
+                    RecommendationItem>();
+
+            RefreshProcessesCommand =
+                new RelayCommand(
+                    async _ =>
+                        await RefreshTopProcessesAsync(),
+                    _ => !_isRefreshingProcesses);
+
+            OpenProcessLocationCommand =
+                new RelayCommand(
+                    _ => OpenSelectedProcessLocation(),
+                    _ => SelectedProcess?.HasExecutablePath == true);
+
+            OptimizeCommand =
+                new RelayCommand(
+                    async _ =>
+                        await AnalyzeSystemAsync(),
+                    _ => !IsAnalyzing &&
+                         !IsApplyingOptimizations);
+
+            ApplyOptimizationsCommand =
+                new RelayCommand(
+                    async _ =>
+                        await ApplyOptimizationsAsync(),
+                    _ => !IsAnalyzing &&
+                         !IsApplyingOptimizations &&
+                         Recommendations.Any(
+                             item =>
+                                 item.IsActionable &&
+                                 item.IsSelected &&
+                                 !string.IsNullOrWhiteSpace(
+                                     item.ActionId)));
+
+            _processRefreshTimer =
+                new DispatcherTimer
+                {
+                    Interval =
+                        TimeSpan.FromSeconds(5)
+                };
+
+            _processRefreshTimer.Tick +=
+                ProcessRefreshTimer_Tick;
+
+            LanguageManager.Instance.LanguageChanged +=
+                LanguageManager_LanguageChanged;
+
+            StartPerformanceMonitoring();
+        }
 
         public int PerformanceAnalyzerScore
         {
@@ -71,49 +170,143 @@ namespace WinBoost.App.ViewModels
                     normalizedValue;
 
                 WinBoostHealthScoreService
-                          .Instance
-                          .PerformanceScore =
-                           normalizedValue;
+                    .Instance
+                    .PerformanceScore =
+                    normalizedValue;
 
                 OnPropertyChanged();
 
                 OnPropertyChanged(
-                       nameof(PerformanceAnalyzerStatus));
+                    nameof(
+                        PerformanceAnalyzerStatus));
             }
         }
 
         public string PerformanceAnalyzerStatus =>
-    PerformanceAnalyzerScore switch
-    {
-        >= 90 =>
-            LocalizationHelper.Get(
-                "PerformanceScoreExcellent"),
+            PerformanceAnalyzerScore switch
+            {
+                >= 90 =>
+                    LocalizationHelper.Get(
+                        "PerformanceScoreExcellent"),
 
-        >= 75 =>
-            LocalizationHelper.Get(
-                "PerformanceScoreGood"),
+                >= 75 =>
+                    LocalizationHelper.Get(
+                        "PerformanceScoreGood"),
 
-        >= 50 =>
-            LocalizationHelper.Get(
-                "PerformanceScoreAttention"),
+                >= 50 =>
+                    LocalizationHelper.Get(
+                        "PerformanceScoreAttention"),
 
-        _ =>
-            LocalizationHelper.Get(
-                "PerformanceScoreCritical")
-    };
-        public ObservableCollection<ProcessInfo> TopProcesses { get; }
+                _ =>
+                    LocalizationHelper.Get(
+                        "PerformanceScoreCritical")
+            };
 
-        public ObservableCollection<OptimizationRecommendation>
+        public ObservableCollection<ProcessInfo>
+            TopProcesses
+        {
+            get;
+        }
+
+        public ObservableCollection<
+            OptimizationRecommendation>
             Recommendations
-        { get; }
+        {
+            get;
+        }
 
-        public ObservableCollection<RecommendationItem>
-    RecommendationItems
-        { get; }
+        public ObservableCollection<
+            RecommendationItem>
+            RecommendationItems
+        {
+            get;
+        }
 
-        public ICommand OptimizeCommand { get; }
+        public ICommand RefreshProcessesCommand
+        {
+            get;
+        }
 
-        public ICommand ApplyOptimizationsCommand { get; }
+        public ICommand OpenProcessLocationCommand
+        {
+            get;
+        }
+
+        public ProcessInfo? SelectedProcess
+        {
+            get => _selectedProcess;
+
+            set
+            {
+                if (_selectedProcess == value)
+                {
+                    return;
+                }
+
+                _selectedProcess = value;
+
+                OnPropertyChanged();
+
+                CommandManager
+                    .InvalidateRequerySuggested();
+            }
+        }
+
+        public ProcessSortMode SelectedProcessSortMode
+        {
+            get => _selectedProcessSortMode;
+
+            set
+            {
+                if (_selectedProcessSortMode == value)
+                {
+                    return;
+                }
+
+                _selectedProcessSortMode = value;
+
+                OnPropertyChanged();
+
+                OnPropertyChanged(
+                    nameof(PrimaryProcessMetricHeader));
+
+                OnPropertyChanged(
+                    nameof(SecondaryProcessMetricHeader));
+
+                SortDisplayedProcesses();
+
+                _ = RefreshTopProcessesAsync();
+            }
+        }
+
+        public ICommand OptimizeCommand
+        {
+            get;
+        }
+
+        public ICommand ApplyOptimizationsCommand
+        {
+            get;
+        }
+
+        public string ProcessesLastUpdatedText
+        {
+            get => _processesLastUpdatedText;
+
+            private set
+            {
+                if (_processesLastUpdatedText ==
+                    value)
+                {
+                    return;
+                }
+
+                _processesLastUpdatedText =
+                    value;
+
+                OnPropertyChanged();
+            }
+        }
 
         public string OptimizationStatus
         {
@@ -122,9 +315,12 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_optimizationStatus == value)
+                {
                     return;
+                }
 
                 _optimizationStatus = value;
+
                 OnPropertyChanged();
             }
         }
@@ -136,14 +332,19 @@ namespace WinBoost.App.ViewModels
             private set
             {
                 if (_isAnalyzing == value)
+                {
                     return;
+                }
 
                 _isAnalyzing = value;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(OptimizationButtonText));
 
-                CommandManager.InvalidateRequerySuggested();
+                OnPropertyChanged(
+                    nameof(OptimizationButtonText));
+
+                CommandManager
+                    .InvalidateRequerySuggested();
             }
         }
 
@@ -153,27 +354,38 @@ namespace WinBoost.App.ViewModels
 
             private set
             {
-                if (_isApplyingOptimizations == value)
+                if (_isApplyingOptimizations ==
+                    value)
+                {
                     return;
+                }
 
-                _isApplyingOptimizations = value;
+                _isApplyingOptimizations =
+                    value;
 
                 OnPropertyChanged();
-                OnPropertyChanged(nameof(ApplyButtonText));
 
-                CommandManager.InvalidateRequerySuggested();
+                OnPropertyChanged(
+                    nameof(ApplyButtonText));
+
+                CommandManager
+                    .InvalidateRequerySuggested();
             }
         }
 
         public string OptimizationButtonText =>
             IsAnalyzing
-                ? LocalizationHelper.Get("PerformanceAnalyzing")
-                : LocalizationHelper.Get("PerformanceAnalyze");
+                ? LocalizationHelper.Get(
+                    "PerformanceAnalyzing")
+                : LocalizationHelper.Get(
+                    "PerformanceAnalyze");
 
         public string ApplyButtonText =>
             IsApplyingOptimizations
-                ? LocalizationHelper.Get("PerformanceApplying")
-                : LocalizationHelper.Get("PerformanceApplySelected");
+                ? LocalizationHelper.Get(
+                    "PerformanceApplying")
+                : LocalizationHelper.Get(
+                    "PerformanceApplySelected");
 
         public int OptimizationProgress
         {
@@ -219,92 +431,17 @@ namespace WinBoost.App.ViewModels
             }
         }
 
-        public PerformanceViewModel()
-        {
-            _processMonitorService =
-                new ProcessMonitorService();
-
-            _tempFileService =
-                new TempFileService();
-
-            _startupAppsScanner =
-                 new StartupAppsScanner();
-
-            _optimizationCoordinator =
-                 new OptimizationCoordinator();
-
-            _optimizationSummaryViewModel =
-                 new OptimizationSummaryViewModel();
-
-            _optimizationHistoryViewModel =
-                 new OptimizationHistoryViewModel();
-
-            _optimizationLogViewModel =
-                       new OptimizationLogViewModel();
-
-            _optimizationCoordinator
-                    .Engine
-                    .ProgressChanged +=
-                     OptimizationEngine_ProgressChanged;
-
-            TopProcesses =
-                new ObservableCollection<ProcessInfo>();
-
-            Recommendations =
-                new ObservableCollection<OptimizationRecommendation>();
-
-            RecommendationItems =
-                new ObservableCollection<RecommendationItem>();
-
-
-
-            OptimizeCommand =
-                new RelayCommand(
-                    async _ => await AnalyzeSystemAsync(),
-                    _ => !IsAnalyzing &&
-                         !IsApplyingOptimizations);
-
-
-            ApplyOptimizationsCommand =
-            new RelayCommand(
-                async _ =>
-                    await ApplyOptimizationsAsync(),
-                _ =>
-                    !IsAnalyzing &&
-                    !IsApplyingOptimizations &&
-                    Recommendations.Any(
-                        item =>
-                            item.IsActionable &&
-                            item.IsSelected &&
-                            !string.IsNullOrWhiteSpace(
-                                item.ActionId)));
-
-            _processRefreshTimer =
-                new DispatcherTimer
-                {
-                    Interval = TimeSpan.FromSeconds(5)
-                };
-
-            _processRefreshTimer.Tick +=
-                ProcessRefreshTimer_Tick;
-
-            LanguageManager.Instance.LanguageChanged +=
-                   LanguageManager_LanguageChanged;
-
-            StartPerformanceMonitoring();
-        }
-
         public OptimizationSummaryViewModel
-              OptimizationSummaryViewModel =>
-              _optimizationSummaryViewModel;
+            OptimizationSummaryViewModel =>
+            _optimizationSummaryViewModel;
 
         public OptimizationHistoryViewModel
-              OptimizationHistoryViewModel =>
-              _optimizationHistoryViewModel;
+            OptimizationHistoryViewModel =>
+            _optimizationHistoryViewModel;
 
         public OptimizationLogViewModel
-                  OptimizationLogViewModel =>
-                  _optimizationLogViewModel;
+            OptimizationLogViewModel =>
+            _optimizationLogViewModel;
 
         public void StartPerformanceMonitoring()
         {
@@ -338,25 +475,96 @@ namespace WinBoost.App.ViewModels
             await RefreshTopProcessesAsync();
         }
 
+        private void SortDisplayedProcesses()
+        {
+            IEnumerable<ProcessInfo> sortedProcesses =
+                SelectedProcessSortMode ==
+                ProcessSortMode.Memory
+                    ? TopProcesses
+                        .OrderByDescending(
+                            process =>
+                                process.MemoryUsageMb)
+                        .ThenByDescending(
+                            process =>
+                                process.CpuUsage)
+                        .ToList()
+                    : TopProcesses
+                        .OrderByDescending(
+                            process =>
+                                process.CpuUsage)
+                        .ThenByDescending(
+                            process =>
+                                process.MemoryUsageMb)
+                        .ToList();
+
+            TopProcesses.Clear();
+
+            foreach (ProcessInfo process
+                     in sortedProcesses)
+            {
+                TopProcesses.Add(process);
+            }
+        }
+
+        public string PrimaryProcessMetricHeader =>
+                SelectedProcessSortMode ==
+                ProcessSortMode.Memory
+        ? LocalizationHelper.Get(
+            "PerformanceColumnRam")
+        : LocalizationHelper.Get(
+            "PerformanceColumnCpu");
+
+        public string SecondaryProcessMetricHeader =>
+            SelectedProcessSortMode ==
+            ProcessSortMode.Memory
+                ? LocalizationHelper.Get(
+                    "PerformanceColumnCpu")
+                : LocalizationHelper.Get(
+                    "PerformanceColumnRam");
+
         private async Task RefreshTopProcessesAsync()
         {
             if (_isRefreshingProcesses)
+            {
                 return;
+            }
 
             try
             {
                 _isRefreshingProcesses = true;
 
-                var processes =
+                CommandManager
+                    .InvalidateRequerySuggested();
+
+                List<ProcessInfo> processes =
                     await _processMonitorService
-                        .GetTopProcessesAsync(5);
+                        .GetTopProcessesAsync(
+                            5,
+                          SelectedProcessSortMode);
+
+                int? selectedProcessId =
+                    SelectedProcess?.ProcessId;
 
                 TopProcesses.Clear();
 
-                foreach (ProcessInfo process in processes)
+                foreach (ProcessInfo process
+                         in processes)
                 {
                     TopProcesses.Add(process);
                 }
+
+                SelectedProcess =
+                    selectedProcessId.HasValue
+                        ? TopProcesses.FirstOrDefault(
+                            process =>
+                                process.ProcessId ==
+                                selectedProcessId.Value)
+                        : null;
+
+                _lastProcessesUpdatedLocal =
+                    DateTime.Now;
+
+                UpdateProcessesLastUpdatedText();
             }
             catch
             {
@@ -365,7 +573,22 @@ namespace WinBoost.App.ViewModels
             finally
             {
                 _isRefreshingProcesses = false;
+
+                CommandManager
+                    .InvalidateRequerySuggested();
             }
+        }
+
+        private void OpenSelectedProcessLocation()
+        {
+            if (SelectedProcess == null)
+            {
+                return;
+            }
+
+            _processActionsService
+                .OpenExecutableLocation(
+                    SelectedProcess.ExecutablePath);
         }
 
         private async Task AnalyzeSystemAsync()
@@ -389,8 +612,6 @@ namespace WinBoost.App.ViewModels
             {
                 var messages =
                     new List<string>();
-
-                // FIȘIERE TEMPORARE
 
                 var tempResult =
                     await _tempFileService
@@ -442,11 +663,8 @@ namespace WinBoost.App.ViewModels
                                 cleanupMessage
                         });
 
-                    messages.Add(
-                        cleanupMessage);
+                    messages.Add(cleanupMessage);
                 }
-
-                // APLICAȚII STARTUP
 
                 var startupApplications =
                     await _startupAppsScanner
@@ -477,11 +695,8 @@ namespace WinBoost.App.ViewModels
                                 startupMessage
                         });
 
-                    messages.Add(
-                        startupMessage);
+                    messages.Add(startupMessage);
                 }
-
-                // UTILIZARE GENERALĂ CPU
 
                 if (CpuUsageValue >= 80)
                 {
@@ -489,8 +704,7 @@ namespace WinBoost.App.ViewModels
                         LocalizationHelper.Get(
                             "PerformanceCpuHighMessage");
 
-                    messages.Add(
-                        cpuMessage);
+                    messages.Add(cpuMessage);
 
                     RecommendationItems.Add(
                         new RecommendationItem
@@ -506,16 +720,13 @@ namespace WinBoost.App.ViewModels
                         });
                 }
 
-                // UTILIZARE RAM
-
                 if (RamUsageValue >= 85)
                 {
                     string ramMessage =
                         LocalizationHelper.Get(
                             "PerformanceRamHighMessage");
 
-                    messages.Add(
-                        ramMessage);
+                    messages.Add(ramMessage);
 
                     RecommendationItems.Add(
                         new RecommendationItem
@@ -530,8 +741,6 @@ namespace WinBoost.App.ViewModels
                                 ramMessage
                         });
                 }
-
-                // PROCES CU UTILIZARE CPU RIDICATĂ
 
                 await RefreshTopProcessesAsync();
 
@@ -552,8 +761,7 @@ namespace WinBoost.App.ViewModels
                             highestCpuProcess.CpuUsage
                                 .ToString("F1"));
 
-                    messages.Add(
-                        processMessage);
+                    messages.Add(processMessage);
 
                     RecommendationItems.Add(
                         new RecommendationItem
@@ -569,16 +777,13 @@ namespace WinBoost.App.ViewModels
                         });
                 }
 
-                // UTILIZARE DISC
-
                 if (DiskUsageValue >= 90)
                 {
                     string diskMessage =
                         LocalizationHelper.Get(
                             "PerformanceDiskLowMessage");
 
-                    messages.Add(
-                        diskMessage);
+                    messages.Add(diskMessage);
 
                     RecommendationItems.Add(
                         new RecommendationItem
@@ -607,16 +812,24 @@ namespace WinBoost.App.ViewModels
                 int score = 100;
 
                 if (CpuUsageValue >= 80)
+                {
                     score -= 10;
+                }
 
                 if (RamUsageValue >= 85)
+                {
                     score -= 15;
+                }
 
                 if (enabledStartupApps >= 5)
+                {
                     score -= 10;
+                }
 
                 if (tempResult.FileCount > 0)
+                {
                     score -= 5;
+                }
 
                 PerformanceAnalyzerScore = score;
 
@@ -644,15 +857,16 @@ namespace WinBoost.App.ViewModels
                 return;
             }
 
-            var selectedItems =
-                Recommendations
-                    .Where(
-                        item =>
-                            item.IsActionable &&
-                            item.IsSelected &&
-                            !string.IsNullOrWhiteSpace(
-                                item.ActionId))
-                    .ToList();
+            List<OptimizationRecommendation>
+                selectedItems =
+                    Recommendations
+                        .Where(
+                            item =>
+                                item.IsActionable &&
+                                item.IsSelected &&
+                                !string.IsNullOrWhiteSpace(
+                                    item.ActionId))
+                        .ToList();
 
             if (selectedItems.Count == 0)
             {
@@ -680,8 +894,7 @@ namespace WinBoost.App.ViewModels
 
             IsApplyingOptimizations = true;
 
-            _optimizationSummaryViewModel
-              .Clear();
+            _optimizationSummaryViewModel.Clear();
 
             OptimizationStatus =
                 LocalizationHelper.Get(
@@ -737,17 +950,14 @@ namespace WinBoost.App.ViewModels
 
                 OptimizationReport report =
                     await _optimizationCoordinator
-                        .OptimizeAsync(
-                            options);
+                        .OptimizeAsync(options);
 
                 OptimizationHistoryService
                     .Instance
-                    .Add(
-                     report);
+                    .Add(report);
 
                 _optimizationSummaryViewModel
-                    .Update(
-                        report);
+                    .Update(report);
 
                 Recommendations.Clear();
                 RecommendationItems.Clear();
@@ -777,14 +987,16 @@ namespace WinBoost.App.ViewModels
         }
 
         private async void LanguageManager_LanguageChanged(
-          object? sender,
-          EventArgs e)
+            object? sender,
+            EventArgs e)
         {
             OnPropertyChanged(
                 nameof(OptimizationButtonText));
 
             OnPropertyChanged(
                 nameof(ApplyButtonText));
+
+            UpdateProcessesLastUpdatedText();
 
             if (IsAnalyzing ||
                 IsApplyingOptimizations)
@@ -795,6 +1007,7 @@ namespace WinBoost.App.ViewModels
             if (Recommendations.Count > 0)
             {
                 await AnalyzeSystemAsync();
+
                 return;
             }
 
@@ -807,19 +1020,41 @@ namespace WinBoost.App.ViewModels
             object? sender,
             OptimizationProgressEventArgs e)
         {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                OptimizationProgress =
-                    e.ProgressPercentage;
+            Application.Current.Dispatcher.Invoke(
+                () =>
+                {
+                    OptimizationProgress =
+                        e.ProgressPercentage;
 
-                CurrentOptimizationOperation =
-                    e.OperationName;
+                    CurrentOptimizationOperation =
+                        e.OperationName;
 
-                OptimizationStatus =
-                    $"{e.ProgressPercentage}% - {e.OperationName}";
-            });
+                    OptimizationStatus =
+                        $"{e.ProgressPercentage}% - " +
+                        e.OperationName;
+                });
         }
-        private static string FormatBytes(long bytes)
+
+        private void UpdateProcessesLastUpdatedText()
+        {
+            if (!_lastProcessesUpdatedLocal.HasValue)
+            {
+                ProcessesLastUpdatedText =
+                    LocalizationHelper.Get(
+                        "PerformanceProcessesNotUpdated");
+
+                return;
+            }
+
+            ProcessesLastUpdatedText =
+                LocalizationHelper.Format(
+                    "PerformanceProcessesLastUpdated",
+                    _lastProcessesUpdatedLocal.Value
+                        .ToString("HH:mm:ss"));
+        }
+
+        private static string FormatBytes(
+            long bytes)
         {
             const double megabyte =
                 1024d * 1024d;
@@ -829,10 +1064,12 @@ namespace WinBoost.App.ViewModels
 
             if (bytes >= gigabyte)
             {
-                return $"{bytes / gigabyte:F2} GB";
+                return
+                    $"{bytes / gigabyte:F2} GB";
             }
 
-            return $"{bytes / megabyte:F1} MB";
+            return
+                $"{bytes / megabyte:F1} MB";
         }
     }
 }

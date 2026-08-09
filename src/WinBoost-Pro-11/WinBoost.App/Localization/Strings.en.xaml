@@ -514,9 +514,8 @@
 		Process
 	</sys:String>
 
-	<sys:String x:Key="PerformanceColumnPid">
-		PID
-	</sys:String>
+	<!-- Strings.en.xaml -->
+	<sys:String x:Key="PerformanceColumnPid">Process ID</sys:String>
 
 	<sys:String x:Key="PerformanceColumnCpu">
 		CPU
@@ -1781,6 +1780,34 @@
 
 	<sys:String x:Key="SettingsResetSuccessMessage">
 		Recommended settings have been restored.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceProcessesRefresh">
+		Refresh
+	</sys:String>
+
+	<sys:String x:Key="PerformanceProcessesNotUpdated">
+		Not updated yet.
+	</sys:String>
+
+	<sys:String x:Key="PerformanceProcessesLastUpdated">
+		Last updated: {0}
+	</sys:String>
+
+	<sys:String x:Key="PerformanceOpenProcessLocation">
+		Open file location
+	</sys:String>
+
+	<sys:String x:Key="PerformanceProcessesSortBy">
+		Sort by:
+	</sys:String>
+
+	<sys:String x:Key="PerformanceProcessesSortCpu">
+		CPU usage
+	</sys:String>
+
+	<sys:String x:Key="PerformanceProcessesSortMemory">
+		RAM usage
 	</sys:String>
 	
 </ResourceDictionary>
