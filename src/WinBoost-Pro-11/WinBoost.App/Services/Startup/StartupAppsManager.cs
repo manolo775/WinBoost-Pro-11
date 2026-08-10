@@ -37,8 +37,9 @@ namespace WinBoost.App.Services.Startup
 
             MoveRegistryValue(
                 application.RegistryHive,
-                application.RegistryPath,
-                disabledPath,
+                        GetRegistryView(application),
+                     application.RegistryPath,
+                   disabledPath,
                 application.RegistryValueName);
         }
 
@@ -49,17 +50,19 @@ namespace WinBoost.App.Services.Startup
                 GetDisabledRegistryPath(application);
 
             MoveRegistryValue(
-                application.RegistryHive,
-                disabledPath,
-                application.RegistryPath,
-                application.RegistryValueName);
+     application.RegistryHive,
+     GetRegistryView(application),
+     disabledPath,
+     application.RegistryPath,
+     application.RegistryValueName);
         }
 
         private static void MoveRegistryValue(
-            RegistryHive hive,
-            string sourcePath,
-            string destinationPath,
-            string valueName)
+    RegistryHive hive,
+    RegistryView registryView,
+    string sourcePath,
+    string destinationPath,
+    string valueName)
         {
             ValidateRegistryInformation(
                 sourcePath,
@@ -69,9 +72,9 @@ namespace WinBoost.App.Services.Startup
             try
             {
                 using RegistryKey baseKey =
-                    RegistryKey.OpenBaseKey(
-                        hive,
-                        RegistryView.Default);
+                 RegistryKey.OpenBaseKey(
+                                hive,
+                         registryView); 
 
                 using RegistryKey? sourceKey =
                     baseKey.OpenSubKey(
@@ -146,6 +149,27 @@ namespace WinBoost.App.Services.Startup
                     "Pornește WinBoost Pro 11 ca administrator.",
                     exception);
             }
+        }
+
+        private static RegistryView GetRegistryView(
+    StartupAppInfo application)
+        {
+            if (application.RegistryHive ==
+                    RegistryHive.LocalMachine &&
+                application.RegistryPath.Equals(
+                    @"Software\WOW6432Node\Microsoft\Windows\CurrentVersion\Run",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return RegistryView.Registry32;
+            }
+
+            if (application.RegistryHive ==
+                RegistryHive.LocalMachine)
+            {
+                return RegistryView.Registry64;
+            }
+
+            return RegistryView.Default;
         }
 
         private static string GetDisabledRegistryPath(

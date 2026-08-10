@@ -1949,4 +1949,28 @@
 		The update check could not be completed.
 	</sys:String>
 
+	<sys:String x:Key="StartupEnableConfirmationTitle">
+		Confirm enable
+	</sys:String>
+
+	<sys:String x:Key="StartupDisableConfirmationTitle">
+		Confirm disable
+	</sys:String>
+
+	<sys:String x:Key="StartupEnableConfirmationMessage">
+		Are you sure you want to enable “{0}” at Windows startup?
+	</sys:String>
+
+	<sys:String x:Key="StartupDisableConfirmationMessage">
+		Are you sure you want to disable “{0}” from Windows startup?
+	</sys:String>
+
+	<sys:String x:Key="StartupConfirmationYes">
+		Yes
+	</sys:String>
+
+	<sys:String x:Key="StartupConfirmationNo">
+		No
+	</sys:String>
+
 </ResourceDictionary>

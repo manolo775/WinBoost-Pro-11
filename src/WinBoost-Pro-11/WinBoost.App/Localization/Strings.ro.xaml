@@ -1950,4 +1950,28 @@
 		Verificarea actualizării nu a putut fi finalizată.
 	</sys:String>
 
+	<sys:String x:Key="StartupEnableConfirmationTitle">
+		Confirmare activare
+	</sys:String>
+
+	<sys:String x:Key="StartupDisableConfirmationTitle">
+		Confirmare dezactivare
+	</sys:String>
+
+	<sys:String x:Key="StartupEnableConfirmationMessage">
+		Sigur dorești să activezi „{0}” la pornirea Windows?
+	</sys:String>
+
+	<sys:String x:Key="StartupDisableConfirmationMessage">
+		Sigur dorești să dezactivezi „{0}” din aplicațiile care pornesc cu Windows?
+	</sys:String>
+
+	<sys:String x:Key="StartupConfirmationYes">
+		Da
+	</sys:String>
+
+	<sys:String x:Key="StartupConfirmationNo">
+		Nu
+	</sys:String>
+	
 </ResourceDictionary>

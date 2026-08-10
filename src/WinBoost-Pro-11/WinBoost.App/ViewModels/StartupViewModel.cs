@@ -8,11 +8,12 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using WinBoost.App.Commands;
+using WinBoost.App.Helpers;
 using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Startup;
-
+using System.Windows;
 namespace WinBoost.App.ViewModels
 {
     public sealed class StartupViewModel :
@@ -354,6 +355,15 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        private static string T(
+                   string key,
+                  params object[] arguments)
+        {
+            return LocalizationHelper.Format(
+                key,
+                arguments);
+        }
+
         private async Task ToggleStartupApplicationAsync(
             StartupAppInfo? application)
         {
@@ -366,6 +376,26 @@ namespace WinBoost.App.ViewModels
 
             bool enableApplication =
                 !application.IsEnabled;
+
+            bool confirmed =
+    NativeConfirmationDialog.Ask(
+        Application.Current.MainWindow,
+        T(
+            enableApplication
+                ? "StartupEnableConfirmationTitle"
+                : "StartupDisableConfirmationTitle"),
+        T(
+            enableApplication
+                ? "StartupEnableConfirmationMessage"
+                : "StartupDisableConfirmationMessage",
+            application.Name),
+        T("StartupConfirmationYes"),
+        T("StartupConfirmationNo"));
+
+            if (!confirmed)
+            {
+                return;
+            }
 
             IsChangingStartupState = true;
 
