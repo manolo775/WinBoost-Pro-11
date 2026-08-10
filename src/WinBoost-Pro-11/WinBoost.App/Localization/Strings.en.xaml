@@ -1058,6 +1058,10 @@
 		Scan Privacy
 	</sys:String>
 
+	<sys:String x:Key="PrivacyButtonScanning">
+		Scanning...
+	</sys:String>
+	
 	<sys:String x:Key="PrivacyScanInitialMessage">
 		Start a scan to check your privacy settings.
 	</sys:String>
@@ -1138,6 +1142,10 @@
 		Enhanced data
 	</sys:String>
 
+	<sys:String x:Key="PrivacyStatusDiagnosticOptional">
+		Optional data
+	</sys:String>
+	
 	<!-- SERVICES - STATUSES AND RECOMMENDATIONS -->
 
 	<sys:String x:Key="ServicesServiceStatusRunning">

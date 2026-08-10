@@ -527,6 +527,17 @@ namespace WinBoost.App.ViewModels
 
                 SelectedAppUpdateDetails =
                     result.Details;
+
+                _ = ClearUpdateMessageAfterDelayAsync(
+                    result.Status);
+
+                if (result.Status !=
+                     AppUpdateStatus.UpdateAvailable)
+                {
+                    _ = ClearUpdateMessageAfterDelayAsync(
+                        result.Status);
+                }
+
             }
             finally
             {
@@ -578,6 +589,24 @@ namespace WinBoost.App.ViewModels
             {
                 IsUpdatingSelectedApp = false;
             }
+        }
+
+        private async Task ClearUpdateMessageAfterDelayAsync(
+                AppUpdateStatus status)
+        {
+            await Task.Delay(
+                TimeSpan.FromSeconds(5));
+
+            if (SelectedAppUpdateStatus != status)
+            {
+                return;
+            }
+
+            SelectedAppUpdateStatus =
+                AppUpdateStatus.NotChecked;
+
+            SelectedAppUpdateDetails =
+                string.Empty;
         }
 
         private void OpenSelectedAppLocation()
