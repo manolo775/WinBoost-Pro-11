@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -13,7 +14,7 @@ using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Startup;
-using System.Windows;
+
 namespace WinBoost.App.ViewModels
 {
     public sealed class StartupViewModel :
@@ -30,6 +31,7 @@ namespace WinBoost.App.ViewModels
 
         private bool _isScanning;
         private bool _isChangingStartupState;
+        private bool _hasInitialLoadStarted;
 
         private string _searchText =
             string.Empty;
@@ -92,7 +94,7 @@ namespace WinBoost.App.ViewModels
                     async parameter =>
                         await ToggleStartupApplicationAsync(
                             parameter as StartupAppInfo),
-                    parameter =>
+                               parameter =>
                         parameter is StartupAppInfo &&
                         !IsScanning &&
                         !IsChangingStartupState);
@@ -299,6 +301,18 @@ namespace WinBoost.App.ViewModels
                 application =>
                     !application.IsEnabled);
 
+        public async Task EnsureStartupApplicationsLoadedAsync()
+        {
+            if (_hasInitialLoadStarted)
+            {
+                return;
+            }
+
+            _hasInitialLoadStarted = true;
+
+            await ScanStartupAsync();
+        }
+
         private async Task ScanStartupAsync()
         {
             if (IsScanning ||
@@ -364,6 +378,28 @@ namespace WinBoost.App.ViewModels
                 arguments);
         }
 
+        private async Task RefreshStartupApplicationsAsync()
+        {
+            var applications =
+                await _startupAppsScanner
+                    .ScanAsync();
+
+            StartupApplications.Clear();
+
+            foreach (StartupAppInfo application
+                     in applications)
+            {
+                StartupApplications.Add(
+                    application);
+            }
+
+            RefreshApplicationStatistics();
+
+            UpdateStartupHealthScore();
+
+            StartupApplicationsView.Refresh();
+        }
+
         private async Task ToggleStartupApplicationAsync(
             StartupAppInfo? application)
         {
@@ -414,12 +450,7 @@ namespace WinBoost.App.ViewModels
                         application,
                         enableApplication);
 
-                application.IsEnabled =
-                    enableApplication;
-
-                RefreshApplicationStatistics();
-
-                UpdateStartupHealthScore();
+                await RefreshStartupApplicationsAsync();
 
                 SetUiState(
                     enableApplication
