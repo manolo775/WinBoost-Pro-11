@@ -842,7 +842,7 @@
 	</sys:String>
 
 	<sys:String x:Key="StartupScanButton">
-		Scan Startup
+		Scanează aplicațiile Startup
 	</sys:String>
 
 	<sys:String x:Key="StartupScanningButton">

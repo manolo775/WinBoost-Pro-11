@@ -4,6 +4,227 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
+	<UserControl.Resources>
+
+		<!-- Bară orizontală pentru tabelul Startup Manager. -->
+		<Style
+			x:Key="StartupHorizontalScrollBarStyle"
+			TargetType="ScrollBar">
+
+			<Setter Property="Orientation" Value="Horizontal"/>
+			<Setter Property="Height" Value="16"/>
+			<Setter Property="MinWidth" Value="100"/>
+			<Setter Property="Background" Value="#171A1E"/>
+			<Setter Property="BorderBrush" Value="#424850"/>
+			<Setter Property="BorderThickness" Value="1"/>
+
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ScrollBar">
+						<Border
+							Height="{TemplateBinding Height}"
+							CornerRadius="7"
+							Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}">
+
+							<Track
+								x:Name="PART_Track"
+								Margin="3"
+								Orientation="Horizontal"
+								IsDirectionReversed="False">
+
+								<Track.DecreaseRepeatButton>
+									<RepeatButton
+										Command="ScrollBar.PageLeftCommand"
+										Focusable="False"
+										IsTabStop="False"
+										Opacity="0"/>
+								</Track.DecreaseRepeatButton>
+
+								<Track.Thumb>
+									<Thumb
+										MinWidth="55"
+										Style="{StaticResource WinBoostScrollBarThumbStyle}"/>
+								</Track.Thumb>
+
+								<Track.IncreaseRepeatButton>
+									<RepeatButton
+										Command="ScrollBar.PageRightCommand"
+										Focusable="False"
+										IsTabStop="False"
+										Opacity="0"/>
+								</Track.IncreaseRepeatButton>
+
+							</Track>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<!-- Bară verticală pentru tabelul Startup Manager. -->
+		<Style
+			x:Key="StartupVerticalScrollBarStyle"
+			TargetType="ScrollBar">
+
+			<Setter Property="Orientation" Value="Vertical"/>
+			<Setter Property="Width" Value="16"/>
+			<Setter Property="MinHeight" Value="80"/>
+			<Setter Property="Background" Value="#171A1E"/>
+			<Setter Property="BorderBrush" Value="#424850"/>
+			<Setter Property="BorderThickness" Value="1"/>
+
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ScrollBar">
+						<Border
+							Width="{TemplateBinding Width}"
+							CornerRadius="7"
+							Background="{TemplateBinding Background}"
+							BorderBrush="{TemplateBinding BorderBrush}"
+							BorderThickness="{TemplateBinding BorderThickness}">
+
+							<Track
+								x:Name="PART_Track"
+								Margin="2"
+								Orientation="Vertical"
+								IsDirectionReversed="True">
+
+								<Track.DecreaseRepeatButton>
+									<RepeatButton
+										Command="ScrollBar.PageUpCommand"
+										Focusable="False"
+										IsTabStop="False"
+										Opacity="0"/>
+								</Track.DecreaseRepeatButton>
+
+								<Track.Thumb>
+									<Thumb
+										MinHeight="55"
+										Style="{StaticResource WinBoostScrollBarThumbStyle}"/>
+								</Track.Thumb>
+
+								<Track.IncreaseRepeatButton>
+									<RepeatButton
+										Command="ScrollBar.PageDownCommand"
+										Focusable="False"
+										IsTabStop="False"
+										Opacity="0"/>
+								</Track.IncreaseRepeatButton>
+
+							</Track>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<!-- ScrollViewer cu bara orizontală poziționată sus, ca în Services. -->
+		<Style
+			x:Key="StartupTopHorizontalScrollViewerStyle"
+			TargetType="ScrollViewer">
+
+			<Setter Property="HorizontalScrollBarVisibility" Value="Visible"/>
+			<Setter Property="VerticalScrollBarVisibility" Value="Disabled"/>
+			<Setter Property="CanContentScroll" Value="False"/>
+
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="ScrollViewer">
+						<Grid>
+
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="*"/>
+							</Grid.RowDefinitions>
+
+							<ScrollBar
+								x:Name="PART_HorizontalScrollBar"
+								Grid.Row="0"
+								Margin="0,0,0,10"
+								Minimum="0"
+								Maximum="{TemplateBinding ScrollableWidth}"
+								Value="{TemplateBinding HorizontalOffset}"
+								ViewportSize="{TemplateBinding ViewportWidth}"
+								Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+								Style="{StaticResource StartupHorizontalScrollBarStyle}"/>
+
+							<ScrollContentPresenter
+								x:Name="PART_ScrollContentPresenter"
+								Grid.Row="1"
+								CanContentScroll="{TemplateBinding CanContentScroll}"
+								Content="{TemplateBinding Content}"
+								ContentTemplate="{TemplateBinding ContentTemplate}"
+								Margin="{TemplateBinding Padding}"/>
+
+						</Grid>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
+		<!-- ScrollViewer vertical cu bara poziționată în stânga. -->
+		<Style
+			x:Key="StartupLeftVerticalScrollViewerStyle"
+			TargetType="ScrollViewer">
+
+			<Setter
+				Property="VerticalScrollBarVisibility"
+				Value="Visible"/>
+
+			<Setter
+				Property="HorizontalScrollBarVisibility"
+				Value="Disabled"/>
+
+			<Setter
+		       Property="CanContentScroll"
+		       Value="True"/>
+
+			<Setter Property="Template">
+
+				<Setter.Value>
+
+					<ControlTemplate TargetType="ScrollViewer">
+
+						<Grid>
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="Auto"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+
+							<ScrollBar
+								x:Name="PART_VerticalScrollBar"
+								Grid.Column="0"
+								Margin="0,0,10,0"
+								Minimum="0"
+								Maximum="{TemplateBinding ScrollableHeight}"
+								Value="{TemplateBinding VerticalOffset}"
+								ViewportSize="{TemplateBinding ViewportHeight}"
+								Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+								Style="{StaticResource StartupVerticalScrollBarStyle}"/>
+
+							<ScrollContentPresenter
+								x:Name="PART_ScrollContentPresenter"
+								Grid.Column="1"
+								CanContentScroll="{TemplateBinding CanContentScroll}"
+								Content="{TemplateBinding Content}"
+								ContentTemplate="{TemplateBinding ContentTemplate}"
+								Margin="{TemplateBinding Padding}"/>
+
+						</Grid>
+
+					</ControlTemplate>
+
+				</Setter.Value>
+
+			</Setter>
+
+		</Style>
+		
+	</UserControl.Resources>
+
 	<ScrollViewer
 		Style="{StaticResource WinBoostPageScrollViewerStyle}">
 
@@ -344,488 +565,506 @@
 
 					<!-- DATAGRID -->
 
-					<DataGrid
-                        Grid.Row="3"
-                        ItemsSource="{Binding StartupApplicationsView}"
-                        AutoGenerateColumns="False"
-                        CanUserAddRows="False"
-                        CanUserDeleteRows="False"
-                        CanUserResizeRows="False"
-                        CanUserReorderColumns="True"
-                        CanUserSortColumns="True"
-                        IsReadOnly="True"
-                        SelectionMode="Single"
-                        SelectionUnit="FullRow"
-                        HeadersVisibility="Column"
-                        GridLinesVisibility="Horizontal"
-                        HorizontalGridLinesBrush="#3A3E44"
-                        VerticalGridLinesBrush="Transparent"
-                        RowBackground="#292C31"
-                        AlternatingRowBackground="#25282D"
-                        Background="Transparent"
-                        BorderThickness="0"
-                        RowHeaderWidth="0"
-                        MinHeight="280"
-                        MaxHeight="520"
-						Width="Auto"
-                        HorizontalAlignment="Stretch"
-                        FontSize="14"
-                        Foreground="{StaticResource TextBrush}"
-                        HorizontalScrollBarVisibility="Visible"
-                        VerticalScrollBarVisibility="Visible"
-                        ScrollViewer.CanContentScroll="True">
+					<ScrollViewer
+						Grid.Row="3"
+						Style="{StaticResource StartupTopHorizontalScrollViewerStyle}">
 
-						<DataGrid.Resources>
+						<DataGrid
+							ItemsSource="{Binding StartupApplicationsView}"
+							AutoGenerateColumns="False"
+							FlowDirection="RightToLeft"
+							CanUserAddRows="False"
+							CanUserDeleteRows="False"
+							CanUserResizeRows="False"
+							CanUserReorderColumns="True"
+							CanUserSortColumns="True"
+							IsReadOnly="True"
+							SelectionMode="Single"
+							SelectionUnit="FullRow"
+							HeadersVisibility="Column"
+							GridLinesVisibility="Horizontal"
+							HorizontalGridLinesBrush="#3A3E44"
+							VerticalGridLinesBrush="Transparent"
+							RowBackground="#292C31"
+							AlternatingRowBackground="#25282D"
+							Background="Transparent"
+							BorderThickness="0"
+							RowHeaderWidth="0"
+							MinHeight="280"
+							MaxHeight="520"
+							MinWidth="1120"
+							Width="Auto"
+							HorizontalAlignment="Stretch"
+							FontSize="14"
+							Foreground="{StaticResource TextBrush}"
+							HorizontalScrollBarVisibility="Disabled"
+							VerticalScrollBarVisibility="Auto"
+							ScrollViewer.CanContentScroll="True">
 
-							<!-- HEADER -->
+							<DataGrid.Resources>
 
-							<Style TargetType="DataGridColumnHeader">
+								<!-- Doar bara verticală internă a DataGrid-ului. -->
+								<Style
+									TargetType="ScrollBar"
+									BasedOn="{StaticResource StartupVerticalScrollBarStyle}"/>
 
-								<Setter
-                                    Property="Background"
-                                    Value="#24272B"/>
+								<!-- HEADER -->
 
-								<Setter
-                                    Property="Foreground"
-                                    Value="#B8BCC4"/>
+								<Style TargetType="DataGridColumnHeader">
 
-								<Setter
-                                    Property="FontWeight"
-                                    Value="SemiBold"/>
+									<Setter
+										Property="Background"
+										Value="#24272B"/>
 
-								<Setter
-                                    Property="Padding"
-                                    Value="12,12"/>
+									<Setter
+										Property="Foreground"
+										Value="#B8BCC4"/>
 
-								<Setter
-                                    Property="BorderBrush"
-                                    Value="#3A3E44"/>
+									<Setter
+										Property="FontWeight"
+										Value="SemiBold"/>
 
-								<Setter
-                                    Property="BorderThickness"
-                                    Value="0,0,0,1"/>
+									<Setter
+										Property="Padding"
+										Value="12,12"/>
 
-								<Setter
-                                    Property="HorizontalContentAlignment"
-                                    Value="Left"/>
+									<Setter
+										Property="BorderBrush"
+										Value="#3A3E44"/>
 
-								<Setter
-                                      Property="FontSize"
-                                      Value="14"/>
-								
-							</Style>
+									<Setter
+										Property="BorderThickness"
+										Value="0,0,0,1"/>
 
-							<!-- RÂND -->
+									<Setter
+										Property="HorizontalContentAlignment"
+										Value="Center"/>
 
-							<Style TargetType="DataGridRow">
+									<Setter
+										  Property="FontSize"
+										  Value="14"/>
 
-								<Setter
-                                    Property="MinHeight"
-                                    Value="72"/>
+								</Style>
 
-								<Setter
-                                    Property="BorderThickness"
-                                    Value="0"/>
+								<!-- RÂND -->
 
-								<Setter
-                                    Property="Cursor"
-                                    Value="Arrow"/>
+								<Style TargetType="DataGridRow">
 
-								<Style.Triggers>
+									<Setter
+										Property="MinHeight"
+										Value="72"/>
 
-									<Trigger
-                                        Property="IsMouseOver"
-                                        Value="True">
+									<Setter
+										Property="BorderThickness"
+										Value="0"/>
 
-										<Setter
-                                            Property="Background"
-                                            Value="#31353B"/>
+									<Setter
+										Property="Cursor"
+										Value="Arrow"/>
 
-									</Trigger>
+									<Style.Triggers>
 
-									<Trigger
-                                        Property="IsSelected"
-                                        Value="True">
+										<Trigger
+											Property="IsMouseOver"
+											Value="True">
 
-										<Setter
-                                            Property="Background"
-                                            Value="#34413A"/>
+											<Setter
+												Property="Background"
+												Value="#31353B"/>
 
-										<Setter
-                                            Property="Foreground"
-                                            Value="White"/>
+										</Trigger>
 
-									</Trigger>
+										<Trigger
+											Property="IsSelected"
+											Value="True">
 
-								</Style.Triggers>
+											<Setter
+												Property="Background"
+												Value="#34413A"/>
 
-							</Style>
+											<Setter
+												Property="Foreground"
+												Value="White"/>
 
-							<!-- CELULĂ -->
+										</Trigger>
 
-							<Style TargetType="DataGridCell">
+									</Style.Triggers>
 
-								<Setter
-                                    Property="Padding"
-                                    Value="11,8"/>
+								</Style>
 
-								<Setter
-                                    Property="BorderThickness"
-                                    Value="0"/>
+								<!-- CELULĂ -->
 
-								<Setter
-                                    Property="VerticalContentAlignment"
-                                    Value="Center"/>
+								<Style TargetType="DataGridCell">
 
-								<Setter
-                                    Property="FocusVisualStyle"
-                                    Value="{x:Null}"/>
+									<Setter
+										Property="Padding"
+										Value="11,8"/>
 
-							</Style>
+									<Setter
+										Property="BorderThickness"
+										Value="0"/>
 
-						</DataGrid.Resources>
+									<Setter
+										Property="VerticalContentAlignment"
+										Value="Center"/>
 
-						<DataGrid.Columns>
+									<Setter
+										Property="FocusVisualStyle"
+										Value="{x:Null}"/>
 
-							<!-- APLICAȚIE -->
+								</Style>
 
-							<DataGridTemplateColumn
-                                Width="1.6*"
-                                MinWidth="185"
-                                SortMemberPath="Name">
+							</DataGrid.Resources>
 
-								<DataGridTemplateColumn.Header>
+							<DataGrid.Columns>
 
-									<TextBlock
-                                        Text="{DynamicResource StartupColumnApplication}"/>
+								<!-- APLICAȚIE -->
 
-								</DataGridTemplateColumn.Header>
+								<DataGridTemplateColumn
+                                        Width="1.6*"
+                                        MinWidth="185"
+                                        DisplayIndex="6"
+                                        SortMemberPath="Name">
 
-								<DataGridTemplateColumn.CellTemplate>
-
-									<DataTemplate>
-
-										<StackPanel>
-
-											<TextBlock
-                                                Text="{Binding Name}"
-                                                FontWeight="SemiBold"
-                                                TextTrimming="CharacterEllipsis"
-                                                ToolTip="{Binding Name}"
-                                                Foreground="{StaticResource TextBrush}"/>
-
-											<TextBlock
-                                                Text="{Binding Description}"
-                                                Margin="0,4,0,0"
-                                                FontSize="14"
-                                                TextTrimming="CharacterEllipsis"
-                                                ToolTip="{Binding Description}"
-                                                Foreground="{StaticResource SecondaryTextBrush}"/>
-
-										</StackPanel>
-
-									</DataTemplate>
-
-								</DataGridTemplateColumn.CellTemplate>
-
-							</DataGridTemplateColumn>
-
-							<!-- PRODUCĂTOR -->
-
-							<DataGridTemplateColumn
-                                Width="1.2*"
-                                MinWidth="145"
-                                SortMemberPath="Publisher">
-
-								<DataGridTemplateColumn.Header>
-
-									<TextBlock
-                                        Text="{DynamicResource StartupColumnPublisher}"/>
-
-								</DataGridTemplateColumn.Header>
-
-								<DataGridTemplateColumn.CellTemplate>
-
-									<DataTemplate>
+									<DataGridTemplateColumn.Header>
 
 										<TextBlock
-                                            Text="{Binding Publisher}"
-                                            TextTrimming="CharacterEllipsis"
-                                            ToolTip="{Binding Publisher}"
-                                            Foreground="{StaticResource TextBrush}"/>
+                                            Text="{DynamicResource StartupColumnApplication}"/>
 
-									</DataTemplate>
+									</DataGridTemplateColumn.Header>
 
-								</DataGridTemplateColumn.CellTemplate>
+									<DataGridTemplateColumn.CellTemplate>
 
-							</DataGridTemplateColumn>
+										<DataTemplate>
 
-							<!-- SURSĂ -->
-
-							<DataGridTemplateColumn
-                                Width="1.15*"
-                                MinWidth="150"
-                                SortMemberPath="Source">
-
-								<DataGridTemplateColumn.Header>
-
-									<TextBlock
-                                        Text="{DynamicResource StartupColumnSource}"/>
-
-								</DataGridTemplateColumn.Header>
-
-								<DataGridTemplateColumn.CellTemplate>
-
-									<DataTemplate>
-
-										<TextBlock
-                                            Text="{Binding Source}"
-                                            TextWrapping="Wrap"
-                                            ToolTip="{Binding Source}"
-                                            Foreground="{StaticResource SecondaryTextBrush}"/>
-
-									</DataTemplate>
-
-								</DataGridTemplateColumn.CellTemplate>
-
-							</DataGridTemplateColumn>
-
-							<!-- STARE -->
-
-							<DataGridTemplateColumn
-                                Width="140"
-                                MinWidth="140"
-                                SortMemberPath="IsEnabled">
-
-								<DataGridTemplateColumn.Header>
-
-									<TextBlock
-                                        Text="{DynamicResource StartupColumnStatus}"/>
-
-								</DataGridTemplateColumn.Header>
-
-								<DataGridTemplateColumn.CellTemplate>
-
-									<DataTemplate>
-
-										<Border
-                                            Padding="9,4"
-                                            CornerRadius="12"
-                                            HorizontalAlignment="Left">
-
-											<Border.Style>
-
-												<Style TargetType="Border">
-
-													<Setter
-                                                        Property="Background"
-                                                        Value="#4A3510"/>
-
-													<Style.Triggers>
-
-														<DataTrigger
-                                                            Binding="{Binding IsEnabled}"
-                                                            Value="True">
-
-															<Setter
-                                                                Property="Background"
-                                                                Value="#103F1F"/>
-
-														</DataTrigger>
-
-													</Style.Triggers>
-
-												</Style>
-
-											</Border.Style>
-
-											<StackPanel
-    Orientation="Horizontal"
-    VerticalAlignment="Center">
-
-												<materialDesign:PackIcon
-													Width="16"
-													Height="16"
-													Margin="0,0,6,0"
-													VerticalAlignment="Center">
-
-													<materialDesign:PackIcon.Style>
-
-														<Style TargetType="materialDesign:PackIcon">
-
-															<Setter
-																Property="Kind"
-																Value="PauseCircle"/>
-
-															<Setter
-																Property="Foreground"
-																Value="#FFC107"/>
-
-															<Style.Triggers>
-
-																<DataTrigger
-																	Binding="{Binding IsEnabled}"
-																	Value="True">
-
-																	<Setter
-																		Property="Kind"
-																		Value="CheckCircle"/>
-
-																	<Setter
-																		Property="Foreground"
-																		Value="#00E676"/>
-
-																</DataTrigger>
-
-															</Style.Triggers>
-
-														</Style>
-
-													</materialDesign:PackIcon.Style>
-
-												</materialDesign:PackIcon>
+											<StackPanel>
 
 												<TextBlock
-													Text="{Binding Status}"
-													FontSize="14"
-													FontWeight="SemiBold"
-													VerticalAlignment="Center">
+                                                        Text="{Binding Name}"
+                                                        FontWeight="SemiBold"
+                                                        TextTrimming="CharacterEllipsis"
+                                                        ToolTip="{Binding Name}"
+                                                        Foreground="{StaticResource TextBrush}"/>
 
-													<TextBlock.Style>
-
-														<Style TargetType="TextBlock">
-
-															<Setter
-																Property="Foreground"
-																Value="#FFC107"/>
-
-															<Style.Triggers>
-
-																<DataTrigger
-																	Binding="{Binding IsEnabled}"
-																	Value="True">
-
-																	<Setter
-																		Property="Foreground"
-																		Value="#00E676"/>
-
-																</DataTrigger>
-
-															</Style.Triggers>
-
-														</Style>
-
-													</TextBlock.Style>
-
-												</TextBlock>
-
+												<TextBlock
+                                                   Text="{Binding Description}"
+                                                   Margin="0,4,0,0"
+                                                     FontSize="14"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   ToolTip="{Binding Description}"
+                                                   Foreground="{StaticResource SecondaryTextBrush}"/>
 											</StackPanel>
 
-										</Border>
+										</DataTemplate>
 
-									</DataTemplate>
+									</DataGridTemplateColumn.CellTemplate>
 
-								</DataGridTemplateColumn.CellTemplate>
+								</DataGridTemplateColumn>
 
-							</DataGridTemplateColumn>
+								<!-- PRODUCĂTOR -->
 
-							<!-- IMPACT -->
+								<DataGridTemplateColumn
+									Width="1.2*"
+									MinWidth="145"
+									DisplayIndex="5"
+									SortMemberPath="Publisher">
 
-							<DataGridTemplateColumn
-                                Width="110"
-                                MinWidth="110"
-                                SortMemberPath="StartupImpact">
-
-								<DataGridTemplateColumn.Header>
-
-									<TextBlock
-                                        Text="{DynamicResource StartupColumnImpact}"/>
-
-								</DataGridTemplateColumn.Header>
-
-								<DataGridTemplateColumn.CellTemplate>
-
-									<DataTemplate>
+									<DataGridTemplateColumn.Header>
 
 										<TextBlock
-                                            Text="{Binding StartupImpact}"
-                                            TextTrimming="CharacterEllipsis"
-                                            ToolTip="{Binding StartupImpact}"
-                                            Foreground="{StaticResource SecondaryTextBrush}"/>
+											Text="{DynamicResource StartupColumnPublisher}"/>
 
-									</DataTemplate>
+									</DataGridTemplateColumn.Header>
 
-								</DataGridTemplateColumn.CellTemplate>
+									<DataGridTemplateColumn.CellTemplate>
 
-							</DataGridTemplateColumn>
+										<DataTemplate>
 
-							<!-- CALE -->
+											<TextBlock
+												Text="{Binding Publisher}"
+												TextTrimming="CharacterEllipsis"
+												ToolTip="{Binding Publisher}"
+												Foreground="{StaticResource TextBrush}"/>
 
-							<DataGridTemplateColumn
-                                Width="1.3*"
-                                MinWidth="200"
-                                SortMemberPath="ExecutablePath">
+										</DataTemplate>
 
-								<DataGridTemplateColumn.Header>
+									</DataGridTemplateColumn.CellTemplate>
 
-									<TextBlock
-                                        Text="{DynamicResource StartupColumnPath}"/>
+								</DataGridTemplateColumn>
 
-								</DataGridTemplateColumn.Header>
+								<!-- SURSĂ -->
 
-								<DataGridTemplateColumn.CellTemplate>
+								<DataGridTemplateColumn
+									Width="1.15*"
+									MinWidth="150"
+									DisplayIndex="4"
+									SortMemberPath="Source">
 
-									<DataTemplate>
+									<DataGridTemplateColumn.Header>
 
 										<TextBlock
-                                            Text="{Binding DisplayPath}"
-                                            TextTrimming="CharacterEllipsis"
-                                            ToolTip="{Binding Command}"
-                                            Foreground="{StaticResource SecondaryTextBrush}"/>
+											Text="{DynamicResource StartupColumnSource}"/>
 
-									</DataTemplate>
+									</DataGridTemplateColumn.Header>
 
-								</DataGridTemplateColumn.CellTemplate>
+									<DataGridTemplateColumn.CellTemplate>
 
-							</DataGridTemplateColumn>
+										<DataTemplate>
 
-							<!-- ACȚIUNE -->
+											<TextBlock
+												Text="{Binding Source}"
+												TextWrapping="Wrap"
+												ToolTip="{Binding Source}"
+												Foreground="{StaticResource SecondaryTextBrush}"/>
 
-							<DataGridTemplateColumn
-                                Width="155"
-                                MinWidth="155">
+										</DataTemplate>
 
-								<DataGridTemplateColumn.Header>
+									</DataGridTemplateColumn.CellTemplate>
 
-									<TextBlock
-                                        Text="{DynamicResource StartupColumnAction}"/>
+								</DataGridTemplateColumn>
 
-								</DataGridTemplateColumn.Header>
+								<!-- STARE -->
 
-								<DataGridTemplateColumn.CellTemplate>
+								<DataGridTemplateColumn
+									Width="140"
+									MinWidth="140"
+									DisplayIndex="3"
+									SortMemberPath="IsEnabled">
 
-									<DataTemplate>
+									<DataGridTemplateColumn.Header>
 
-										<Button
-                                            Content="{Binding ActionText}"
-                                            Command="{Binding DataContext.ToggleStartupCommand,
+										<TextBlock
+											Text="{DynamicResource StartupColumnStatus}"/>
+
+									</DataGridTemplateColumn.Header>
+
+									<DataGridTemplateColumn.CellTemplate>
+
+										<DataTemplate>
+
+											<Border
+												Padding="9,4"
+												CornerRadius="12"
+												HorizontalAlignment="Left">
+
+												<Border.Style>
+
+													<Style TargetType="Border">
+
+														<Setter
+															Property="Background"
+															Value="#4A3510"/>
+
+														<Style.Triggers>
+
+															<DataTrigger
+																Binding="{Binding IsEnabled}"
+																Value="True">
+
+																<Setter
+																	Property="Background"
+																	Value="#103F1F"/>
+
+															</DataTrigger>
+
+														</Style.Triggers>
+
+													</Style>
+
+												</Border.Style>
+
+												<StackPanel
+	                                            	Orientation="Horizontal"
+		                                            VerticalAlignment="Center">
+
+													<materialDesign:PackIcon
+														Width="16"
+														Height="16"
+														Margin="0,0,6,0"
+														VerticalAlignment="Center">
+
+														<materialDesign:PackIcon.Style>
+
+															<Style TargetType="materialDesign:PackIcon">
+
+																<Setter
+																	Property="Kind"
+																	Value="PauseCircle"/>
+
+																<Setter
+																	Property="Foreground"
+																	Value="#FFC107"/>
+
+																<Style.Triggers>
+
+																	<DataTrigger
+																		Binding="{Binding IsEnabled}"
+																		Value="True">
+
+																		<Setter
+																			Property="Kind"
+																			Value="CheckCircle"/>
+
+																		<Setter
+																			Property="Foreground"
+																			Value="#00E676"/>
+
+																	</DataTrigger>
+
+																</Style.Triggers>
+
+															</Style>
+
+														</materialDesign:PackIcon.Style>
+
+													</materialDesign:PackIcon>
+
+													<TextBlock
+														Text="{Binding Status}"
+														FontSize="14"
+														FontWeight="SemiBold"
+														VerticalAlignment="Center">
+
+														<TextBlock.Style>
+
+															<Style TargetType="TextBlock">
+
+																<Setter
+																	Property="Foreground"
+																	Value="#FFC107"/>
+
+																<Style.Triggers>
+
+																	<DataTrigger
+																		Binding="{Binding IsEnabled}"
+																		Value="True">
+
+																		<Setter
+																			Property="Foreground"
+																			Value="#00E676"/>
+
+																	</DataTrigger>
+
+																</Style.Triggers>
+
+															</Style>
+
+														</TextBlock.Style>
+
+													</TextBlock>
+
+												</StackPanel>
+
+											</Border>
+
+										</DataTemplate>
+
+									</DataGridTemplateColumn.CellTemplate>
+
+								</DataGridTemplateColumn>
+
+								<!-- IMPACT -->
+
+								<DataGridTemplateColumn
+                                     Width="110"
+                                     MinWidth="110"
+                                     DisplayIndex="2"
+                                     SortMemberPath="StartupImpact">
+									
+									<DataGridTemplateColumn.Header>
+
+										<TextBlock
+											Text="{DynamicResource StartupColumnImpact}"/>
+
+									</DataGridTemplateColumn.Header>
+
+									<DataGridTemplateColumn.CellTemplate>
+
+										<DataTemplate>
+
+											<TextBlock
+												Text="{Binding StartupImpact}"
+												TextTrimming="CharacterEllipsis"
+												ToolTip="{Binding StartupImpact}"
+												Foreground="{StaticResource SecondaryTextBrush}"/>
+
+										</DataTemplate>
+
+									</DataGridTemplateColumn.CellTemplate>
+
+								</DataGridTemplateColumn>
+
+								<!-- CALE -->
+
+								<DataGridTemplateColumn
+									Width="1.3*"
+									MinWidth="200"
+									DisplayIndex="1"
+									SortMemberPath="ExecutablePath">
+
+									<DataGridTemplateColumn.Header>
+
+										<TextBlock
+											Text="{DynamicResource StartupColumnPath}"/>
+
+									</DataGridTemplateColumn.Header>
+
+									<DataGridTemplateColumn.CellTemplate>
+
+										<DataTemplate>
+
+											<TextBlock
+												Text="{Binding DisplayPath}"
+												TextTrimming="CharacterEllipsis"
+												ToolTip="{Binding Command}"
+												Foreground="{StaticResource SecondaryTextBrush}"/>
+
+										</DataTemplate>
+
+									</DataGridTemplateColumn.CellTemplate>
+
+								</DataGridTemplateColumn>
+
+								<!-- ACȚIUNE -->
+
+								<DataGridTemplateColumn
+	                                	Width="155"
+	                                	MinWidth="155"
+	                                	DisplayIndex="0">
+
+									<DataGridTemplateColumn.Header>
+
+										<TextBlock
+											Text="{DynamicResource StartupColumnAction}"/>
+
+									</DataGridTemplateColumn.Header>
+
+									<DataGridTemplateColumn.CellTemplate>
+
+										<DataTemplate>
+
+											<Button
+												Content="{Binding ActionText}"
+												Command="{Binding DataContext.ToggleStartupCommand,
                                                               RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding}"
-                                            MinWidth="130"
-                                            Height="36"
-                                            Padding="12,5"
-                                            HorizontalAlignment="Center"
-                                            VerticalAlignment="Center"/>
+												CommandParameter="{Binding}"
+												MinWidth="130"
+												Height="36"
+												Padding="12,5"
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"/>
 
-									</DataTemplate>
+										</DataTemplate>
 
-								</DataGridTemplateColumn.CellTemplate>
+									</DataGridTemplateColumn.CellTemplate>
 
-							</DataGridTemplateColumn>
+								</DataGridTemplateColumn>
 
-						</DataGrid.Columns>
+							</DataGrid.Columns>
 
-					</DataGrid>
+						</DataGrid>
+
+					</ScrollViewer>
 
 				</Grid>
 

@@ -99,32 +99,32 @@
 	<!-- ====================================== -->
 
 	<Style
-        x:Key="HorizontalDarkScrollBarStyle"
-        TargetType="ScrollBar">
+		x:Key="HorizontalDarkScrollBarStyle"
+		TargetType="ScrollBar">
 
 		<Setter
-            Property="Orientation"
-            Value="Horizontal"/>
+			Property="Orientation"
+			Value="Horizontal"/>
 
 		<Setter
-            Property="Height"
-            Value="16"/>
+			Property="Height"
+			Value="16"/>
 
 		<Setter
-            Property="MinWidth"
-            Value="80"/>
+			Property="MinWidth"
+			Value="80"/>
 
 		<Setter
-            Property="Background"
-            Value="#171A1E"/>
+			Property="Background"
+			Value="#171A1E"/>
 
 		<Setter
-            Property="BorderBrush"
-            Value="#343A40"/>
+			Property="BorderBrush"
+			Value="#343A40"/>
 
 		<Setter
-            Property="BorderThickness"
-            Value="1"/>
+			Property="BorderThickness"
+			Value="1"/>
 
 		<Setter Property="Template">
 
@@ -133,42 +133,43 @@
 				<ControlTemplate TargetType="ScrollBar">
 
 					<Border
-                        Height="{TemplateBinding Height}"
-                        CornerRadius="8"
-                        Background="{TemplateBinding Background}"
-                        BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
+						Height="{TemplateBinding Height}"
+						CornerRadius="8"
+						Background="{TemplateBinding Background}"
+						BorderBrush="{TemplateBinding BorderBrush}"
+						BorderThickness="{TemplateBinding BorderThickness}">
 
 						<Track
-                            x:Name="PART_Track"
-                            Margin="2"
-                            Orientation="Horizontal"
-                            IsDirectionReversed="False">
+							x:Name="PART_Track"
+							Margin="2"
+							Orientation="Horizontal"
+							IsDirectionReversed="False">
 
 							<Track.DecreaseRepeatButton>
 
 								<RepeatButton
-                                    Command="ScrollBar.PageLeftCommand"
-                                    Focusable="False"
-                                    IsTabStop="False"
-                                    Opacity="0"/>
+									Command="ScrollBar.PageLeftCommand"
+									Focusable="False"
+									IsTabStop="False"
+									Opacity="0"/>
 
 							</Track.DecreaseRepeatButton>
 
-						
-                                 <Thumb
-                                      Width="12"
-                                      MinHeight="60"
-                                       HorizontalAlignment="Center"
-                                      Style="{StaticResource WinBoostScrollBarThumbStyle}"/>
+							<Track.Thumb>
+
+								<Thumb
+									MinWidth="54"
+									Style="{StaticResource WinBoostScrollBarThumbStyle}"/>
+
+							</Track.Thumb>
 
 							<Track.IncreaseRepeatButton>
 
 								<RepeatButton
-                                    Command="ScrollBar.PageRightCommand"
-                                    Focusable="False"
-                                    IsTabStop="False"
-                                    Opacity="0"/>
+									Command="ScrollBar.PageRightCommand"
+									Focusable="False"
+									IsTabStop="False"
+									Opacity="0"/>
 
 							</Track.IncreaseRepeatButton>
 
