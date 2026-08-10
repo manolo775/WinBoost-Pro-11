@@ -20,13 +20,13 @@
 			<StackPanel Grid.Row="0">
 
 				<TextBlock
-                    Text="Windows Update"
+                    Text="{DynamicResource WindowsUpdatePageTitle}"
                     FontSize="30"
                     FontWeight="SemiBold"
                     Foreground="{StaticResource TextBrush}"/>
 
 				<TextBlock
-                    Text="Verifică starea actualizărilor și serviciile necesare pentru Windows Update."
+                    Text="{DynamicResource WindowsUpdatePageDescription}"
                     Margin="0,6,0,0"
                     FontSize="14"
                     TextWrapping="Wrap"
@@ -50,10 +50,10 @@
 						<ColumnDefinition Width="Auto"/>
 					</Grid.ColumnDefinitions>
 
-					<StackPanel>
+					<StackPanel Grid.Column="0">
 
 						<TextBlock
-                            Text="Windows Update Check"
+                            Text="{DynamicResource WindowsUpdateCheckTitle}"
                             FontSize="20"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource TextBrush}"/>
@@ -65,7 +65,7 @@
                             Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
-                            Text="Scanarea va fi informativă și nu va instala actualizări."
+                            Text="{DynamicResource WindowsUpdateSafeScanDescription}"
                             Margin="0,6,20,0"
                             FontSize="13"
                             TextWrapping="Wrap"
@@ -96,8 +96,8 @@
 									<Style.Triggers>
 
 										<DataTrigger
-                                            Binding="{Binding ScanBadgeText}"
-                                            Value="Se verifică">
+                                            Binding="{Binding ScanState}"
+                                            Value="Checking">
 
 											<Setter
                                                 Property="Background"
@@ -106,8 +106,18 @@
 										</DataTrigger>
 
 										<DataTrigger
-                                            Binding="{Binding ScanBadgeText}"
-                                            Value="Verificat">
+                                            Binding="{Binding ScanState}"
+                                            Value="Warning">
+
+											<Setter
+                                                Property="Background"
+                                                Value="#664500"/>
+
+										</DataTrigger>
+
+										<DataTrigger
+                                            Binding="{Binding ScanState}"
+                                            Value="Checked">
 
 											<Setter
                                                 Property="Background"
@@ -116,8 +126,18 @@
 										</DataTrigger>
 
 										<DataTrigger
-                                            Binding="{Binding ScanBadgeText}"
-                                            Value="Eroare">
+                                            Binding="{Binding ScanState}"
+                                            Value="UpdatesAvailable">
+
+											<Setter
+                                                Property="Background"
+                                                Value="#164A29"/>
+
+										</DataTrigger>
+
+										<DataTrigger
+                                            Binding="{Binding ScanState}"
+                                            Value="Error">
 
 											<Setter
                                                 Property="Background"
@@ -145,8 +165,8 @@
 										<Style.Triggers>
 
 											<DataTrigger
-                                                Binding="{Binding ScanBadgeText}"
-                                                Value="Se verifică">
+                                                Binding="{Binding ScanState}"
+                                                Value="Checking">
 
 												<Setter
                                                     Property="Foreground"
@@ -155,8 +175,18 @@
 											</DataTrigger>
 
 											<DataTrigger
-                                                Binding="{Binding ScanBadgeText}"
-                                                Value="Verificat">
+                                                Binding="{Binding ScanState}"
+                                                Value="Warning">
+
+												<Setter
+                                                    Property="Foreground"
+                                                    Value="Orange"/>
+
+											</DataTrigger>
+
+											<DataTrigger
+                                                Binding="{Binding ScanState}"
+                                                Value="Checked">
 
 												<Setter
                                                     Property="Foreground"
@@ -165,8 +195,18 @@
 											</DataTrigger>
 
 											<DataTrigger
-                                                Binding="{Binding ScanBadgeText}"
-                                                Value="Eroare">
+                                                Binding="{Binding ScanState}"
+                                                Value="UpdatesAvailable">
+
+												<Setter
+                                                    Property="Foreground"
+                                                    Value="#00C853"/>
+
+											</DataTrigger>
+
+											<DataTrigger
+                                                Binding="{Binding ScanState}"
+                                                Value="Error">
 
 												<Setter
                                                     Property="Foreground"
@@ -189,9 +229,10 @@
 						<Button
                             Content="{Binding ScanButtonText}"
                             Command="{Binding ScanUpdatesCommand}"
-                            Width="150"
+                            Width="180"
                             Height="42"
-                            Margin="0,10,0,0"/>
+                            Margin="0,10,0,0"
+                            HorizontalContentAlignment="Center"/>
 
 					</StackPanel>
 
@@ -211,7 +252,7 @@
 				<StackPanel>
 
 					<TextBlock
-                        Text="Rezultatul verificării"
+                        Text="{DynamicResource WindowsUpdateResultTitle}"
                         FontSize="20"
                         FontWeight="SemiBold"
                         Foreground="{StaticResource TextBrush}"/>
@@ -221,6 +262,107 @@
                         Margin="0,8,0,0"
                         TextWrapping="Wrap"
                         Foreground="{StaticResource SecondaryTextBrush}"/>
+
+					<!-- SEPARATOR -->
+
+					<Border
+                        Height="1"
+                        Margin="0,18,0,16"
+                        Background="#454A50"/>
+
+					<!-- ACTUALIZARI DISPONIBILE -->
+
+					<TextBlock
+                        Text="{DynamicResource WindowsUpdateAvailableUpdatesTitle}"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Foreground="{StaticResource TextBrush}"/>
+
+					<ItemsControl
+                        ItemsSource="{Binding AvailableUpdates}"
+                        Margin="0,12,0,0">
+
+						<ItemsControl.ItemTemplate>
+
+							<DataTemplate>
+
+								<Border
+                                    Margin="0,0,0,10"
+                                    Padding="14"
+                                    CornerRadius="7"
+                                    Background="#24272B">
+
+									<Grid>
+
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="*"/>
+											<ColumnDefinition Width="180"/>
+										</Grid.ColumnDefinitions>
+
+										<!-- DETALII UPDATE -->
+
+										<StackPanel
+                                            Grid.Column="0"
+                                            Margin="0,0,20,0">
+
+											<TextBlock
+                                                Text="{Binding Title}"
+                                                FontWeight="SemiBold"
+                                                TextWrapping="Wrap"
+                                                Foreground="{StaticResource TextBrush}"/>
+
+											<TextBlock
+                                                Text="{Binding Description}"
+                                                Margin="0,6,0,0"
+                                                FontSize="12"
+                                                TextWrapping="Wrap"
+                                                Foreground="{StaticResource SecondaryTextBrush}"/>
+
+										</StackPanel>
+
+										<!-- STATUS UPDATE -->
+
+										<StackPanel
+                                            Grid.Column="1"
+                                            VerticalAlignment="Center">
+
+											<TextBlock
+                                                Text="{DynamicResource WindowsUpdateDownloadedLabel}"
+                                                HorizontalAlignment="Center"
+                                                FontSize="12"
+                                                Foreground="{StaticResource SecondaryTextBrush}"/>
+
+											<TextBlock
+                                                Text="{Binding IsDownloaded}"
+                                                Margin="0,3,0,10"
+                                                HorizontalAlignment="Center"
+                                                FontWeight="SemiBold"
+                                                Foreground="{StaticResource TextBrush}"/>
+
+											<TextBlock
+                                                Text="{DynamicResource WindowsUpdateRestartRequiredLabel}"
+                                                HorizontalAlignment="Center"
+                                                FontSize="12"
+                                                Foreground="{StaticResource SecondaryTextBrush}"/>
+
+											<TextBlock
+                                                Text="{Binding RebootRequired}"
+                                                Margin="0,3,0,0"
+                                                HorizontalAlignment="Center"
+                                                FontWeight="SemiBold"
+                                                Foreground="{StaticResource TextBrush}"/>
+
+										</StackPanel>
+
+									</Grid>
+
+								</Border>
+
+							</DataTemplate>
+
+						</ItemsControl.ItemTemplate>
+
+					</ItemsControl>
 
 				</StackPanel>
 

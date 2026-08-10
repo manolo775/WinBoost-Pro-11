@@ -1973,4 +1973,100 @@
 		No
 	</sys:String>
 
+	<sys:String x:Key="WindowsUpdatePageTitle">
+		Windows Update
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdatePageDescription">
+		Check update status and the services required for Windows Update.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateCheckTitle">
+		Windows Update Check
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateSafeScanDescription">
+		The scan is informational and will not install updates.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateResultTitle">
+		Check result
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateScanButton">
+		Scan Updates
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateScanningButton">
+		Checking...
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeNotChecked">
+		Not checked
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeChecking">
+		Checking
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeChecked">
+		Checked
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeWarning">
+		Warning
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeError">
+		Error
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateScanPrompt">
+		Press Scan Updates to check.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateScanningStatus">
+		Checking the services required for Windows Update...
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAllServicesRunningFormat">
+		Check completed. All {0} services required for Windows Update are running.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateStoppedServicesFormat">
+		{0} services were checked. {1} are running. Stopped or unavailable services: {2}.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateDisabledServicesFormat">
+		{0} services were checked. Disabled services: {1}.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateScanFailedFormat">
+		The check could not be completed: {0}
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAvailableCountFormat">
+		Available updates: {0}.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeUpdatesAvailable">
+		Updates available
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAvailableUpdatesTitle">
+		Available updates
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateNoUpdates">
+		No updates are available.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateDownloadedLabel">
+		Downloaded
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateRestartRequiredLabel">
+		Restart required
+	</sys:String>
+	
 </ResourceDictionary>

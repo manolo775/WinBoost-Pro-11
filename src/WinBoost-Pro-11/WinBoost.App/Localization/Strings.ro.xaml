@@ -1973,5 +1973,101 @@
 	<sys:String x:Key="StartupConfirmationNo">
 		Nu
 	</sys:String>
+
+	<sys:String x:Key="WindowsUpdatePageTitle">
+		Actualizări Windows
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdatePageDescription">
+		Verifică starea actualizărilor și serviciile necesare pentru Windows Update.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateCheckTitle">
+		Verificare Windows Update
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateSafeScanDescription">
+		Scanarea este informativă și nu va instala actualizări.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateResultTitle">
+		Rezultatul verificării
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateScanButton">
+		Scanează actualizările
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateScanningButton">
+		Se verifică...
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeNotChecked">
+		Neverificat
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeChecking">
+		Se verifică
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeChecked">
+		Verificat
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeWarning">
+		Atenție
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeError">
+		Eroare
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateScanPrompt">
+		Apasă Scanează actualizările pentru verificare.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateScanningStatus">
+		Se verifică serviciile necesare pentru Windows Update...
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAllServicesRunningFormat">
+		Verificare finalizată. Toate cele {0} servicii necesare pentru Windows Update rulează.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateStoppedServicesFormat">
+		Au fost verificate {0} servicii. {1} rulează. Servicii oprite sau indisponibile: {2}.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateDisabledServicesFormat">
+		Au fost verificate {0} servicii. Servicii dezactivate: {1}.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateScanFailedFormat">
+		Verificarea nu a putut fi finalizată: {0}
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAvailableCountFormat">
+		Actualizări disponibile: {0}.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateBadgeUpdatesAvailable">
+		Actualizări disponibile
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAvailableUpdatesTitle">
+		Actualizări disponibile
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateNoUpdates">
+		Nu există actualizări disponibile.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateDownloadedLabel">
+		Descărcată
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateRestartRequiredLabel">
+		Necesită repornire
+	</sys:String>
 	
 </ResourceDictionary>
