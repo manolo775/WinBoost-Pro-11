@@ -145,7 +145,7 @@ namespace WinBoost.App.ViewModels
             LanguageManager.Instance.LanguageChanged +=
                 LanguageManager_LanguageChanged;
 
-            StartPerformanceMonitoring();
+            
         }
 
         public int PerformanceAnalyzerScore

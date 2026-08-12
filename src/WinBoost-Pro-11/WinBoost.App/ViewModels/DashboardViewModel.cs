@@ -156,13 +156,13 @@ namespace WinBoost.App.ViewModels
                 new DispatcherTimer
                 {
                     Interval =
-                        TimeSpan.FromSeconds(2)
+                        TimeSpan.FromSeconds(10)
                 };
 
             _refreshTimer.Tick +=
                 RefreshTimer_Tick;
 
-            StartMonitoring();
+            
         }
 
         private static string T(
@@ -994,7 +994,7 @@ namespace WinBoost.App.ViewModels
                 var metrics =
                     await _systemMonitorService
                         .GetSystemMetricsAsync();
-
+              
                 ProcessPerformanceAlerts(
                     metrics);
 
@@ -1038,7 +1038,7 @@ namespace WinBoost.App.ViewModels
                         _metricsHistoryService
                             .GetSnapshot();
 
-                    UpdateLivePerformanceAnalysis();
+                    // UpdateLivePerformanceAnalysis();
                 }
                 else if (
                     DateTime.UtcNow -
@@ -1302,6 +1302,7 @@ namespace WinBoost.App.ViewModels
             List<PerformanceHistoryRecord>
                 liveRecords =
                     livePoints
+                        .TakeLast(60)
                         .Select(point =>
                             new PerformanceHistoryRecord
                             {
