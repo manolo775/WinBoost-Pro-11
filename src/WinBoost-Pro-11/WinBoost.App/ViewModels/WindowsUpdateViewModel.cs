@@ -5,6 +5,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -73,6 +74,25 @@ namespace WinBoost.App.ViewModels
         private string _lastErrorMessage =
             string.Empty;
 
+        private readonly WindowsUpdateWorkerStatusReader
+    _workerStatusReader =
+        new WindowsUpdateWorkerStatusReader();
+
+        private bool _isInstallingUpdates;
+
+        private string _installationState =
+            "Idle";
+
+        private int _installationPercent;
+
+        private string _installationMessage =
+            string.Empty;
+
+        private string _currentUpdateTitle =
+            string.Empty;
+
+        private bool _rebootRequired;
+
         public WindowsUpdateViewModel()
         {
             _windowsUpdateScanner =
@@ -93,11 +113,11 @@ namespace WinBoost.App.ViewModels
                         !IsScanning);
 
             InstallUpdatesCommand =
-                new RelayCommand(
-                    _ =>
-                        ConfirmInstallUpdates(),
-                    _ =>
-                        CanInstallUpdates);
+     new RelayCommand(
+         async _ =>
+             await ConfirmInstallUpdatesAsync(),
+         _ =>
+             CanInstallUpdates);
 
             ApplyInitialUiState();
 
@@ -203,9 +223,131 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        public bool IsInstallingUpdates
+        {
+            get => _isInstallingUpdates;
+
+            private set
+            {
+                if (_isInstallingUpdates == value)
+                {
+                    return;
+                }
+
+                _isInstallingUpdates =
+                    value;
+
+                OnPropertyChanged();
+
+                OnPropertyChanged(
+                    nameof(CanInstallUpdates));
+
+                CommandManager
+                    .InvalidateRequerySuggested();
+            }
+        }
+
+        public string InstallationState
+        {
+            get => _installationState;
+
+            private set
+            {
+                if (_installationState == value)
+                {
+                    return;
+                }
+
+                _installationState =
+                    value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public int InstallationPercent
+        {
+            get => _installationPercent;
+
+            private set
+            {
+                int normalizedValue =
+                    Math.Clamp(
+                        value,
+                        0,
+                        100);
+
+                if (_installationPercent ==
+                    normalizedValue)
+                {
+                    return;
+                }
+
+                _installationPercent =
+                    normalizedValue;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public string InstallationMessage
+        {
+            get => _installationMessage;
+
+            private set
+            {
+                if (_installationMessage == value)
+                {
+                    return;
+                }
+
+                _installationMessage =
+                    value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public string CurrentUpdateTitle
+        {
+            get => _currentUpdateTitle;
+
+            private set
+            {
+                if (_currentUpdateTitle == value)
+                {
+                    return;
+                }
+
+                _currentUpdateTitle =
+                    value;
+
+                OnPropertyChanged();
+            }
+        }
+
+        public bool RebootRequired
+        {
+            get => _rebootRequired;
+
+            private set
+            {
+                if (_rebootRequired == value)
+                {
+                    return;
+                }
+
+                _rebootRequired =
+                    value;
+
+                OnPropertyChanged();
+            }
+        }
+
         public bool CanInstallUpdates =>
-            !IsScanning &&
-            _lastAvailableUpdateCount > 0;
+       !IsScanning &&
+       !IsInstallingUpdates &&
+       _lastAvailableUpdateCount > 0;
 
         public string ScanButtonText =>
             IsScanning
@@ -315,7 +457,7 @@ namespace WinBoost.App.ViewModels
             }
         }
 
-        private void ConfirmInstallUpdates()
+        private async Task ConfirmInstallUpdatesAsync()
         {
             if (!CanInstallUpdates)
             {
@@ -357,6 +499,24 @@ namespace WinBoost.App.ViewModels
                     return;
                 }
 
+                InstallationState =
+                    "Starting";
+
+                InstallationPercent =
+                    0;
+
+                InstallationMessage =
+                    string.Empty;
+
+                CurrentUpdateTitle =
+                    string.Empty;
+
+                RebootRequired =
+                    false;
+
+                IsInstallingUpdates =
+                    true;
+
                 var startInfo =
                     new ProcessStartInfo
                     {
@@ -370,14 +530,26 @@ namespace WinBoost.App.ViewModels
                             "runas"
                     };
 
-                Process.Start(
-                    startInfo);
+                Process? workerProcess =
+                    Process.Start(
+                        startInfo);
+
+                if (workerProcess == null)
+                {
+                    throw new InvalidOperationException(
+                        "WinBoost Update Worker could not be started.");
+                }
+
+                await MonitorUpdateWorkerAsync(
+                    workerProcess);
             }
             catch (System.ComponentModel.Win32Exception ex)
             {
+                IsInstallingUpdates =
+                    false;
+
                 if (ex.NativeErrorCode == 1223)
                 {
-                    // Utilizatorul a anulat fereastra UAC.
                     return;
                 }
 
@@ -389,12 +561,174 @@ namespace WinBoost.App.ViewModels
             }
             catch (Exception ex)
             {
+                IsInstallingUpdates =
+                    false;
+
                 MessageBox.Show(
                     ex.Message,
                     "WinBoost Update Worker",
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
             }
+        }
+
+
+        private async Task MonitorUpdateWorkerAsync(
+    Process workerProcess)
+        {
+            try
+            {
+                while (!workerProcess.HasExited)
+                {
+                    WindowsUpdateWorkerStatus? status =
+                        await _workerStatusReader
+                            .ReadAsync();
+
+                    if (status != null)
+                    {
+                        ApplyWorkerStatus(
+                            status);
+                    }
+
+                    await Task.Delay(
+                        TimeSpan.FromSeconds(1));
+                }
+
+                WindowsUpdateWorkerStatus? finalStatus =
+                    await _workerStatusReader
+                        .ReadAsync();
+
+                if (finalStatus != null)
+                {
+                    ApplyWorkerStatus(
+                        finalStatus);
+                }
+
+                if (finalStatus == null)
+                {
+                    InstallationState =
+                        "Completed";
+
+                    InstallationMessage =
+                        "Windows Update Worker finished.";
+
+                    await Task.Delay(
+                        TimeSpan.FromSeconds(2));
+
+                    IsInstallingUpdates =
+                        false;
+
+                    return;
+                }
+
+                if (!finalStatus.IsCompleted)
+                {
+                    InstallationState =
+                        "Completed";
+
+                    InstallationMessage =
+                        "Windows Update Worker finished.";
+
+                    await Task.Delay(
+                        TimeSpan.FromSeconds(2));
+
+                    IsInstallingUpdates =
+                        false;
+
+                    return;
+                }
+
+                if (finalStatus.IsSuccessful)
+                {
+                    InstallationState =
+                        "Completed";
+
+                    InstallationPercent =
+                        100;
+
+                    RebootRequired =
+                        finalStatus.RebootRequired;
+
+                    if (string.IsNullOrWhiteSpace(
+                        InstallationMessage))
+                    {
+                        InstallationMessage =
+                            finalStatus.RebootRequired
+                                ? "Windows updates were installed. A restart is required."
+                                : "Windows updates were installed successfully.";
+                    }
+
+                    /*
+                     * Păstrăm panoul vizibil puțin timp
+                     * pentru ca utilizatorul să poată vedea
+                     * rezultatul final și 100%.
+                     */
+                    await Task.Delay(
+                        TimeSpan.FromSeconds(2));
+                }
+                else
+                {
+                    InstallationState =
+                        "Error";
+
+                    if (!string.IsNullOrWhiteSpace(
+                        finalStatus.ErrorMessage))
+                    {
+                        InstallationMessage =
+                            finalStatus.ErrorMessage;
+                    }
+
+                    /*
+                     * Eroarea rămâne puțin mai mult
+                     * pentru a putea fi citită.
+                     */
+                    await Task.Delay(
+                        TimeSpan.FromSeconds(3));
+                }
+
+                IsInstallingUpdates =
+                    false;
+            }
+            catch (Exception ex)
+            {
+                InstallationState =
+                    "Error";
+
+                InstallationMessage =
+                    ex.Message;
+
+                await Task.Delay(
+                    TimeSpan.FromSeconds(3));
+
+                IsInstallingUpdates =
+                    false;
+            }
+        }
+
+        private void ApplyWorkerStatus(
+            WindowsUpdateWorkerStatus status)
+        {
+            InstallationState =
+                status.State;
+
+            InstallationPercent =
+                status.Percent;
+
+            InstallationMessage =
+                status.Message;
+
+            CurrentUpdateTitle =
+                status.CurrentUpdateTitle;
+
+            RebootRequired =
+                status.RebootRequired;
+
+            /*
+             * Nu ascundem panoul aici când Worker-ul
+             * termină. MonitorUpdateWorkerAsync îl va
+             * păstra vizibil suficient pentru afișarea
+             * rezultatului final și a valorii 100%.
+             */
         }
 
         private void RefreshAvailableUpdates()

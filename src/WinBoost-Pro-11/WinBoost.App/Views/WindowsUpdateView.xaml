@@ -128,6 +128,7 @@
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 
 			<!-- TITLU -->
@@ -502,6 +503,81 @@
 
 			</Border>
 
+			<!-- PROGRES INSTALARE WINDOWS UPDATE -->
+
+			<Border
+				Grid.Row="3"
+				Margin="0,25,0,0"
+				Padding="22"
+				CornerRadius="10"
+				Background="{StaticResource CardBrush}">
+
+				<Border.Style>
+					<Style TargetType="Border">
+						<Setter Property="Visibility" Value="Collapsed"/>
+
+						<Style.Triggers>
+
+							<DataTrigger
+								Binding="{Binding IsInstallingUpdates}"
+								Value="True">
+
+								<Setter
+									Property="Visibility"
+									Value="Visible"/>
+
+							</DataTrigger>
+
+						</Style.Triggers>
+					</Style>
+				</Border.Style>
+
+				<StackPanel>
+
+					<TextBlock
+						Text="Windows Update"
+						FontSize="20"
+						FontWeight="SemiBold"
+						Foreground="{StaticResource TextBrush}"/>
+
+					<TextBlock
+						Text="{Binding InstallationMessage}"
+						Margin="0,10,0,0"
+						TextWrapping="Wrap"
+						Foreground="{StaticResource SecondaryTextBrush}"/>
+
+					<TextBlock
+						Text="{Binding CurrentUpdateTitle}"
+						Margin="0,8,0,0"
+						FontWeight="SemiBold"
+						TextWrapping="Wrap"
+						Foreground="{StaticResource TextBrush}"/>
+					<ProgressBar
+    Minimum="0"
+    Maximum="100"
+    Value="{Binding InstallationPercent, Mode=OneWay}"
+    Height="12"
+    Margin="0,18,0,0"/>
+
+					<TextBlock
+						Margin="0,8,0,0"
+						HorizontalAlignment="Right"
+						Foreground="{StaticResource SecondaryTextBrush}">
+
+						<Run Text="{Binding InstallationPercent, Mode=OneWay}"/>
+						<Run Text="%"/>
+					</TextBlock>
+
+					<TextBlock
+						Text="{Binding InstallationState}"
+						Margin="0,4,0,0"
+						FontSize="12"
+						Foreground="{StaticResource SecondaryTextBrush}"/>
+
+				</StackPanel>
+
+			</Border>
+			
 		</Grid>
 
 	</ScrollViewer>

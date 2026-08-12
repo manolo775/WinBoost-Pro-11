@@ -13,8 +13,6 @@ namespace WinBoost.UpdateWorker
             object installationJob,
             object callbackArgs)
         {
-            // Progresul este citit controlat din IInstallationJob.GetProgress().
-            // Callback-ul există pentru contractul BeginInstall.
         }
     }
 
@@ -27,7 +25,6 @@ namespace WinBoost.UpdateWorker
             object installationJob,
             object callbackArgs)
         {
-            // Finalizarea este verificată prin IInstallationJob.IsCompleted.
         }
     }
 
@@ -45,6 +42,14 @@ namespace WinBoost.UpdateWorker
         {
             try
             {
+                UpdateWorkerStatusWriter.Reset();
+
+                WriteStatus(
+                    state: "Searching",
+                    percent: 0,
+                    message:
+                        "Searching for available Windows updates...");
+
                 Console.WriteLine(
                     "WinBoost Update Worker");
 
@@ -57,10 +62,9 @@ namespace WinBoost.UpdateWorker
 
                 if (sessionType == null)
                 {
-                    Console.Error.WriteLine(
+                    return Fail(
+                        10,
                         "Windows Update Agent is not available.");
-
-                    return 10;
                 }
 
                 dynamic? session =
@@ -69,10 +73,9 @@ namespace WinBoost.UpdateWorker
 
                 if (session == null)
                 {
-                    Console.Error.WriteLine(
+                    return Fail(
+                        11,
                         "Windows Update session could not be created.");
-
-                    return 11;
                 }
 
                 session.ClientApplicationID =
@@ -93,8 +96,13 @@ namespace WinBoost.UpdateWorker
 
                 if (updateCount == 0)
                 {
-                    Console.WriteLine(
-                        "No updates are available.");
+                    WriteStatus(
+                        state: "Completed",
+                        percent: 100,
+                        message:
+                            "No updates are available.",
+                        isCompleted: true,
+                        isSuccessful: true);
 
                     return 0;
                 }
@@ -105,10 +113,9 @@ namespace WinBoost.UpdateWorker
 
                 if (collectionType == null)
                 {
-                    Console.Error.WriteLine(
+                    return Fail(
+                        12,
                         "Windows Update collection could not be created.");
-
-                    return 12;
                 }
 
                 dynamic? updatesToInstall =
@@ -117,10 +124,9 @@ namespace WinBoost.UpdateWorker
 
                 if (updatesToInstall == null)
                 {
-                    Console.Error.WriteLine(
+                    return Fail(
+                        13,
                         "Windows Update collection could not be created.");
-
-                    return 13;
                 }
 
                 for (int index = 0;
@@ -171,18 +177,28 @@ namespace WinBoost.UpdateWorker
                     }
                 }
 
-                if (updatesToInstall.Count == 0)
-                {
-                    Console.Error.WriteLine(
-                        "No updates could be prepared for installation.");
+                int preparedUpdateCount =
+                    Convert.ToInt32(
+                        updatesToInstall.Count);
 
-                    return 14;
+                if (preparedUpdateCount == 0)
+                {
+                    return Fail(
+                        14,
+                        "No updates could be prepared for installation.");
                 }
 
                 Console.WriteLine();
 
                 Console.WriteLine(
-                    $"Downloading {updatesToInstall.Count} update(s)...");
+                    $"Downloading {preparedUpdateCount} update(s)...");
+
+                WriteStatus(
+                    state: "Downloading",
+                    percent: 0,
+                    totalUpdates: preparedUpdateCount,
+                    message:
+                        $"Downloading {preparedUpdateCount} update(s)...");
 
                 dynamic downloader =
                     session.CreateUpdateDownloader();
@@ -192,14 +208,14 @@ namespace WinBoost.UpdateWorker
 
                 object? downloadResult =
                     RunDownloadWithActivityIndicator(
-                        downloader);
+                        downloader,
+                        preparedUpdateCount);
 
                 if (downloadResult == null)
                 {
-                    Console.Error.WriteLine(
+                    return Fail(
+                        19,
                         "Download did not return a result.");
-
-                    return 19;
                 }
 
                 dynamic dynamicDownloadResult =
@@ -208,7 +224,8 @@ namespace WinBoost.UpdateWorker
                 Console.WriteLine();
 
                 Console.WriteLine(
-                    $"Download result code: {dynamicDownloadResult.ResultCode}");
+                    $"Download result code: " +
+                    $"{dynamicDownloadResult.ResultCode}");
 
                 Type? installCollectionType =
                     Type.GetTypeFromProgID(
@@ -216,10 +233,9 @@ namespace WinBoost.UpdateWorker
 
                 if (installCollectionType == null)
                 {
-                    Console.Error.WriteLine(
+                    return Fail(
+                        15,
                         "Installation collection could not be created.");
-
-                    return 15;
                 }
 
                 dynamic? downloadedUpdates =
@@ -228,14 +244,13 @@ namespace WinBoost.UpdateWorker
 
                 if (downloadedUpdates == null)
                 {
-                    Console.Error.WriteLine(
+                    return Fail(
+                        16,
                         "Installation collection could not be created.");
-
-                    return 16;
                 }
 
                 for (int index = 0;
-                     index < updatesToInstall.Count;
+                     index < preparedUpdateCount;
                      index++)
                 {
                     dynamic update =
@@ -261,18 +276,29 @@ namespace WinBoost.UpdateWorker
                     }
                 }
 
-                if (downloadedUpdates.Count == 0)
-                {
-                    Console.Error.WriteLine(
-                        "No updates were downloaded successfully.");
+                int downloadedUpdateCount =
+                    Convert.ToInt32(
+                        downloadedUpdates.Count);
 
-                    return 20;
+                if (downloadedUpdateCount == 0)
+                {
+                    return Fail(
+                        20,
+                        "No updates were downloaded successfully.");
                 }
 
                 Console.WriteLine();
 
                 Console.WriteLine(
-                    $"Installing {downloadedUpdates.Count} update(s)...");
+                    $"Installing {downloadedUpdateCount} update(s)...");
+
+                WriteStatus(
+                    state: "Installing",
+                    percent: 0,
+                    currentUpdate: 1,
+                    totalUpdates: downloadedUpdateCount,
+                    message:
+                        $"Installing {downloadedUpdateCount} update(s)...");
 
                 dynamic installer =
                     session.CreateUpdateInstaller();
@@ -285,18 +311,16 @@ namespace WinBoost.UpdateWorker
 
                 if (installer.IsBusy)
                 {
-                    Console.Error.WriteLine(
+                    return Fail(
+                        21,
                         "Windows Update is already installing or removing updates.");
-
-                    return 21;
                 }
 
                 if (installer.RebootRequiredBeforeInstallation)
                 {
-                    Console.Error.WriteLine(
+                    return Fail(
+                        22,
                         "Windows requires a restart before updates can be installed.");
-
-                    return 22;
                 }
 
                 object? installationResult =
@@ -306,24 +330,34 @@ namespace WinBoost.UpdateWorker
 
                 if (installationResult == null)
                 {
-                    return 23;
+                    return Fail(
+                        23,
+                        "Windows Update installation did not complete.");
                 }
 
                 dynamic dynamicInstallationResult =
                     installationResult;
 
+                bool rebootRequired =
+                    Convert.ToBoolean(
+                        dynamicInstallationResult.RebootRequired);
+
+                int installationResultCode =
+                    Convert.ToInt32(
+                        dynamicInstallationResult.ResultCode);
+
                 Console.WriteLine();
 
                 Console.WriteLine(
                     $"Installation result code: " +
-                    $"{dynamicInstallationResult.ResultCode}");
+                    $"{installationResultCode}");
 
                 Console.WriteLine(
                     $"Restart required: " +
-                    $"{dynamicInstallationResult.RebootRequired}");
+                    $"{rebootRequired}");
 
                 for (int index = 0;
-                     index < downloadedUpdates.Count;
+                     index < downloadedUpdateCount;
                      index++)
                 {
                     dynamic update =
@@ -355,12 +389,47 @@ namespace WinBoost.UpdateWorker
                         $"{updateResult.RebootRequired}");
                 }
 
+                bool installationSucceeded =
+                    installationResultCode == 2 ||
+                    installationResultCode == 3;
+
+                string completedMessage;
+
+                if (rebootRequired)
+                {
+                    completedMessage =
+                        "Windows updates were installed. " +
+                        "A restart is required.";
+                }
+                else if (installationSucceeded)
+                {
+                    completedMessage =
+                        "Windows updates were installed successfully.";
+                }
+                else
+                {
+                    completedMessage =
+                        "Windows Update completed with warnings.";
+                }
+
+                WriteStatus(
+                    state: "Completed",
+                    percent: 100,
+                    currentUpdate: downloadedUpdateCount,
+                    totalUpdates: downloadedUpdateCount,
+                    message: completedMessage,
+                    rebootRequired: rebootRequired,
+                    isCompleted: true,
+                    isSuccessful: installationSucceeded);
+
                 Console.WriteLine();
 
                 Console.WriteLine(
                     "Windows Update operation completed.");
 
-                return 0;
+                return installationSucceeded
+                    ? 0
+                    : 24;
             }
             catch (Exception ex)
             {
@@ -375,12 +444,22 @@ namespace WinBoost.UpdateWorker
                 Console.Error.WriteLine(
                     ex);
 
+                WriteStatus(
+                    state: "Error",
+                    percent: 0,
+                    message:
+                        "Windows Update operation failed.",
+                    isCompleted: true,
+                    isSuccessful: false,
+                    errorMessage: ex.Message);
+
                 return 100;
             }
         }
 
         private static object? RunDownloadWithActivityIndicator(
-            dynamic downloader)
+            dynamic downloader,
+            int totalUpdates)
         {
             object? downloadResult =
                 null;
@@ -434,11 +513,22 @@ namespace WinBoost.UpdateWorker
                 }
 
                 TimeSpan elapsed =
-                    DateTime.Now - startedAt;
+                    DateTime.Now -
+                    startedAt;
+
+                string message =
+                    $"Downloading Windows updates... " +
+                    $"{elapsed:mm\\:ss}";
 
                 Console.WriteLine(
                     $"Download in progress... elapsed " +
                     $"{elapsed:mm\\:ss}");
+
+                WriteStatus(
+                    state: "Downloading",
+                    percent: 0,
+                    totalUpdates: totalUpdates,
+                    message: message);
             }
 
             downloadThread.Join();
@@ -487,6 +577,10 @@ namespace WinBoost.UpdateWorker
                 DateTime lastActivityMessage =
                     DateTime.MinValue;
 
+                int totalUpdates =
+                    Convert.ToInt32(
+                        downloadedUpdates.Count);
+
                 while (!(bool)installationJob.IsCompleted)
                 {
                     try
@@ -531,7 +625,7 @@ namespace WinBoost.UpdateWorker
                             Console.WriteLine(
                                 $"Installing: {overallPercent}% overall | " +
                                 $"Update {currentUpdateIndex + 1}/" +
-                                $"{downloadedUpdates.Count} | " +
+                                $"{totalUpdates} | " +
                                 $"{currentUpdatePercent}% | " +
                                 $"{elapsed:mm\\:ss}");
 
@@ -541,6 +635,19 @@ namespace WinBoost.UpdateWorker
                                 Console.WriteLine(
                                     $"Current: {currentTitle}");
                             }
+
+                            WriteStatus(
+                                state: "Installing",
+                                percent: overallPercent,
+                                currentUpdate:
+                                    currentUpdateIndex + 1,
+                                totalUpdates: totalUpdates,
+                                currentUpdateTitle:
+                                    currentTitle,
+                                message:
+                                    $"Installing update " +
+                                    $"{currentUpdateIndex + 1} " +
+                                    $"of {totalUpdates}...");
 
                             lastOverallPercent =
                                 overallPercent;
@@ -568,6 +675,21 @@ namespace WinBoost.UpdateWorker
                         Console.WriteLine(
                             $"Progress temporarily unavailable: " +
                             $"{ex.Message}");
+
+                        WriteStatus(
+                            state: "Installing",
+                            percent:
+                                Math.Max(
+                                    lastOverallPercent,
+                                    0),
+                            currentUpdate:
+                                Math.Max(
+                                    lastUpdateIndex + 1,
+                                    1),
+                            totalUpdates: totalUpdates,
+                            message:
+                                $"Installation is still running... " +
+                                $"{elapsed:mm\\:ss}");
                     }
 
                     TimeSpan totalElapsed =
@@ -584,6 +706,22 @@ namespace WinBoost.UpdateWorker
 
                         Console.Error.WriteLine(
                             "Requesting Windows Update to stop the operation...");
+
+                        WriteStatus(
+                            state: "Error",
+                            percent:
+                                Math.Max(
+                                    lastOverallPercent,
+                                    0),
+                            currentUpdate:
+                                Math.Max(
+                                    lastUpdateIndex + 1,
+                                    1),
+                            totalUpdates: totalUpdates,
+                            message:
+                                "Windows Update installation exceeded the safety timeout.",
+                            isCompleted: false,
+                            isSuccessful: false);
 
                         try
                         {
@@ -640,8 +778,6 @@ namespace WinBoost.UpdateWorker
                     }
                     catch
                     {
-                        // Cleanup failure must not hide
-                        // the installation result.
                     }
                 }
 
@@ -676,6 +812,64 @@ namespace WinBoost.UpdateWorker
             {
                 return string.Empty;
             }
+        }
+
+        private static int Fail(
+            int exitCode,
+            string message)
+        {
+            Console.Error.WriteLine(
+                message);
+
+            WriteStatus(
+                state: "Error",
+                percent: 0,
+                message: message,
+                isCompleted: true,
+                isSuccessful: false,
+                errorMessage: message);
+
+            return exitCode;
+        }
+
+        private static void WriteStatus(
+            string state,
+            int percent,
+            string message,
+            int currentUpdate = 0,
+            int totalUpdates = 0,
+            string currentUpdateTitle = "",
+            bool rebootRequired = false,
+            bool isCompleted = false,
+            bool isSuccessful = false,
+            string errorMessage = "")
+        {
+            UpdateWorkerStatusWriter.Write(
+                new UpdateWorkerStatus
+                {
+                    State = state,
+                    Percent =
+                        Math.Clamp(
+                            percent,
+                            0,
+                            100),
+                    CurrentUpdate =
+                        currentUpdate,
+                    TotalUpdates =
+                        totalUpdates,
+                    CurrentUpdateTitle =
+                        currentUpdateTitle,
+                    Message =
+                        message,
+                    RebootRequired =
+                        rebootRequired,
+                    IsCompleted =
+                        isCompleted,
+                    IsSuccessful =
+                        isSuccessful,
+                    ErrorMessage =
+                        errorMessage
+                });
         }
     }
 }
