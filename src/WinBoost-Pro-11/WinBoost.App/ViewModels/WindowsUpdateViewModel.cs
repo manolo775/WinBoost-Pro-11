@@ -1,15 +1,47 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 using WinBoost.App.Commands;
 using WinBoost.App.Localization;
 using WinBoost.App.Services.WindowsUpdate;
+using WinBoost.App.Helpers;
 
 namespace WinBoost.App.ViewModels
 {
+    public sealed class WindowsUpdateAvailableDisplayItem
+    {
+        public string Title
+        {
+            get;
+            init;
+        } = string.Empty;
+
+        public string Description
+        {
+            get;
+            init;
+        } = string.Empty;
+
+        public string IsDownloaded
+        {
+            get;
+            init;
+        } = string.Empty;
+
+        public string RebootRequired
+        {
+            get;
+            init;
+        } = string.Empty;
+    }
+
     public class WindowsUpdateViewModel : INotifyPropertyChanged
     {
         private readonly WindowsUpdateScanner
@@ -32,6 +64,10 @@ namespace WinBoost.App.ViewModels
         private WindowsUpdateScanResult?
             _lastScanResult;
 
+        private IReadOnlyList<WindowsUpdateAvailableInfo>
+            _lastAvailableUpdates =
+                Array.Empty<WindowsUpdateAvailableInfo>();
+
         private int _lastAvailableUpdateCount;
 
         private string _lastErrorMessage =
@@ -47,7 +83,7 @@ namespace WinBoost.App.ViewModels
 
             AvailableUpdates =
                 new ObservableCollection<
-                    WindowsUpdateAvailableInfo>();
+                    WindowsUpdateAvailableDisplayItem>();
 
             ScanUpdatesCommand =
                 new RelayCommand(
@@ -55,6 +91,13 @@ namespace WinBoost.App.ViewModels
                         await ScanUpdatesAsync(),
                     _ =>
                         !IsScanning);
+
+            InstallUpdatesCommand =
+                new RelayCommand(
+                    _ =>
+                        ConfirmInstallUpdates(),
+                    _ =>
+                        CanInstallUpdates);
 
             ApplyInitialUiState();
 
@@ -67,8 +110,13 @@ namespace WinBoost.App.ViewModels
             get;
         }
 
+        public ICommand InstallUpdatesCommand
+        {
+            get;
+        }
+
         public ObservableCollection<
-            WindowsUpdateAvailableInfo>
+            WindowsUpdateAvailableDisplayItem>
             AvailableUpdates
         {
             get;
@@ -147,10 +195,17 @@ namespace WinBoost.App.ViewModels
                 OnPropertyChanged(
                     nameof(ScanButtonText));
 
+                OnPropertyChanged(
+                    nameof(CanInstallUpdates));
+
                 CommandManager
                     .InvalidateRequerySuggested();
             }
         }
+
+        public bool CanInstallUpdates =>
+            !IsScanning &&
+            _lastAvailableUpdateCount > 0;
 
         public string ScanButtonText =>
             IsScanning
@@ -158,6 +213,10 @@ namespace WinBoost.App.ViewModels
                     "WindowsUpdateScanningButton")
                 : LocalizationHelper.Get(
                     "WindowsUpdateScanButton");
+
+        public string InstallButtonText =>
+            LocalizationHelper.Get(
+                "WindowsUpdateInstallButton");
 
         private async Task ScanUpdatesAsync()
         {
@@ -184,29 +243,42 @@ namespace WinBoost.App.ViewModels
 
             try
             {
+                Task<WindowsUpdateScanResult>
+                    servicesScanTask =
+                        _windowsUpdateScanner
+                            .ScanAsync();
+
+                Task<WindowsUpdateAvailableResult>
+                    updatesScanTask =
+                        _windowsUpdateAvailableScanner
+                            .ScanAsync();
+
+                await Task.WhenAll(
+                    servicesScanTask,
+                    updatesScanTask);
+
                 WindowsUpdateScanResult result =
-                    await _windowsUpdateScanner
-                        .ScanAsync();
+                    await servicesScanTask;
 
                 WindowsUpdateAvailableResult availableResult =
-                    await _windowsUpdateAvailableScanner
-                        .ScanAsync();
+                    await updatesScanTask;
 
-                AvailableUpdates.Clear();
+                _lastAvailableUpdates =
+                    availableResult.Updates;
 
-                foreach (
-                    WindowsUpdateAvailableInfo update
-                    in availableResult.Updates)
-                {
-                    AvailableUpdates.Add(
-                        update);
-                }
+                RefreshAvailableUpdates();
 
                 _lastScanResult =
                     result;
 
                 _lastAvailableUpdateCount =
                     availableResult.UpdateCount;
+
+                OnPropertyChanged(
+                    nameof(CanInstallUpdates));
+
+                CommandManager
+                    .InvalidateRequerySuggested();
 
                 ApplyScanResult(
                     result,
@@ -217,10 +289,20 @@ namespace WinBoost.App.ViewModels
                 _lastScanResult =
                     null;
 
+                _lastAvailableUpdates =
+                    Array.Empty<
+                        WindowsUpdateAvailableInfo>();
+
                 _lastAvailableUpdateCount =
                     0;
 
                 AvailableUpdates.Clear();
+
+                OnPropertyChanged(
+                    nameof(CanInstallUpdates));
+
+                CommandManager
+                    .InvalidateRequerySuggested();
 
                 _lastErrorMessage =
                     ex.Message;
@@ -231,6 +313,125 @@ namespace WinBoost.App.ViewModels
             {
                 IsScanning = false;
             }
+        }
+
+        private void ConfirmInstallUpdates()
+        {
+            if (!CanInstallUpdates)
+            {
+                return;
+            }
+
+            bool confirmed =
+                NativeConfirmationDialog.Ask(
+                    Application.Current.MainWindow,
+                    LocalizationHelper.Get(
+                        "WindowsUpdateInstallConfirmationTitle"),
+                    LocalizationHelper.Get(
+                        "WindowsUpdateInstallConfirmationMessage"),
+                    LocalizationHelper.Get(
+                        "WindowsUpdateInstallConfirmYes"),
+                    LocalizationHelper.Get(
+                        "WindowsUpdateInstallConfirmNo"));
+
+            if (!confirmed)
+            {
+                return;
+            }
+
+            try
+            {
+                string workerPath =
+                    Path.Combine(
+                        AppContext.BaseDirectory,
+                        "WinBoost.UpdateWorker.exe");
+
+                if (!File.Exists(workerPath))
+                {
+                    MessageBox.Show(
+                        $"Update worker not found:\n\n{workerPath}",
+                        "WinBoost Update Worker",
+                        MessageBoxButton.OK,
+                        MessageBoxImage.Warning);
+
+                    return;
+                }
+
+                var startInfo =
+                    new ProcessStartInfo
+                    {
+                        FileName =
+                            workerPath,
+
+                        UseShellExecute =
+                            true,
+
+                        Verb =
+                            "runas"
+                    };
+
+                Process.Start(
+                    startInfo);
+            }
+            catch (System.ComponentModel.Win32Exception ex)
+            {
+                if (ex.NativeErrorCode == 1223)
+                {
+                    // Utilizatorul a anulat fereastra UAC.
+                    return;
+                }
+
+                MessageBox.Show(
+                    ex.Message,
+                    "WinBoost Update Worker",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(
+                    ex.Message,
+                    "WinBoost Update Worker",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+        private void RefreshAvailableUpdates()
+        {
+            AvailableUpdates.Clear();
+
+            foreach (
+                WindowsUpdateAvailableInfo update
+                in _lastAvailableUpdates)
+            {
+                AvailableUpdates.Add(
+                    new WindowsUpdateAvailableDisplayItem
+                    {
+                        Title =
+                            update.Title,
+
+                        Description =
+                            update.Description,
+
+                        IsDownloaded =
+                            GetLocalizedBoolean(
+                                update.IsDownloaded),
+
+                        RebootRequired =
+                            GetLocalizedBoolean(
+                                update.RebootRequired)
+                    });
+            }
+        }
+
+        private static string GetLocalizedBoolean(
+            bool value)
+        {
+            return LocalizationHelper.Get(
+                value
+                    ? "WindowsUpdateYes"
+                    : "WindowsUpdateNo");
         }
 
         private void ApplyScanResult(
@@ -351,12 +552,23 @@ namespace WinBoost.App.ViewModels
 
             OnPropertyChanged(
                 nameof(ScanButtonText));
+
+            OnPropertyChanged(
+                nameof(InstallButtonText));
+
+            OnPropertyChanged(
+                nameof(CanInstallUpdates));
         }
 
         private void RefreshLocalizedUi()
         {
             OnPropertyChanged(
                 nameof(ScanButtonText));
+
+            OnPropertyChanged(
+                nameof(InstallButtonText));
+
+            RefreshAvailableUpdates();
 
             if (IsScanning)
             {

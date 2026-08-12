@@ -2069,5 +2069,33 @@
 	<sys:String x:Key="WindowsUpdateRestartRequiredLabel">
 		Necesită repornire
 	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateYes">
+		Da
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateNo">
+		Nu
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallButton">
+		Instalează actualizările
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallConfirmationTitle">
+		Instalare actualizări Windows
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallConfirmationMessage">
+		WinBoost va solicita drepturi de administrator pentru instalarea actualizărilor Windows disponibile. Dorești să continui?
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallConfirmYes">
+		Da
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallConfirmNo">
+		Nu
+	</sys:String>
 	
 </ResourceDictionary>

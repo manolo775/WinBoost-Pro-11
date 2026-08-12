@@ -1,3 +1,4 @@
 <Solution>
   <Project Path="WinBoost.App/WinBoost.App.csproj" />
+  <Project Path="WinBoost.UpdateWorker/WinBoost.UpdateWorker.csproj" Id="f1a7ed7b-5aea-42f0-8e7a-cf8395be3f00" />
 </Solution>

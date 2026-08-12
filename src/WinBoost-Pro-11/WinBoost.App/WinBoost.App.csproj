@@ -23,6 +23,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\WinBoost.UpdateWorker\WinBoost.UpdateWorker.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="ViewModels\DashboardViewModel.cs">
       <Generator>MSBuild:Compile</Generator>
     </Compile>

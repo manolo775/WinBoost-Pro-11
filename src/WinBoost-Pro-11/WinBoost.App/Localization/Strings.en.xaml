@@ -2068,5 +2068,33 @@
 	<sys:String x:Key="WindowsUpdateRestartRequiredLabel">
 		Restart required
 	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateYes">
+		Yes
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateNo">
+		No
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallButton">
+		Install updates
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallConfirmationTitle">
+		Install Windows updates
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallConfirmationMessage">
+		WinBoost will request administrator privileges to install the available Windows updates. Do you want to continue?
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallConfirmYes">
+		Yes
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallConfirmNo">
+		No
+	</sys:String>
 	
 </ResourceDictionary>
