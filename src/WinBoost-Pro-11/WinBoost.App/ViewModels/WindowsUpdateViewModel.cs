@@ -17,7 +17,10 @@ using WinBoost.App.Helpers;
 namespace WinBoost.App.ViewModels
 {
     public sealed class WindowsUpdateAvailableDisplayItem
+    : INotifyPropertyChanged
     {
+        private bool _isSelected;
+
         public string Title
         {
             get;
@@ -25,6 +28,12 @@ namespace WinBoost.App.ViewModels
         } = string.Empty;
 
         public string Description
+        {
+            get;
+            init;
+        } = string.Empty;
+
+        public string UpdateId
         {
             get;
             init;
@@ -41,6 +50,29 @@ namespace WinBoost.App.ViewModels
             get;
             init;
         } = string.Empty;
+
+        public bool IsSelected
+        {
+            get => _isSelected;
+
+            set
+            {
+                if (_isSelected == value)
+                {
+                    return;
+                }
+
+                _isSelected = value;
+
+                PropertyChanged?.Invoke(
+                    this,
+                    new PropertyChangedEventArgs(
+                        nameof(IsSelected)));
+            }
+        }
+
+        public event PropertyChangedEventHandler?
+            PropertyChanged;
     }
 
     public class WindowsUpdateViewModel : INotifyPropertyChanged
@@ -167,6 +199,9 @@ namespace WinBoost.App.ViewModels
         public int RecommendedUpdateCount =>
             CountRecommendedUpdates();
 
+        public int HighPriorityUpdateCount =>
+            CountHighPriorityUpdates();
+
         public string AdvisorState
         {
             get
@@ -187,12 +222,13 @@ namespace WinBoost.App.ViewModels
                 }
 
                 if (_lastScanResult.DisabledServices.Count > 0 ||
-                    RecommendedUpdateCount > 0)
+                    HighPriorityUpdateCount > 0)
                 {
                     return "ActionRecommended";
                 }
 
-                if (OptionalUpdateCount > 0 ||
+                if (RecommendedUpdateCount > 0 ||
+                    OptionalUpdateCount > 0 ||
                     DriverUpdateCount > 0 ||
                     _lastScanResult.StoppedServices.Count > 0)
                 {
@@ -542,9 +578,9 @@ namespace WinBoost.App.ViewModels
         }
 
         public bool CanInstallUpdates =>
-       !IsScanning &&
-       !IsInstallingUpdates &&
-       _lastAvailableUpdateCount > 0;
+            !IsScanning &&
+            !IsInstallingUpdates &&
+            HasSelectedUpdates();
 
         public string ScanButtonText =>
             IsScanning
@@ -658,10 +694,59 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        private bool HasSelectedUpdates()
+        {
+            foreach (
+                WindowsUpdateAvailableDisplayItem update
+                in AvailableUpdates)
+            {
+                if (update.IsSelected)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private async Task ConfirmInstallUpdatesAsync()
         {
             if (!CanInstallUpdates)
             {
+                return;
+            }
+
+            var selectedUpdateIds =
+                new List<string>();
+
+            foreach (
+                WindowsUpdateAvailableDisplayItem update
+                in AvailableUpdates)
+            {
+                if (!update.IsSelected)
+                {
+                    continue;
+                }
+
+                if (string.IsNullOrWhiteSpace(
+                        update.UpdateId))
+                {
+                    continue;
+                }
+
+                selectedUpdateIds.Add(
+                    update.UpdateId);
+            }
+
+            if (selectedUpdateIds.Count == 0)
+            {
+                MessageBox.Show(
+        LocalizationHelper.Get(
+            "WindowsUpdateSelectAtLeastOne"),
+        "WinBoost Pro 11",
+        MessageBoxButton.OK,
+        MessageBoxImage.Information);
+
                 return;
             }
 
@@ -730,6 +815,13 @@ namespace WinBoost.App.ViewModels
                         Verb =
                             "runas"
                     };
+
+                foreach (string updateId
+                         in selectedUpdateIds)
+                {
+                    startInfo.ArgumentList.Add(
+                        $"--update-id={updateId}");
+                }
 
                 Process? workerProcess =
                     Process.Start(
@@ -973,6 +1065,26 @@ namespace WinBoost.App.ViewModels
             return count;
         }
 
+        private int CountHighPriorityUpdates()
+        {
+            int count = 0;
+
+            foreach (WindowsUpdateAvailableInfo update
+                     in _lastAvailableUpdates)
+            {
+                WindowsUpdateAdvisorResult result =
+                    _windowsUpdateAdvisor
+                        .Analyze(update);
+
+                if (result.IsHighPriority)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
         private void NotifyAdvisorSummaryProperties()
         {
             OnPropertyChanged(
@@ -989,6 +1101,9 @@ namespace WinBoost.App.ViewModels
 
             OnPropertyChanged(
                 nameof(RecommendedUpdateCount));
+
+            OnPropertyChanged(
+                nameof(HighPriorityUpdateCount));
 
             NotifyAdvisorTextProperties();
         }
@@ -1010,13 +1125,49 @@ namespace WinBoost.App.ViewModels
 
         private void RefreshAvailableUpdates()
         {
+            var selectedUpdateIds =
+                new HashSet<string>(
+                    StringComparer.OrdinalIgnoreCase);
+
+            foreach (
+                WindowsUpdateAvailableDisplayItem existingItem
+                in AvailableUpdates)
+            {
+                if (existingItem.IsSelected &&
+                    !string.IsNullOrWhiteSpace(
+                        existingItem.UpdateId))
+                {
+                    selectedUpdateIds.Add(
+                        existingItem.UpdateId);
+                }
+            }
+
             AvailableUpdates.Clear();
 
             foreach (
                 WindowsUpdateAvailableInfo update
                 in _lastAvailableUpdates)
             {
-                AvailableUpdates.Add(
+                WindowsUpdateAdvisorResult advisorResult =
+                    _windowsUpdateAdvisor
+                        .Analyze(update);
+
+                bool isSelectedByDefault =
+                    advisorResult.Type ==
+                        WindowsUpdateAdvisorType.Security ||
+                    advisorResult.Type ==
+                        WindowsUpdateAdvisorType.System;
+
+                bool isSelected =
+                    selectedUpdateIds.Count > 0
+                        ? selectedUpdateIds.Contains(
+                            update.UpdateId)
+                        : isSelectedByDefault;
+
+                update.IsSelected =
+                    isSelected;
+
+                var displayItem =
                     new WindowsUpdateAvailableDisplayItem
                     {
                         Title =
@@ -1025,15 +1176,33 @@ namespace WinBoost.App.ViewModels
                         Description =
                             update.Description,
 
+                        UpdateId =
+                            update.UpdateId,
+
                         IsDownloaded =
                             GetLocalizedBoolean(
                                 update.IsDownloaded),
 
                         RebootRequired =
                             GetLocalizedBoolean(
-                                update.RebootRequired)
-                    });
+                                update.RebootRequired),
+
+                        IsSelected =
+                            isSelected
+                    };
+
+                displayItem.PropertyChanged +=
+                    AvailableUpdate_PropertyChanged;
+
+                AvailableUpdates.Add(
+                    displayItem);
             }
+
+            OnPropertyChanged(
+                nameof(CanInstallUpdates));
+
+            CommandManager
+                .InvalidateRequerySuggested();
         }
 
         private static string GetLocalizedBoolean(
@@ -1043,6 +1212,25 @@ namespace WinBoost.App.ViewModels
                 value
                     ? "WindowsUpdateYes"
                     : "WindowsUpdateNo");
+        }
+
+        private void AvailableUpdate_PropertyChanged(
+    object? sender,
+    PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName !=
+                nameof(
+                    WindowsUpdateAvailableDisplayItem
+                        .IsSelected))
+            {
+                return;
+            }
+
+            OnPropertyChanged(
+                nameof(CanInstallUpdates));
+
+            CommandManager
+                .InvalidateRequerySuggested();
         }
 
         private void ApplyScanResult(

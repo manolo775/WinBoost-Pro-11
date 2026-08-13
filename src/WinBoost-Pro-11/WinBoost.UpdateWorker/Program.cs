@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -42,6 +43,16 @@ namespace WinBoost.UpdateWorker
         {
             try
             {
+                var selectedUpdateIds =
+                    ParseSelectedUpdateIds(args);
+
+                if (selectedUpdateIds.Count == 0)
+                {
+                    return Fail(
+                        9,
+                        "No Windows updates were selected for installation.");
+                }
+
                 UpdateWorkerStatusWriter.Reset();
 
                 WriteStatus(
@@ -135,6 +146,17 @@ namespace WinBoost.UpdateWorker
                 {
                     dynamic update =
                         searchResult.Updates.Item(index);
+
+                    string updateId =
+                        Convert.ToString(
+                            update.Identity.UpdateID)
+                        ?? string.Empty;
+
+                    if (!selectedUpdateIds.Contains(
+                            updateId))
+                    {
+                        continue;
+                    }
 
                     string title =
                         Convert.ToString(
@@ -455,6 +477,52 @@ namespace WinBoost.UpdateWorker
 
                 return 100;
             }
+        }
+
+        private static HashSet<string>
+            ParseSelectedUpdateIds(
+                string[] args)
+        {
+            var selectedUpdateIds =
+                new HashSet<string>(
+                    StringComparer.OrdinalIgnoreCase);
+
+            foreach (string argument in args)
+            {
+                if (string.IsNullOrWhiteSpace(
+                        argument))
+                {
+                    continue;
+                }
+
+                string value =
+                    argument.Trim();
+
+                const string prefix =
+                    "--update-id=";
+
+                if (value.StartsWith(
+                        prefix,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    value =
+                        value.Substring(
+                            prefix.Length);
+                }
+
+                value =
+                    value.Trim(
+                        '"');
+
+                if (!string.IsNullOrWhiteSpace(
+                        value))
+                {
+                    selectedUpdateIds.Add(
+                        value);
+                }
+            }
+
+            return selectedUpdateIds;
         }
 
         private static object? RunDownloadWithActivityIndicator(

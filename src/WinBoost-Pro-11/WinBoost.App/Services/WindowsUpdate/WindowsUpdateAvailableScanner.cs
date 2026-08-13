@@ -47,6 +47,13 @@ namespace WinBoost.App.Services.WindowsUpdate
             get;
             init;
         }
+
+        public bool IsSelected
+        {
+            get;
+            set;
+        }
+
     }
 
     public sealed class WindowsUpdateAvailableResult

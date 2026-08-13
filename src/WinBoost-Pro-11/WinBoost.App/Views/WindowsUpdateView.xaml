@@ -411,88 +411,97 @@
                         Foreground="{StaticResource TextBrush}"/>
 
 					<ItemsControl
-                        ItemsSource="{Binding AvailableUpdates}"
-                        Margin="0,12,0,0">
+    ItemsSource="{Binding AvailableUpdates}"
+    Margin="0,12,0,0">
 
 						<ItemsControl.ItemTemplate>
 
 							<DataTemplate>
 
 								<Border
-                                    Margin="0,0,0,10"
-                                    Padding="14"
-                                    CornerRadius="7"
-                                    Background="#24272B">
+									Margin="0,0,0,10"
+									Padding="14"
+									CornerRadius="7"
+									Background="#24272B">
 
 									<Grid>
 
 										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="Auto"/>
 											<ColumnDefinition Width="*"/>
 											<ColumnDefinition Width="180"/>
 										</Grid.ColumnDefinitions>
 
+										<!-- SELECTARE UPDATE -->
+
+										<CheckBox
+											Grid.Column="0"
+											IsChecked="{Binding IsSelected, Mode=TwoWay}"
+											Margin="0,0,14,0"
+											VerticalAlignment="Center"/>
+
 										<!-- DETALII UPDATE -->
 
 										<StackPanel
-                                            Grid.Column="0"
-                                            Margin="0,0,20,0">
+											Grid.Column="1"
+											Margin="0,0,20,0">
 
 											<TextBlock
-                                                Text="{Binding Title}"
-                                                FontWeight="SemiBold"
-                                                TextWrapping="Wrap"
-                                                Foreground="{StaticResource TextBrush}"/>
+												Text="{Binding Title}"
+												FontWeight="SemiBold"
+												TextWrapping="Wrap"
+												Foreground="{StaticResource TextBrush}"/>
 
 											<!--
-                                                Descriere compactă.
-                                                Textul complet rămâne disponibil
-                                                în ToolTip.
-                                            -->
+                            Descriere compactă.
+                            Textul complet rămâne disponibil
+                            în ToolTip.
+                        -->
 
 											<TextBlock
-                                                Text="{Binding Description}"
-                                                ToolTip="{Binding Description}"
-                                                Margin="0,6,0,0"
-                                                FontSize="12"
-                                                LineHeight="16"
-                                                MaxHeight="48"
-                                                TextWrapping="Wrap"
-                                                ClipToBounds="True"
-                                                Foreground="{StaticResource SecondaryTextBrush}"/>
+												Text="{Binding Description}"
+												ToolTip="{Binding Description}"
+												Margin="0,6,0,0"
+												FontSize="12"
+												LineHeight="16"
+												MaxHeight="48"
+												TextWrapping="Wrap"
+												ClipToBounds="True"
+												Foreground="{StaticResource SecondaryTextBrush}"/>
 
 										</StackPanel>
 
 										<!-- STATUS UPDATE -->
 
 										<StackPanel
-                                            Grid.Column="1"
-                                            VerticalAlignment="Center">
+											Grid.Column="2"
+											VerticalAlignment="Center">
 
 											<TextBlock
-                                                Text="{DynamicResource WindowsUpdateDownloadedLabel}"
-                                                HorizontalAlignment="Center"
-                                                FontSize="12"
-                                                Foreground="{StaticResource SecondaryTextBrush}"/>
+												Text="{DynamicResource WindowsUpdateDownloadedLabel}"
+												HorizontalAlignment="Center"
+												FontSize="12"
+												Foreground="{StaticResource SecondaryTextBrush}"/>
 
 											<TextBlock
-                                                Text="{Binding IsDownloaded}"
-                                                Margin="0,3,0,10"
-                                                HorizontalAlignment="Center"
-                                                FontWeight="SemiBold"
-                                                Foreground="{StaticResource TextBrush}"/>
+												Text="{Binding IsDownloaded}"
+												Margin="0,3,0,10"
+												HorizontalAlignment="Center"
+												FontWeight="SemiBold"
+												Foreground="{StaticResource TextBrush}"/>
 
 											<TextBlock
-                                                Text="{DynamicResource WindowsUpdateRestartRequiredLabel}"
-                                                HorizontalAlignment="Center"
-                                                FontSize="12"
-                                                Foreground="{StaticResource SecondaryTextBrush}"/>
+												Text="{DynamicResource WindowsUpdateRestartRequiredLabel}"
+												HorizontalAlignment="Center"
+												FontSize="12"
+												Foreground="{StaticResource SecondaryTextBrush}"/>
 
 											<TextBlock
-                                                Text="{Binding RebootRequired}"
-                                                Margin="0,3,0,0"
-                                                HorizontalAlignment="Center"
-                                                FontWeight="SemiBold"
-                                                Foreground="{StaticResource TextBrush}"/>
+												Text="{Binding RebootRequired}"
+												Margin="0,3,0,0"
+												HorizontalAlignment="Center"
+												FontWeight="SemiBold"
+												Foreground="{StaticResource TextBrush}"/>
 
 										</StackPanel>
 
@@ -500,7 +509,6 @@
 
 								</Border>
 
-								
 							</DataTemplate>
 
 						</ItemsControl.ItemTemplate>
@@ -583,63 +591,107 @@
 						Margin="0,16,0,13"
 						Background="#454545"/>
 
-
 					<!-- CATEGORII UPDATE -->
 
-					<TextBlock
-						TextWrapping="Wrap"
-						Foreground="{StaticResource SecondaryTextBrush}">
+					<WrapPanel
+						Margin="0,0,0,0">
 
-						<Run
-							Text="{DynamicResource WindowsUpdateAdvisorSecurity}"/>
+						<StackPanel
+							Orientation="Horizontal"
+							Margin="0,0,24,8">
 
-						<Run Text=" "/>
+							<TextBlock
+								Text="{DynamicResource WindowsUpdateAdvisorSecurity}"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
-						<Run
-							Text="{Binding SecurityUpdateCount, Mode=OneWay}"
-							FontWeight="SemiBold"/>
+							<TextBlock
+								Text=" "
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
+							<TextBlock
+								Text="{Binding SecurityUpdateCount, Mode=OneWay}"
+								FontWeight="SemiBold"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
-						<Run Text="     "/>
+						</StackPanel>
 
+						<StackPanel
+							Orientation="Horizontal"
+							Margin="0,0,24,8">
 
-						<Run
-							Text="{DynamicResource WindowsUpdateAdvisorSystem}"/>
+							<TextBlock
+								Text="{DynamicResource WindowsUpdateAdvisorHighPriority}"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
-						<Run Text=" "/>
+							<TextBlock
+								Text=" "
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
-						<Run
-							Text="{Binding SystemUpdateCount, Mode=OneWay}"
-							FontWeight="SemiBold"/>
+							<TextBlock
+								Text="{Binding HighPriorityUpdateCount, Mode=OneWay}"
+								FontWeight="SemiBold"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
+						</StackPanel>
 
-						<Run Text="     "/>
+						<StackPanel
+							Orientation="Horizontal"
+							Margin="0,0,24,8">
 
+							<TextBlock
+								Text="{DynamicResource WindowsUpdateAdvisorSystem}"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
-						<Run
-							Text="{DynamicResource WindowsUpdateAdvisorDriver}"/>
+							<TextBlock
+								Text=" "
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
-						<Run Text=" "/>
+							<TextBlock
+								Text="{Binding SystemUpdateCount, Mode=OneWay}"
+								FontWeight="SemiBold"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
-						<Run
-							Text="{Binding DriverUpdateCount, Mode=OneWay}"
-							FontWeight="SemiBold"/>
+						</StackPanel>
 
+						<StackPanel
+							Orientation="Horizontal"
+							Margin="0,0,24,8">
 
-						<Run Text="     "/>
+							<TextBlock
+								Text="{DynamicResource WindowsUpdateAdvisorDriver}"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
+							<TextBlock
+								Text=" "
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
-						<Run
-							Text="{DynamicResource WindowsUpdateAdvisorOptional}"/>
+							<TextBlock
+								Text="{Binding DriverUpdateCount, Mode=OneWay}"
+								FontWeight="SemiBold"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
-						<Run Text=" "/>
+						</StackPanel>
 
-						<Run
-							Text="{Binding OptionalUpdateCount, Mode=OneWay}"
-							FontWeight="SemiBold"/>
+						<StackPanel
+							Orientation="Horizontal"
+							Margin="0,0,24,8">
 
-					</TextBlock>
+							<TextBlock
+								Text="{DynamicResource WindowsUpdateAdvisorOptional}"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
 
+							<TextBlock
+								Text=" "
+								Foreground="{StaticResource SecondaryTextBrush}"/>
+
+							<TextBlock
+								Text="{Binding OptionalUpdateCount, Mode=OneWay}"
+								FontWeight="SemiBold"
+								Foreground="{StaticResource SecondaryTextBrush}"/>
+
+						</StackPanel>
+
+					</WrapPanel>
 
 					<!-- TOTAL RECOMANDATE -->
 

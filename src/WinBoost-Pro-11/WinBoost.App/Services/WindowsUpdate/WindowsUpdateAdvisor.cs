@@ -26,6 +26,11 @@ namespace WinBoost.App.Services.WindowsUpdate
             init;
         } = string.Empty;
 
+        public bool IsHighPriority
+        {
+            get;
+            init;
+        }
         public bool IsRecommended
         {
             get;
@@ -73,19 +78,34 @@ namespace WinBoost.App.Services.WindowsUpdate
                     StringComparison.OrdinalIgnoreCase);
 
             if (hasSecurityCategory ||
-                !string.IsNullOrWhiteSpace(
-                    update.MsrcSeverity))
+    !string.IsNullOrWhiteSpace(
+        update.MsrcSeverity))
             {
+                string severity =
+                    update.MsrcSeverity?.Trim()
+                    ?? string.Empty;
+
+                bool isCriticalOrImportant =
+                    severity.Equals(
+                        "Critical",
+                        StringComparison.OrdinalIgnoreCase) ||
+                    severity.Equals(
+                        "Important",
+                        StringComparison.OrdinalIgnoreCase);
+
                 return new WindowsUpdateAdvisorResult
                 {
                     Type =
-                        WindowsUpdateAdvisorType.Security,
+        WindowsUpdateAdvisorType.Security,
 
                     Severity =
-                        update.MsrcSeverity,
+        severity,
 
                     IsRecommended =
-                        true
+        true,
+
+                    IsHighPriority =
+        isCriticalOrImportant
                 };
             }
 
@@ -129,14 +149,14 @@ namespace WinBoost.App.Services.WindowsUpdate
                 return new WindowsUpdateAdvisorResult
                 {
                     Type =
-                        WindowsUpdateAdvisorType.System,
+        WindowsUpdateAdvisorType.Other,
 
                     Severity =
-                        string.Empty,
+        string.Empty,
 
                     IsRecommended =
-                        true
-                };
+        false
+                }; 
             }
 
             return new WindowsUpdateAdvisorResult

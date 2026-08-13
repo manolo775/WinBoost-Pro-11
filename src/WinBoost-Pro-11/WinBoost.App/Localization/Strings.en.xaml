@@ -2200,5 +2200,39 @@
 	<sys:String x:Key="WindowsUpdateOpenButton">
 		Open Update
 	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorHighPriority">
+		High priority:
+	</sys:String>
+
+	<!-- WINDOWS UPDATE ADVISOR - RECOMMENDATIONS -->
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationScan">
+		Scan for updates to receive a recommendation.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationWait">
+		Wait for the scan to complete.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationRetry">
+		Try the Windows Update check again.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationServices">
+		Check the Windows Update services before installing updates.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationInstall">
+		WinBoost recommends installing {0} updates.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationReviewOptional">
+		Review optional updates and drivers before installation.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateSelectAtLeastOne">
+		Select at least one Windows update.
+	</sys:String>
 	
 </ResourceDictionary>

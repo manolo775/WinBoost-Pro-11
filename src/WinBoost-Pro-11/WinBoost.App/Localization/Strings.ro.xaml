@@ -2202,4 +2202,38 @@
 		Deschide Update
 	</sys:String>
 	
+	<sys:String x:Key="WindowsUpdateAdvisorHighPriority">
+		Prioritate ridicată:
+	</sys:String>
+
+	<!-- WINDOWS UPDATE ADVISOR - RECOMMENDATIONS -->
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationScan">
+		Scanează actualizările pentru a primi o recomandare.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationWait">
+		Așteaptă finalizarea scanării.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationRetry">
+		Încearcă din nou verificarea Windows Update.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationServices">
+		Verifică serviciile Windows Update înainte de instalarea actualizărilor.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationInstall">
+		WinBoost recomandă instalarea a {0} actualizări.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationReviewOptional">
+		Verifică actualizările opționale și driverele înainte de instalare.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateSelectAtLeastOne">
+		Selectează cel puțin o actualizare Windows.
+	</sys:String>
+	
 </ResourceDictionary>
