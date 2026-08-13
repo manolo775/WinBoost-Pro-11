@@ -12,9 +12,20 @@ namespace WinBoost.App.Services.Monitoring
                 "% Processor Time",
                 "_Total");
 
-        public Task<float> GetCpuUsageAsync()
+        public async Task<float> GetCpuUsageAsync()
         {
-            return Task.FromResult(0f);
+            _cpuCounter.NextValue();
+
+            await Task.Delay(250)
+                .ConfigureAwait(false);
+
+            float cpuUsage =
+                _cpuCounter.NextValue();
+
+            return Math.Clamp(
+                cpuUsage,
+                0f,
+                100f);
         }
     }
 }

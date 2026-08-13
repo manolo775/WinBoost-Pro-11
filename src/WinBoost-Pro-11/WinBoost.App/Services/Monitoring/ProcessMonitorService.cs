@@ -77,11 +77,17 @@ namespace WinBoost.App.Services.Monitoring
                                     0,
                                     100);
 
-                            double memoryUsageMb =
-                                sample.Process
-                                    .WorkingSet64 /
-                                1024d /
-                                1024d;
+                            double memoryUsageMb = 0;
+
+                            if (sortMode ==
+                                ProcessSortMode.Memory)
+                            {
+                                memoryUsageMb =
+                                    sample.Process
+                                        .WorkingSet64 /
+                                    1024d /
+                                    1024d;
+                            }
 
                             results.Add(
                                 new ProcessInfo
@@ -99,8 +105,7 @@ namespace WinBoost.App.Services.Monitoring
                                         memoryUsageMb,
 
                                     ExecutablePath =
-                                        GetExecutablePath(
-                                            sample.Process)
+                                        string.Empty
                                 });
                         }
                         catch
@@ -114,27 +119,61 @@ namespace WinBoost.App.Services.Monitoring
                         }
                     }
 
-                    return sortMode ==
-                           ProcessSortMode.Memory
-                        ? results
-                            .OrderByDescending(
-                                process =>
-                                    process.MemoryUsageMb)
-                            .ThenByDescending(
-                                process =>
-                                    process.CpuUsage)
-                            .Take(numberOfProcesses)
-                            .ToList()
-                        : results
-                            .OrderByDescending(
-                                process =>
-                                    process.CpuUsage)
-                            .ThenByDescending(
-                                process =>
-                                    process.MemoryUsageMb)
-                            .Take(numberOfProcesses)
-                            .ToList();
+                    List<ProcessInfo> topProcesses =
+                        sortMode ==
+                        ProcessSortMode.Memory
+                            ? results
+                                .OrderByDescending(
+                                    process =>
+                                        process.MemoryUsageMb)
+                                .ThenByDescending(
+                                    process =>
+                                        process.CpuUsage)
+                                .Take(numberOfProcesses)
+                                .ToList()
+                            : results
+                                .OrderByDescending(
+                                    process =>
+                                        process.CpuUsage)
+                                .Take(numberOfProcesses)
+                                .ToList();
+
+                    foreach (ProcessInfo processInfo
+                             in topProcesses)
+                    {
+                        PopulateProcessDetails(
+                            processInfo);
+                    }
+
+                    return topProcesses;
                 });
+        }
+
+        private static void PopulateProcessDetails(
+            ProcessInfo processInfo)
+        {
+            try
+            {
+                using Process process =
+                    Process.GetProcessById(
+                        processInfo.ProcessId);
+
+                if (processInfo.MemoryUsageMb <= 0)
+                {
+                    processInfo.MemoryUsageMb =
+                        process.WorkingSet64 /
+                        1024d /
+                        1024d;
+                }
+
+                processInfo.ExecutablePath =
+                    GetExecutablePath(process);
+            }
+            catch
+            {
+                // Procesul poate fi protejat sau se poate
+                // închide înainte de citirea detaliilor.
+            }
         }
 
         private static string GetExecutablePath(
