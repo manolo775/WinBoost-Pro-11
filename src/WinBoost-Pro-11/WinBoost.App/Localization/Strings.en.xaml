@@ -2197,5 +2197,8 @@
 		Check the Windows Update services and try again.
 	</sys:String>
 
-
+	<sys:String x:Key="WindowsUpdateOpenButton">
+		Open Update
+	</sys:String>
+	
 </ResourceDictionary>
