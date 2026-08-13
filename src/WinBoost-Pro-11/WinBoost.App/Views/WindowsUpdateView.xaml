@@ -129,6 +129,7 @@
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
 				<RowDefinition Height="Auto"/>
+				<RowDefinition Height="Auto"/>
 			</Grid.RowDefinitions>
 
 			<!-- TITLU -->
@@ -155,9 +156,8 @@
 			<Border
                 Grid.Row="1"
                 Margin="0,25,0,0"
-                Padding="22"
-                CornerRadius="10"
-                Background="{StaticResource CardBrush}">
+                 Style="{StaticResource MetricCardBorderStyle}"
+                 Padding="22">
 
 				<Grid>
 
@@ -370,9 +370,8 @@
 			<Border
                 Grid.Row="2"
                 Margin="0,25,0,0"
-                Padding="22"
-                CornerRadius="10"
-                Background="{StaticResource CardBrush}">
+                Style="{StaticResource MetricCardBorderStyle}"
+				Padding="22">
 
 				<StackPanel>
 
@@ -493,6 +492,7 @@
 
 								</Border>
 
+								
 							</DataTemplate>
 
 						</ItemsControl.ItemTemplate>
@@ -503,17 +503,170 @@
 
 			</Border>
 
-			<!-- PROGRES INSTALARE WINDOWS UPDATE -->
+			<!-- WINDOWS UPDATE ADVISOR -->
 
 			<Border
 				Grid.Row="3"
 				Margin="0,25,0,0"
-				Padding="22"
-				CornerRadius="10"
-				Background="{StaticResource CardBrush}">
+				Style="{StaticResource MetricCardBorderStyle}"
+				Padding="22">
 
-				<Border.Style>
-					<Style TargetType="Border">
+				<StackPanel>
+
+					<!-- TITLU -->
+
+					<TextBlock
+						Text="{DynamicResource WindowsUpdateAdvisorTitle}"
+						FontSize="20"
+						FontWeight="SemiBold"
+						Foreground="{StaticResource TextBrush}"/>
+
+
+					<!-- STARE -->
+
+					<TextBlock
+						Text="{Binding AdvisorStatusText, Mode=OneWay}"
+						Margin="0,14,0,0"
+						FontSize="16"
+						FontWeight="SemiBold"
+						Foreground="#39C85A"/>
+
+
+					<!-- EXPLICAȚIE -->
+
+					<TextBlock
+						Text="{Binding AdvisorMessage, Mode=OneWay}"
+						Margin="0,5,0,0"
+						FontSize="13"
+						TextWrapping="Wrap"
+						Foreground="{StaticResource SecondaryTextBrush}"/>
+
+
+					<!-- RECOMANDARE -->
+
+					<StackPanel
+						Orientation="Horizontal"
+						Margin="0,12,0,0">
+
+						<TextBlock
+							Text="{DynamicResource WindowsUpdateAdvisorRecommended}"
+							FontSize="13"
+							FontWeight="SemiBold"
+							Foreground="{StaticResource TextBrush}"/>
+
+						<TextBlock
+							Text=" "
+							FontSize="13"/>
+
+						<TextBlock
+							Text="{Binding AdvisorRecommendation, Mode=OneWay}"
+							FontSize="13"
+							FontWeight="SemiBold"
+							TextWrapping="Wrap"
+							Foreground="{StaticResource TextBrush}"/>
+
+					</StackPanel>
+
+
+					<!-- SEPARATOR -->
+
+					<Border
+						Height="1"
+						Margin="0,16,0,13"
+						Background="#454545"/>
+
+
+					<!-- CATEGORII UPDATE -->
+
+					<TextBlock
+						TextWrapping="Wrap"
+						Foreground="{StaticResource SecondaryTextBrush}">
+
+						<Run
+							Text="{DynamicResource WindowsUpdateAdvisorSecurity}"/>
+
+						<Run Text=" "/>
+
+						<Run
+							Text="{Binding SecurityUpdateCount, Mode=OneWay}"
+							FontWeight="SemiBold"/>
+
+
+						<Run Text="     "/>
+
+
+						<Run
+							Text="{DynamicResource WindowsUpdateAdvisorSystem}"/>
+
+						<Run Text=" "/>
+
+						<Run
+							Text="{Binding SystemUpdateCount, Mode=OneWay}"
+							FontWeight="SemiBold"/>
+
+
+						<Run Text="     "/>
+
+
+						<Run
+							Text="{DynamicResource WindowsUpdateAdvisorDriver}"/>
+
+						<Run Text=" "/>
+
+						<Run
+							Text="{Binding DriverUpdateCount, Mode=OneWay}"
+							FontWeight="SemiBold"/>
+
+
+						<Run Text="     "/>
+
+
+						<Run
+							Text="{DynamicResource WindowsUpdateAdvisorOptional}"/>
+
+						<Run Text=" "/>
+
+						<Run
+							Text="{Binding OptionalUpdateCount, Mode=OneWay}"
+							FontWeight="SemiBold"/>
+
+					</TextBlock>
+
+
+					<!-- TOTAL RECOMANDATE -->
+
+					<TextBlock
+						Margin="0,10,0,0"
+						TextWrapping="Wrap"
+						Foreground="{StaticResource TextBrush}">
+
+						<Run
+							Text="{DynamicResource WindowsUpdateAdvisorRecommended}"/>
+
+						<Run Text=" "/>
+
+						<Run
+							Text="{Binding RecommendedUpdateCount, Mode=OneWay}"
+							FontWeight="SemiBold"/>
+
+					</TextBlock>
+
+				</StackPanel>
+
+			</Border>
+			
+			<!-- PROGRES INSTALARE WINDOWS UPDATE -->
+
+			<Border
+		       Grid.Row="4"
+		       Margin="0,25,0,0"
+		    
+		       Padding="22">
+
+					<Border.Style>
+						<Style
+							TargetType="Border"
+							BasedOn="{StaticResource MetricCardBorderStyle}">
 						<Setter Property="Visibility" Value="Collapsed"/>
 
 						<Style.Triggers>

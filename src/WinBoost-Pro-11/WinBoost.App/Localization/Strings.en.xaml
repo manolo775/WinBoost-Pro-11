@@ -2096,5 +2096,106 @@
 	<sys:String x:Key="WindowsUpdateInstallConfirmNo">
 		No
 	</sys:String>
-	
+
+	<sys:String x:Key="WindowsUpdateAdvisorTitle">
+		WinBoost Update Advisor
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorSecurity">
+		Security:
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorSystem">
+		System:
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorDriver">
+		Driver:
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorOptional">
+		Optional:
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommended">
+		Recommended updates:
+	</sys:String>
+
+	<!-- ====================================== -->
+	<!-- WINDOWS UPDATE ADVISOR -->
+	<!-- ====================================== -->
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusNotChecked">
+		Not checked
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageNotChecked">
+		Scan for updates to evaluate the Windows Update status.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationNotChecked">
+		WinBoost will analyze the updates and provide a recommendation.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusChecking">
+		Analyzing updates...
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageChecking">
+		WinBoost is checking available updates and Windows Update services.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationChecking">
+		Wait for the scan to complete.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusGood">
+		System is up to date
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageGood">
+		No available Windows updates were detected.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationGood">
+		No action is required at this time.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusAttention">
+		Attention required
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageAttention">
+		Updates that should be reviewed were detected.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationAttention">
+		Review the update list before installation.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusActionRecommended">
+		Action recommended
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageActionRecommended">
+		Important system updates are available.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationActionRecommended">
+		WinBoost recommends installing the important updates.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusError">
+		Check could not be completed
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageError">
+		WinBoost could not fully analyze the Windows Update status.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationError">
+		Check the Windows Update services and try again.
+	</sys:String>
+
+
 </ResourceDictionary>

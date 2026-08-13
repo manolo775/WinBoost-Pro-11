@@ -2097,5 +2097,105 @@
 	<sys:String x:Key="WindowsUpdateInstallConfirmNo">
 		Nu
 	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorTitle">
+		WinBoost Update Advisor
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorSecurity">
+		Securitate:
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorSystem">
+		Sistem:
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorDriver">
+		Drivere:
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorOptional">
+		Opționale:
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommended">
+		Actualizări recomandate:
+	</sys:String>
+
+	<!-- ====================================== -->
+	<!-- WINDOWS UPDATE ADVISOR -->
+	<!-- ====================================== -->
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusNotChecked">
+		Neverificat
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageNotChecked">
+		Scanează actualizările pentru a evalua starea Windows Update.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationNotChecked">
+		WinBoost va analiza actualizările și îți va oferi o recomandare.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusChecking">
+		Se analizează actualizările...
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageChecking">
+		WinBoost verifică actualizările disponibile și starea serviciilor Windows Update.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationChecking">
+		Așteaptă finalizarea verificării.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusGood">
+		Sistemul este actualizat
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageGood">
+		Nu au fost detectate actualizări Windows disponibile.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationGood">
+		Nu este necesară nicio acțiune în acest moment.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusAttention">
+		Necesită atenție
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageAttention">
+		Au fost detectate actualizări care merită verificate.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationAttention">
+		Verifică lista actualizărilor înainte de instalare.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusActionRecommended">
+		Acțiune recomandată
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageActionRecommended">
+		Sunt disponibile actualizări importante pentru sistem.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationActionRecommended">
+		WinBoost recomandă instalarea actualizărilor importante.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorStatusError">
+		Verificarea nu a putut fi finalizată
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageError">
+		WinBoost nu a putut analiza complet starea Windows Update.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorRecommendationError">
+		Verifică serviciile Windows Update și încearcă din nou.
+	</sys:String>
 	
 </ResourceDictionary>

@@ -24,6 +24,18 @@ namespace WinBoost.App.Services.WindowsUpdate
             init;
         } = string.Empty;
 
+        public string MsrcSeverity
+        {
+            get;
+            init;
+        } = string.Empty;
+
+        public IReadOnlyList<string> Categories
+        {
+            get;
+            init;
+        } = Array.Empty<string>();
+
         public bool IsDownloaded
         {
             get;
@@ -103,6 +115,30 @@ namespace WinBoost.App.Services.WindowsUpdate
                 dynamic update =
                     searchResult.Updates.Item(index);
 
+                var categories =
+    new List<string>();
+
+                for (int categoryIndex = 0;
+                     categoryIndex < update.Categories.Count;
+                     categoryIndex++)
+                {
+                    dynamic category =
+                        update.Categories.Item(
+                            categoryIndex);
+
+                    string categoryName =
+                        Convert.ToString(
+                            category.Name)
+                        ?? string.Empty;
+
+                    if (!string.IsNullOrWhiteSpace(
+                            categoryName))
+                    {
+                        categories.Add(
+                            categoryName);
+                    }
+                }
+
                 updates.Add(
                     new WindowsUpdateAvailableInfo
                     {
@@ -120,6 +156,14 @@ namespace WinBoost.App.Services.WindowsUpdate
                             Convert.ToString(
                                 update.Identity.UpdateID)
                             ?? string.Empty,
+
+                        MsrcSeverity =
+                             Convert.ToString(
+                             update.MsrcSeverity)
+                             ?? string.Empty,
+
+                        Categories =
+                                categories,
 
                         IsDownloaded =
                             Convert.ToBoolean(

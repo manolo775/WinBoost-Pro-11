@@ -51,6 +51,9 @@ namespace WinBoost.App.ViewModels
         private readonly WindowsUpdateAvailableScanner
             _windowsUpdateAvailableScanner;
 
+        private readonly WindowsUpdateAdvisor
+             _windowsUpdateAdvisor;
+
         private bool _isScanning;
 
         private string _scanStatus =
@@ -101,6 +104,9 @@ namespace WinBoost.App.ViewModels
             _windowsUpdateAvailableScanner =
                 new WindowsUpdateAvailableScanner();
 
+            _windowsUpdateAdvisor =
+                  new WindowsUpdateAdvisor();
+
             AvailableUpdates =
                 new ObservableCollection<
                     WindowsUpdateAvailableDisplayItem>();
@@ -140,6 +146,195 @@ namespace WinBoost.App.ViewModels
             AvailableUpdates
         {
             get;
+        }
+
+        public int SecurityUpdateCount =>
+             CountUpdatesByType(
+             WindowsUpdateAdvisorType.Security);
+
+        public int SystemUpdateCount =>
+            CountUpdatesByType(
+                WindowsUpdateAdvisorType.System);
+
+        public int DriverUpdateCount =>
+            CountUpdatesByType(
+                WindowsUpdateAdvisorType.Driver);
+
+        public int OptionalUpdateCount =>
+            CountUpdatesByType(
+                WindowsUpdateAdvisorType.Optional);
+
+        public int RecommendedUpdateCount =>
+            CountRecommendedUpdates();
+
+        public string AdvisorState
+        {
+            get
+            {
+                if (IsScanning)
+                {
+                    return "Checking";
+                }
+
+                if (ScanState == "Error")
+                {
+                    return "Error";
+                }
+
+                if (_lastScanResult == null)
+                {
+                    return "NotChecked";
+                }
+
+                if (_lastScanResult.DisabledServices.Count > 0 ||
+                    RecommendedUpdateCount > 0)
+                {
+                    return "ActionRecommended";
+                }
+
+                if (OptionalUpdateCount > 0 ||
+                    DriverUpdateCount > 0 ||
+                    _lastScanResult.StoppedServices.Count > 0)
+                {
+                    return "Attention";
+                }
+
+                return "Good";
+            }
+        }
+
+        public string AdvisorStatusText =>
+            AdvisorState switch
+            {
+                "Checking" =>
+                    LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorStatusChecking"),
+
+                "Good" =>
+                    LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorStatusGood"),
+
+                "Attention" =>
+                    LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorStatusAttention"),
+
+                "ActionRecommended" =>
+                    LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorStatusActionRecommended"),
+
+                "Error" =>
+                    LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorStatusError"),
+
+                _ =>
+                    LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorStatusNotChecked")
+            };
+
+        public string AdvisorMessage
+        {
+            get
+            {
+                if (IsScanning)
+                {
+                    return LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorMessageChecking");
+                }
+
+                if (ScanState == "Error")
+                {
+                    return LocalizationHelper.Format(
+                        "WindowsUpdateAdvisorMessageError",
+                        _lastErrorMessage);
+                }
+
+                if (_lastScanResult == null)
+                {
+                    return LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorMessageNotChecked");
+                }
+
+                if (_lastScanResult.DisabledServices.Count > 0)
+                {
+                    return LocalizationHelper.Format(
+                        "WindowsUpdateAdvisorMessageDisabledServices",
+                        string.Join(
+                            ", ",
+                            _lastScanResult.DisabledServices));
+                }
+
+                if (RecommendedUpdateCount > 0)
+                {
+                    return LocalizationHelper.Format(
+                        "WindowsUpdateAdvisorMessageRecommendedUpdates",
+                        RecommendedUpdateCount);
+                }
+
+                if (OptionalUpdateCount > 0 ||
+                    DriverUpdateCount > 0)
+                {
+                    return LocalizationHelper.Format(
+                        "WindowsUpdateAdvisorMessageOptionalUpdates",
+                        DriverUpdateCount,
+                        OptionalUpdateCount);
+                }
+
+                if (_lastScanResult.StoppedServices.Count > 0)
+                {
+                    return LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorMessageServicesOnDemand");
+                }
+
+                return LocalizationHelper.Get(
+                    "WindowsUpdateAdvisorMessageGood");
+            }
+        }
+
+        public string AdvisorRecommendation
+        {
+            get
+            {
+                if (IsScanning)
+                {
+                    return LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorRecommendationWait");
+                }
+
+                if (ScanState == "Error")
+                {
+                    return LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorRecommendationRetry");
+                }
+
+                if (_lastScanResult == null)
+                {
+                    return LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorRecommendationScan");
+                }
+
+                if (_lastScanResult.DisabledServices.Count > 0)
+                {
+                    return LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorRecommendationServices");
+                }
+
+                if (RecommendedUpdateCount > 0)
+                {
+                    return LocalizationHelper.Format(
+                        "WindowsUpdateAdvisorRecommendationInstall",
+                        RecommendedUpdateCount);
+                }
+
+                if (OptionalUpdateCount > 0 ||
+                    DriverUpdateCount > 0)
+                {
+                    return LocalizationHelper.Get(
+                        "WindowsUpdateAdvisorRecommendationReviewOptional");
+                }
+
+                return LocalizationHelper.Get(
+                    "WindowsUpdateAdvisorRecommendationGood");
+            }
         }
 
         public string ScanStatus
@@ -217,6 +412,8 @@ namespace WinBoost.App.ViewModels
 
                 OnPropertyChanged(
                     nameof(CanInstallUpdates));
+
+                NotifyAdvisorTextProperties();
 
                 CommandManager
                     .InvalidateRequerySuggested();
@@ -410,6 +607,8 @@ namespace WinBoost.App.ViewModels
 
                 RefreshAvailableUpdates();
 
+                NotifyAdvisorSummaryProperties();
+
                 _lastScanResult =
                     result;
 
@@ -434,6 +633,8 @@ namespace WinBoost.App.ViewModels
                 _lastAvailableUpdates =
                     Array.Empty<
                         WindowsUpdateAvailableInfo>();
+
+                NotifyAdvisorSummaryProperties();
 
                 _lastAvailableUpdateCount =
                     0;
@@ -731,6 +932,82 @@ namespace WinBoost.App.ViewModels
              */
         }
 
+        private int CountUpdatesByType(
+            WindowsUpdateAdvisorType type)
+        {
+            int count = 0;
+
+            foreach (WindowsUpdateAvailableInfo update
+                     in _lastAvailableUpdates)
+            {
+                WindowsUpdateAdvisorResult result =
+                    _windowsUpdateAdvisor
+                        .Analyze(update);
+
+                if (result.Type == type)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private int CountRecommendedUpdates()
+        {
+            int count = 0;
+
+            foreach (WindowsUpdateAvailableInfo update
+                     in _lastAvailableUpdates)
+            {
+                WindowsUpdateAdvisorResult result =
+                    _windowsUpdateAdvisor
+                        .Analyze(update);
+
+                if (result.IsRecommended)
+                {
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        private void NotifyAdvisorSummaryProperties()
+        {
+            OnPropertyChanged(
+                nameof(SecurityUpdateCount));
+
+            OnPropertyChanged(
+                nameof(SystemUpdateCount));
+
+            OnPropertyChanged(
+                nameof(DriverUpdateCount));
+
+            OnPropertyChanged(
+                nameof(OptionalUpdateCount));
+
+            OnPropertyChanged(
+                nameof(RecommendedUpdateCount));
+
+            NotifyAdvisorTextProperties();
+        }
+
+        private void NotifyAdvisorTextProperties()
+        {
+            OnPropertyChanged(
+                nameof(AdvisorState));
+
+            OnPropertyChanged(
+                nameof(AdvisorStatusText));
+
+            OnPropertyChanged(
+                nameof(AdvisorMessage));
+
+            OnPropertyChanged(
+                nameof(AdvisorRecommendation));
+        }
+
         private void RefreshAvailableUpdates()
         {
             AvailableUpdates.Clear();
@@ -903,6 +1180,7 @@ namespace WinBoost.App.ViewModels
                 nameof(InstallButtonText));
 
             RefreshAvailableUpdates();
+            NotifyAdvisorSummaryProperties();
 
             if (IsScanning)
             {
