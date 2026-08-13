@@ -404,15 +404,47 @@
 
 					<!-- ACTUALIZARI DISPONIBILE -->
 
-					<TextBlock
-                        Text="{DynamicResource WindowsUpdateAvailableUpdatesTitle}"
-                        FontSize="18"
-                        FontWeight="SemiBold"
-                        Foreground="{StaticResource TextBrush}"/>
+					<Grid>
 
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+
+						<TextBlock
+							Grid.Column="0"
+							Text="{DynamicResource WindowsUpdateAvailableUpdatesTitle}"
+							FontSize="18"
+							FontWeight="SemiBold"
+							VerticalAlignment="Center"
+							Foreground="{StaticResource TextBrush}"/>
+
+						<StackPanel
+							Grid.Column="1"
+							Orientation="Horizontal">
+
+							<Button
+								Content="{DynamicResource WindowsUpdateSelectRecommended}"
+								Command="{Binding SelectRecommendedUpdatesCommand}"
+								IsEnabled="{Binding HasAvailableUpdates}"
+								MinWidth="150"
+								Height="34"
+								Margin="0,0,8,0"/>
+
+							<Button
+								Content="{DynamicResource WindowsUpdateClearSelection}"
+								Command="{Binding ClearUpdateSelectionCommand}"
+								IsEnabled="{Binding HasAvailableUpdates}"
+								MinWidth="120"
+								Height="34"/>
+
+						</StackPanel>
+
+					</Grid>
+					
 					<ItemsControl
-    ItemsSource="{Binding AvailableUpdates}"
-    Margin="0,12,0,0">
+                         ItemsSource="{Binding AvailableUpdates}"
+                         Margin="0,12,0,0">
 
 						<ItemsControl.ItemTemplate>
 

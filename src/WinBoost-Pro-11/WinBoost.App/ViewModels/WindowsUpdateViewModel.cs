@@ -157,6 +157,16 @@ namespace WinBoost.App.ViewModels
          _ =>
              CanInstallUpdates);
 
+            SelectRecommendedUpdatesCommand =
+    new RelayCommand(
+        _ =>
+            SelectRecommendedUpdates());
+
+            ClearUpdateSelectionCommand =
+                new RelayCommand(
+                    _ =>
+                        ClearUpdateSelection());
+
             ApplyInitialUiState();
 
             LanguageManager.Instance.LanguageChanged +=
@@ -169,6 +179,16 @@ namespace WinBoost.App.ViewModels
         }
 
         public ICommand InstallUpdatesCommand
+        {
+            get;
+        }
+
+        public ICommand SelectRecommendedUpdatesCommand
+        {
+            get;
+        }
+
+        public ICommand ClearUpdateSelectionCommand
         {
             get;
         }
@@ -582,6 +602,9 @@ namespace WinBoost.App.ViewModels
             !IsInstallingUpdates &&
             HasSelectedUpdates();
 
+        public bool HasAvailableUpdates =>
+              AvailableUpdates.Count > 0;
+
         public string ScanButtonText =>
             IsScanning
                 ? LocalizationHelper.Get(
@@ -652,6 +675,9 @@ namespace WinBoost.App.ViewModels
                     availableResult.UpdateCount;
 
                 OnPropertyChanged(
+                    nameof(HasAvailableUpdates));
+
+                OnPropertyChanged(
                     nameof(CanInstallUpdates));
 
                 CommandManager
@@ -676,6 +702,9 @@ namespace WinBoost.App.ViewModels
                     0;
 
                 AvailableUpdates.Clear();
+
+                OnPropertyChanged(
+                    nameof(HasAvailableUpdates));
 
                 OnPropertyChanged(
                     nameof(CanInstallUpdates));
@@ -707,6 +736,64 @@ namespace WinBoost.App.ViewModels
             }
 
             return false;
+        }
+
+        private void SelectRecommendedUpdates()
+        {
+            foreach (
+                WindowsUpdateAvailableDisplayItem item
+                in AvailableUpdates)
+            {
+                WindowsUpdateAvailableInfo? update =
+                    _lastAvailableUpdates
+                        .FirstOrDefault(
+                            candidate =>
+                                string.Equals(
+                                    candidate.UpdateId,
+                                    item.UpdateId,
+                                    StringComparison.OrdinalIgnoreCase));
+
+                if (update == null)
+                {
+                    item.IsSelected =
+                        false;
+
+                    continue;
+                }
+
+                WindowsUpdateAdvisorResult advisorResult =
+                    _windowsUpdateAdvisor
+                        .Analyze(update);
+
+                item.IsSelected =
+                    advisorResult.Type ==
+                        WindowsUpdateAdvisorType.Security ||
+                    advisorResult.Type ==
+                        WindowsUpdateAdvisorType.System;
+            }
+
+            OnPropertyChanged(
+                nameof(CanInstallUpdates));
+
+            CommandManager
+                .InvalidateRequerySuggested();
+        }
+
+        private void ClearUpdateSelection()
+        {
+            foreach (
+                WindowsUpdateAvailableDisplayItem item
+                in AvailableUpdates)
+            {
+                item.IsSelected =
+                    false;
+            }
+
+            OnPropertyChanged(
+                nameof(CanInstallUpdates));
+
+            CommandManager
+                .InvalidateRequerySuggested();
         }
 
         private async Task ConfirmInstallUpdatesAsync()

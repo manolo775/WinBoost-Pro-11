@@ -2234,5 +2234,13 @@
 	<sys:String x:Key="WindowsUpdateSelectAtLeastOne">
 		Select at least one Windows update.
 	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateSelectRecommended">
+		Select recommended
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateClearSelection">
+		Clear selection
+	</sys:String>
 	
 </ResourceDictionary>
