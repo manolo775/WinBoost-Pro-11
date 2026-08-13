@@ -484,6 +484,29 @@
 												TextWrapping="Wrap"
 												Foreground="{StaticResource TextBrush}"/>
 
+											<StackPanel
+    Orientation="Horizontal"
+    Margin="0,5,0,0">
+
+												<TextBlock
+													Text="{Binding AdvisorCategory}"
+													FontSize="12"
+													FontWeight="SemiBold"
+													Foreground="{StaticResource AccentBrush}"/>
+
+												<TextBlock
+													Text="  •  "
+													FontSize="12"
+													Foreground="{StaticResource SecondaryTextBrush}"/>
+
+												<TextBlock
+													Text="{Binding AdvisorRecommendation}"
+													FontSize="12"
+													FontWeight="SemiBold"
+													Foreground="{StaticResource SecondaryTextBrush}"/>
+
+											</StackPanel>
+											
 											<!--
                             Descriere compactă.
                             Textul complet rămâne disponibil

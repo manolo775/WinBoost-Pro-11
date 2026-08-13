@@ -2242,5 +2242,37 @@
 	<sys:String x:Key="WindowsUpdateClearSelection">
 		Clear selection
 	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorCategorySecurity">
+		Security
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorCategorySystem">
+		System
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorCategoryDriver">
+		Driver
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorCategoryOptional">
+		Optional
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorCategoryOther">
+		Other
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorItemHighPriority">
+		High priority
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorItemRecommended">
+		Recommended
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorItemReview">
+		Review
+	</sys:String>
 	
 </ResourceDictionary>

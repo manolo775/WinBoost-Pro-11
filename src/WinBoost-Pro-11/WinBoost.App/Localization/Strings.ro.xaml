@@ -2243,5 +2243,37 @@
 	<sys:String x:Key="WindowsUpdateClearSelection">
 		Șterge selecția
 	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorCategorySecurity">
+		Securitate
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorCategorySystem">
+		Sistem
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorCategoryDriver">
+		Driver
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorCategoryOptional">
+		Opțional
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorCategoryOther">
+		Alt tip
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorItemHighPriority">
+		Prioritate ridicată
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorItemRecommended">
+		Recomandat
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorItemReview">
+		De verificat
+	</sys:String>
 	
 </ResourceDictionary>

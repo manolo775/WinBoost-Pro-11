@@ -51,6 +51,24 @@ namespace WinBoost.App.ViewModels
             init;
         } = string.Empty;
 
+        public string AdvisorCategory
+        {
+            get;
+            init;
+        } = string.Empty;
+
+        public string AdvisorRecommendation
+        {
+            get;
+            init;
+        } = string.Empty;
+
+        public bool IsHighPriority
+        {
+            get;
+            init;
+        }
+
         public bool IsSelected
         {
             get => _isSelected;
@@ -596,6 +614,9 @@ namespace WinBoost.App.ViewModels
                 OnPropertyChanged();
             }
         }
+
+      
+
 
         public bool CanInstallUpdates =>
             !IsScanning &&
@@ -1254,6 +1275,40 @@ namespace WinBoost.App.ViewModels
                 update.IsSelected =
                     isSelected;
 
+                string advisorCategory =
+    advisorResult.Type switch
+    {
+        WindowsUpdateAdvisorType.Security =>
+            LocalizationHelper.Get(
+                "WindowsUpdateAdvisorCategorySecurity"),
+
+        WindowsUpdateAdvisorType.System =>
+            LocalizationHelper.Get(
+                "WindowsUpdateAdvisorCategorySystem"),
+
+        WindowsUpdateAdvisorType.Driver =>
+            LocalizationHelper.Get(
+                "WindowsUpdateAdvisorCategoryDriver"),
+
+        WindowsUpdateAdvisorType.Optional =>
+            LocalizationHelper.Get(
+                "WindowsUpdateAdvisorCategoryOptional"),
+
+        _ =>
+            LocalizationHelper.Get(
+                "WindowsUpdateAdvisorCategoryOther")
+    };
+
+                string advisorRecommendation =
+                    advisorResult.IsHighPriority
+                        ? LocalizationHelper.Get(
+                            "WindowsUpdateAdvisorItemHighPriority")
+                        : advisorResult.IsRecommended
+                            ? LocalizationHelper.Get(
+                                "WindowsUpdateAdvisorItemRecommended")
+                            : LocalizationHelper.Get(
+                                "WindowsUpdateAdvisorItemReview");
+
                 var displayItem =
                     new WindowsUpdateAvailableDisplayItem
                     {
@@ -1273,6 +1328,15 @@ namespace WinBoost.App.ViewModels
                         RebootRequired =
                             GetLocalizedBoolean(
                                 update.RebootRequired),
+
+                        AdvisorCategory =
+                            advisorCategory,
+
+                        AdvisorRecommendation =
+                            advisorRecommendation,
+
+                        IsHighPriority =
+                            advisorResult.IsHighPriority,
 
                         IsSelected =
                             isSelected
