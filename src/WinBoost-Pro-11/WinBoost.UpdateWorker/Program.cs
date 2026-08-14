@@ -46,20 +46,28 @@ namespace WinBoost.UpdateWorker
                 var selectedUpdateIds =
                     ParseSelectedUpdateIds(args);
 
+                string language =
+                  ParseLanguage(args);
+
                 if (selectedUpdateIds.Count == 0)
                 {
                     return Fail(
                         9,
-                        "No Windows updates were selected for installation.");
+                        language,
+                        "No Windows updates were selected for installation.",
+                        "Nu a fost selectată nicio actualizare Windows pentru instalare.");
                 }
 
                 UpdateWorkerStatusWriter.Reset();
 
                 WriteStatus(
-                    state: "Searching",
-                    percent: 0,
-                    message:
-                        "Searching for available Windows updates...");
+         state: "Searching",
+         percent: 0,
+         message:
+             Localize(
+                 language,
+                 "Searching for available Windows updates...",
+                 "Se caută actualizări Windows disponibile..."));
 
                 Console.WriteLine(
                     "WinBoost Update Worker");
@@ -70,12 +78,13 @@ namespace WinBoost.UpdateWorker
                 Type? sessionType =
                     Type.GetTypeFromProgID(
                         "Microsoft.Update.Session");
-
                 if (sessionType == null)
                 {
                     return Fail(
                         10,
-                        "Windows Update Agent is not available.");
+                        language,
+                        "Windows Update Agent is not available.",
+                        "Agentul Windows Update nu este disponibil.");
                 }
 
                 dynamic? session =
@@ -86,7 +95,9 @@ namespace WinBoost.UpdateWorker
                 {
                     return Fail(
                         11,
-                        "Windows Update session could not be created.");
+                        language,
+                        "Windows Update session could not be created.",
+                        "Sesiunea Windows Update nu a putut fi creată.");
                 }
 
                 session.ClientApplicationID =
@@ -110,8 +121,11 @@ namespace WinBoost.UpdateWorker
                     WriteStatus(
                         state: "Completed",
                         percent: 100,
-                        message:
-                            "No updates are available.",
+                       message:
+                               Localize(
+                                      language,
+                                      "No updates are available.",
+                                      "Nu sunt disponibile actualizări."),
                         isCompleted: true,
                         isSuccessful: true);
 
@@ -126,7 +140,9 @@ namespace WinBoost.UpdateWorker
                 {
                     return Fail(
                         12,
-                        "Windows Update collection could not be created.");
+                        language,
+                        "Windows Update collection could not be created.",
+                        "Colecția Windows Update nu a putut fi creată.");
                 }
 
                 dynamic? updatesToInstall =
@@ -137,7 +153,9 @@ namespace WinBoost.UpdateWorker
                 {
                     return Fail(
                         13,
-                        "Windows Update collection could not be created.");
+                        language,
+                        "Windows Update collection could not be created.",
+                        "Colecția Windows Update nu a putut fi creată.");
                 }
 
                 for (int index = 0;
@@ -207,7 +225,9 @@ namespace WinBoost.UpdateWorker
                 {
                     return Fail(
                         14,
-                        "No updates could be prepared for installation.");
+                        language,
+                        "No updates could be prepared for installation.",
+                        "Nicio actualizare nu a putut fi pregătită pentru instalare.");
                 }
 
                 Console.WriteLine();
@@ -216,12 +236,14 @@ namespace WinBoost.UpdateWorker
                     $"Downloading {preparedUpdateCount} update(s)...");
 
                 WriteStatus(
-                    state: "Downloading",
-                    percent: 0,
-                    totalUpdates: preparedUpdateCount,
-                    message:
-                        $"Downloading {preparedUpdateCount} update(s)...");
-
+                      state: "Downloading",
+                         percent: 0,
+                        totalUpdates: preparedUpdateCount,
+                         message:
+                            Localize(
+                                language,
+                              $"Downloading {preparedUpdateCount} update(s)...",
+                               $"Se descarcă {preparedUpdateCount} actualizări..."));
                 dynamic downloader =
                     session.CreateUpdateDownloader();
 
@@ -229,15 +251,18 @@ namespace WinBoost.UpdateWorker
                     updatesToInstall;
 
                 object? downloadResult =
-                    RunDownloadWithActivityIndicator(
-                        downloader,
-                        preparedUpdateCount);
+                   RunDownloadWithActivityIndicator(
+                           downloader,
+                           preparedUpdateCount,
+                           language);
 
                 if (downloadResult == null)
                 {
                     return Fail(
                         19,
-                        "Download did not return a result.");
+                        language,
+                        "Download did not return a result.",
+                        "Descărcarea nu a returnat niciun rezultat.");
                 }
 
                 dynamic dynamicDownloadResult =
@@ -257,7 +282,9 @@ namespace WinBoost.UpdateWorker
                 {
                     return Fail(
                         15,
-                        "Installation collection could not be created.");
+                        language,
+                        "Installation collection could not be created.",
+                        "Colecția pentru instalare nu a putut fi creată.");
                 }
 
                 dynamic? downloadedUpdates =
@@ -268,7 +295,9 @@ namespace WinBoost.UpdateWorker
                 {
                     return Fail(
                         16,
-                        "Installation collection could not be created.");
+                        language,
+                        "Installation collection could not be created.",
+                        "Colecția pentru instalare nu a putut fi creată.");
                 }
 
                 for (int index = 0;
@@ -306,7 +335,9 @@ namespace WinBoost.UpdateWorker
                 {
                     return Fail(
                         20,
-                        "No updates were downloaded successfully.");
+                        language,
+                        "No updates were downloaded successfully.",
+                        "Nicio actualizare nu a fost descărcată cu succes.");
                 }
 
                 Console.WriteLine();
@@ -320,7 +351,10 @@ namespace WinBoost.UpdateWorker
                     currentUpdate: 1,
                     totalUpdates: downloadedUpdateCount,
                     message:
-                        $"Installing {downloadedUpdateCount} update(s)...");
+                        Localize(
+                            language,
+                            $"Installing {downloadedUpdateCount} update(s)...",
+                            $"Se instalează {downloadedUpdateCount} actualizări..."));
 
                 dynamic installer =
                     session.CreateUpdateInstaller();
@@ -335,26 +369,33 @@ namespace WinBoost.UpdateWorker
                 {
                     return Fail(
                         21,
-                        "Windows Update is already installing or removing updates.");
+                        language,
+                        "Windows Update is already installing or removing updates.",
+                        "Windows Update instalează sau elimină deja actualizări.");
                 }
 
                 if (installer.RebootRequiredBeforeInstallation)
                 {
                     return Fail(
                         22,
-                        "Windows requires a restart before updates can be installed.");
+                        language,
+                        "Windows requires a restart before updates can be installed.",
+                        "Windows necesită o repornire înainte ca actualizările să poată fi instalate.");
                 }
 
                 object? installationResult =
-                    RunInstallationWithProgress(
+                   RunInstallationWithProgress(
                         installer,
-                        downloadedUpdates);
+                      downloadedUpdates,
+                         language);
 
                 if (installationResult == null)
                 {
                     return Fail(
                         23,
-                        "Windows Update installation did not complete.");
+                        language,
+                        "Windows Update installation did not complete.",
+                        "Instalarea Windows Update nu s-a finalizat.");
                 }
 
                 dynamic dynamicInstallationResult =
@@ -420,18 +461,26 @@ namespace WinBoost.UpdateWorker
                 if (rebootRequired)
                 {
                     completedMessage =
-                        "Windows updates were installed. " +
-                        "A restart is required.";
+                        Localize(
+                            language,
+                            "Windows updates were installed. A restart is required.",
+                            "Actualizările Windows au fost instalate. Este necesară o repornire.");
                 }
                 else if (installationSucceeded)
                 {
                     completedMessage =
-                        "Windows updates were installed successfully.";
+                        Localize(
+                            language,
+                            "Windows updates were installed successfully.",
+                            "Actualizările Windows au fost instalate cu succes.");
                 }
                 else
                 {
                     completedMessage =
-                        "Windows Update completed with warnings.";
+                        Localize(
+                            language,
+                            "Windows Update completed with warnings.",
+                            "Windows Update s-a finalizat cu avertismente.");
                 }
 
                 WriteStatus(
@@ -470,7 +519,10 @@ namespace WinBoost.UpdateWorker
                     state: "Error",
                     percent: 0,
                     message:
-                        "Windows Update operation failed.",
+                        Localize(
+                            ParseLanguage(args),
+                            "Windows Update operation failed.",
+                            "Operația Windows Update a eșuat."),
                     isCompleted: true,
                     isSuccessful: false,
                     errorMessage: ex.Message);
@@ -525,9 +577,59 @@ namespace WinBoost.UpdateWorker
             return selectedUpdateIds;
         }
 
+        private static string ParseLanguage(
+           string[] args)
+        {
+            const string prefix =
+                "--language=";
+
+            foreach (string argument in args)
+            {
+                if (string.IsNullOrWhiteSpace(
+                        argument))
+                {
+                    continue;
+                }
+
+                if (!argument.StartsWith(
+                        prefix,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                string language =
+                    argument.Substring(
+                        prefix.Length)
+                    .Trim()
+                    .ToLowerInvariant();
+
+                if (language == "ro" ||
+                    language == "en")
+                {
+                    return language;
+                }
+            }
+
+            return "en";
+        }
+
+        private static string Localize(
+               string language,
+               string english,
+               string romanian)
+        {
+            return string.Equals(
+                language,
+                "ro",
+                StringComparison.OrdinalIgnoreCase)
+                    ? romanian
+                    : english;
+        }
         private static object? RunDownloadWithActivityIndicator(
-            dynamic downloader,
-            int totalUpdates)
+       dynamic downloader,
+       int totalUpdates,
+       string language)
         {
             object? downloadResult =
                 null;
@@ -585,9 +687,10 @@ namespace WinBoost.UpdateWorker
                     startedAt;
 
                 string message =
-                    $"Downloading Windows updates... " +
-                    $"{elapsed:mm\\:ss}";
-
+                      Localize(
+                        language,
+                             $"Downloading Windows updates... {elapsed:mm\\:ss}",
+                           $"Se descarcă actualizările Windows... {elapsed:mm\\:ss}");
                 Console.WriteLine(
                     $"Download in progress... elapsed " +
                     $"{elapsed:mm\\:ss}");
@@ -610,8 +713,9 @@ namespace WinBoost.UpdateWorker
         }
 
         private static object? RunInstallationWithProgress(
-            dynamic installer,
-            dynamic downloadedUpdates)
+             dynamic installer,
+             dynamic downloadedUpdates,
+             string language)
         {
             var progressCallback =
                 new InstallationProgressCallback();
@@ -713,9 +817,10 @@ namespace WinBoost.UpdateWorker
                                 currentUpdateTitle:
                                     currentTitle,
                                 message:
-                                    $"Installing update " +
-                                    $"{currentUpdateIndex + 1} " +
-                                    $"of {totalUpdates}...");
+                                    Localize(
+                                        language,
+                                        $"Installing update {currentUpdateIndex + 1} of {totalUpdates}...",
+                                        $"Se instalează actualizarea {currentUpdateIndex + 1} din {totalUpdates}..."));
 
                             lastOverallPercent =
                                 overallPercent;
@@ -756,8 +861,10 @@ namespace WinBoost.UpdateWorker
                                     1),
                             totalUpdates: totalUpdates,
                             message:
-                                $"Installation is still running... " +
-                                $"{elapsed:mm\\:ss}");
+                                Localize(
+                                    language,
+                                    $"Installation is still running... {elapsed:mm\\:ss}",
+                                    $"Instalarea este încă în desfășurare... {elapsed:mm\\:ss}"));
                     }
 
                     TimeSpan totalElapsed =
@@ -787,7 +894,10 @@ namespace WinBoost.UpdateWorker
                                     1),
                             totalUpdates: totalUpdates,
                             message:
-                                "Windows Update installation exceeded the safety timeout.",
+                                Localize(
+                                    language,
+                                    "Windows Update installation exceeded the safety timeout.",
+                                    "Instalarea Windows Update a depășit limita de siguranță."),
                             isCompleted: false,
                             isSuccessful: false);
 
@@ -884,8 +994,16 @@ namespace WinBoost.UpdateWorker
 
         private static int Fail(
             int exitCode,
-            string message)
+            string language,
+            string englishMessage,
+            string romanianMessage)
         {
+            string message =
+                Localize(
+                    language,
+                    englishMessage,
+                    romanianMessage);
+
             Console.Error.WriteLine(
                 message);
 

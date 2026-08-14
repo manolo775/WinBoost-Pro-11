@@ -859,16 +859,20 @@ namespace WinBoost.App.ViewModels
             }
 
             bool confirmed =
-                NativeConfirmationDialog.Ask(
-                    Application.Current.MainWindow,
-                    LocalizationHelper.Get(
-                        "WindowsUpdateInstallConfirmationTitle"),
-                    LocalizationHelper.Get(
-                        "WindowsUpdateInstallConfirmationMessage"),
-                    LocalizationHelper.Get(
-                        "WindowsUpdateInstallConfirmYes"),
-                    LocalizationHelper.Get(
-                        "WindowsUpdateInstallConfirmNo"));
+               NativeConfirmationDialog.Ask(
+            Application.Current.MainWindow,
+                  LocalizationHelper.Get(
+                 "WindowsUpdateInstallSelectedConfirmationTitle"),
+                    selectedUpdateIds.Count == 1
+                    ? LocalizationHelper.Get(
+                       "WindowsUpdateInstallSelectedConfirmationMessageSingular")
+                    : LocalizationHelper.Format(
+                     "WindowsUpdateInstallSelectedConfirmationMessage",
+                  selectedUpdateIds.Count),
+            LocalizationHelper.Get(
+                "WindowsUpdateInstallConfirmYes"),
+            LocalizationHelper.Get(
+                "WindowsUpdateInstallConfirmNo"));
 
             if (!confirmed)
             {
@@ -924,6 +928,14 @@ namespace WinBoost.App.ViewModels
                             "runas"
                     };
 
+                string currentLanguage =
+                    LanguageManager.Instance.CurrentLanguage ==
+                         Language.Romanian
+                            ? "ro"
+                             : "en";
+                startInfo.ArgumentList.Add(
+                    $"--language={currentLanguage}");
+
                 foreach (string updateId
                          in selectedUpdateIds)
                 {
@@ -975,7 +987,7 @@ namespace WinBoost.App.ViewModels
 
 
         private async Task MonitorUpdateWorkerAsync(
-    Process workerProcess)
+              Process workerProcess)
         {
             try
             {
@@ -1011,7 +1023,8 @@ namespace WinBoost.App.ViewModels
                         "Completed";
 
                     InstallationMessage =
-                        "Windows Update Worker finished.";
+                         LocalizationHelper.Get(
+                         "WindowsUpdateWorkerFinished");
 
                     await Task.Delay(
                         TimeSpan.FromSeconds(2));
@@ -1028,7 +1041,8 @@ namespace WinBoost.App.ViewModels
                         "Completed";
 
                     InstallationMessage =
-                        "Windows Update Worker finished.";
+                      LocalizationHelper.Get(
+                      "WindowsUpdateWorkerFinished");
 
                     await Task.Delay(
                         TimeSpan.FromSeconds(2));
@@ -1054,18 +1068,22 @@ namespace WinBoost.App.ViewModels
                         InstallationMessage))
                     {
                         InstallationMessage =
-                            finalStatus.RebootRequired
-                                ? "Windows updates were installed. A restart is required."
-                                : "Windows updates were installed successfully.";
+                               finalStatus.RebootRequired
+                               ? LocalizationHelper.Get(
+                                  "WindowsUpdateInstallSuccessRestart")
+                                : LocalizationHelper.Get(
+                                  "WindowsUpdateInstallSuccess");
                     }
 
-                    /*
-                     * Păstrăm panoul vizibil puțin timp
-                     * pentru ca utilizatorul să poată vedea
-                     * rezultatul final și 100%.
-                     */
                     await Task.Delay(
                         TimeSpan.FromSeconds(2));
+
+                    IsInstallingUpdates =
+                        false;
+
+                    await ScanUpdatesAsync();
+
+                    return;
                 }
                 else
                 {
@@ -1233,6 +1251,9 @@ namespace WinBoost.App.ViewModels
 
         private void RefreshAvailableUpdates()
         {
+            bool hadExistingItems =
+              AvailableUpdates.Count > 0;
+
             var selectedUpdateIds =
                 new HashSet<string>(
                     StringComparer.OrdinalIgnoreCase);
@@ -1267,7 +1288,7 @@ namespace WinBoost.App.ViewModels
                         WindowsUpdateAdvisorType.System;
 
                 bool isSelected =
-                    selectedUpdateIds.Count > 0
+                    hadExistingItems
                         ? selectedUpdateIds.Contains(
                             update.UpdateId)
                         : isSelectedByDefault;

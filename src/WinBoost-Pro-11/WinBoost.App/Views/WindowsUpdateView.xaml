@@ -353,7 +353,7 @@
 						<Button
                              Content="{Binding InstallButtonText}"
                              Command="{Binding InstallUpdatesCommand}"
-                             Width="180"
+                             Width="210"
                              Height="42"
                              Margin="0,10,0,0"
                              HorizontalContentAlignment="Center"

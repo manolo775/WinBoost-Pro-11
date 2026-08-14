@@ -2275,5 +2275,33 @@
 	<sys:String x:Key="WindowsUpdateAdvisorItemReview">
 		De verificat
 	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallSelectedConfirmationMessage">
+		Ai selectat {0} actualizări. Dorești să le descarci și să le instalezi?
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallSelectedConfirmationMessageSingular">
+		Ai selectat 1 actualizare. Dorești să o descarci și să o instalezi?
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallSelectedConfirmationTitle">
+		Instalare actualizări selectate
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallSuccess">
+		Actualizările Windows au fost instalate cu succes.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallSuccessRestart">
+		Actualizările Windows au fost instalate. Este necesară repornirea sistemului.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateWorkerFinished">
+		Procesul Windows Update s-a încheiat.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageRecommendedUpdates">
+		Au fost detectate {0} actualizări Windows recomandate.
+	</sys:String>
 	
 </ResourceDictionary>

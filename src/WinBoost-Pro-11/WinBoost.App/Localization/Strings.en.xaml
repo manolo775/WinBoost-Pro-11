@@ -2274,5 +2274,33 @@
 	<sys:String x:Key="WindowsUpdateAdvisorItemReview">
 		Review
 	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallSelectedConfirmationMessage">
+		You selected {0} updates. Do you want to download and install them?
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallSelectedConfirmationMessageSingular">
+		You selected 1 update. Do you want to download and install it?
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallSelectedConfirmationTitle">
+		Install selected updates
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallSuccess">
+		Windows updates were installed successfully.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateInstallSuccessRestart">
+		Windows updates were installed. A system restart is required.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateWorkerFinished">
+		Windows Update process has finished.
+	</sys:String>
+
+	<sys:String x:Key="WindowsUpdateAdvisorMessageRecommendedUpdates">
+		{0} recommended Windows updates were detected.
+	</sys:String>
 	
 </ResourceDictionary>
