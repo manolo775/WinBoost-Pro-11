@@ -1,0 +1,458 @@
+﻿<UserControl
+    x:Class="WinBoost.App.Views.RecoveryView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+	<UserControl.Resources>
+
+		<BooleanToVisibilityConverter
+            x:Key="BooleanToVisibilityConverter"/>
+
+		<!-- ====================================== -->
+		<!-- RESTORE POINTS SCROLLVIEWER -->
+		<!-- Folosește stilurile globale WinBoost -->
+		<!-- ====================================== -->
+
+		<Style
+            x:Key="RecoveryRestorePointsScrollViewerStyle"
+            TargetType="ScrollViewer">
+
+			<Setter
+                Property="VerticalScrollBarVisibility"
+                Value="Auto"/>
+
+			<Setter
+                Property="HorizontalScrollBarVisibility"
+                Value="Auto"/>
+
+			<Setter
+                Property="CanContentScroll"
+                Value="False"/>
+
+			<Setter Property="Template">
+
+				<Setter.Value>
+
+					<ControlTemplate
+                        TargetType="ScrollViewer">
+
+						<Grid>
+
+							<Grid.RowDefinitions>
+								<RowDefinition Height="*"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="*"/>
+								<ColumnDefinition Width="Auto"/>
+							</Grid.ColumnDefinitions>
+
+							<ScrollContentPresenter
+                                x:Name="PART_ScrollContentPresenter"
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                CanContentScroll="{TemplateBinding CanContentScroll}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                Margin="{TemplateBinding Padding}"/>
+
+							<!-- VERTICALĂ - STIL GLOBAL -->
+
+							<ScrollBar
+                                x:Name="PART_VerticalScrollBar"
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Margin="10,0,0,0"
+                                Minimum="0"
+                                Maximum="{TemplateBinding ScrollableHeight}"
+                                Value="{TemplateBinding VerticalOffset}"
+                                ViewportSize="{TemplateBinding ViewportHeight}"
+                                Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
+                                Style="{StaticResource VerticalDarkScrollBarStyle}"/>
+
+							<!-- ORIZONTALĂ - STIL GLOBAL -->
+
+							<ScrollBar
+                                x:Name="PART_HorizontalScrollBar"
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Margin="0,10,0,0"
+                                Minimum="0"
+                                Maximum="{TemplateBinding ScrollableWidth}"
+                                Value="{TemplateBinding HorizontalOffset}"
+                                ViewportSize="{TemplateBinding ViewportWidth}"
+                                Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                                Style="{StaticResource HorizontalDarkScrollBarStyle}"/>
+
+						</Grid>
+
+					</ControlTemplate>
+
+				</Setter.Value>
+
+			</Setter>
+
+		</Style>
+
+
+		<!-- ====================================== -->
+		<!-- RESTORE POINTS LISTBOX -->
+		<!-- ====================================== -->
+
+		<Style
+            x:Key="RecoveryRestorePointsListStyle"
+            TargetType="ListBox">
+
+			<Setter
+                Property="Background"
+                Value="Transparent"/>
+
+			<Setter
+                Property="BorderThickness"
+                Value="0"/>
+
+			<Setter
+                Property="HorizontalContentAlignment"
+                Value="Stretch"/>
+
+			<Setter Property="Template">
+
+				<Setter.Value>
+
+					<ControlTemplate
+                        TargetType="ListBox">
+
+						<ScrollViewer
+                            Style="{StaticResource RecoveryRestorePointsScrollViewerStyle}"
+                            VerticalScrollBarVisibility="Auto"
+                            HorizontalScrollBarVisibility="Auto">
+
+							<ItemsPresenter/>
+
+						</ScrollViewer>
+
+					</ControlTemplate>
+
+				</Setter.Value>
+
+			</Setter>
+
+		</Style>
+
+	</UserControl.Resources>
+
+
+	<Grid>
+
+		<!-- ====================================== -->
+		<!-- MAIN PAGE SCROLL -->
+		<!-- STIL GLOBAL WINBOOST -->
+		<!-- ====================================== -->
+
+		<ScrollViewer
+            Style="{StaticResource WinBoostPageScrollViewerStyle}">
+
+			<StackPanel
+                Margin="30">
+
+				<!-- ====================================== -->
+				<!-- PAGE TITLE -->
+				<!-- ====================================== -->
+
+				<TextBlock
+                    Text="Recovery &amp; Safety"
+                    FontSize="30"
+                    FontWeight="SemiBold"
+                    Foreground="{StaticResource TextBrush}"/>
+
+				<TextBlock
+                    Text="Create and manage Windows restore points before important system changes."
+                    Margin="0,8,0,25"
+                    FontSize="14"
+                    TextWrapping="Wrap"
+                    Foreground="{StaticResource SecondaryTextBrush}"/>
+
+
+				<!-- ====================================== -->
+				<!-- CREATE RESTORE POINT -->
+				<!-- ====================================== -->
+
+				<Border
+                    Padding="22"
+                    Style="{StaticResource MetricCardBorderStyle}">
+
+					<StackPanel>
+
+						<TextBlock
+                            Text="System Restore Point"
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource TextBrush}"/>
+
+						<TextBlock
+                            Text="Create a safety restore point for the current Windows configuration."
+                            Margin="0,8,0,18"
+                            TextWrapping="Wrap"
+                            Foreground="{StaticResource SecondaryTextBrush}"/>
+
+						<TextBlock
+                            Text="{Binding AvailabilityMessage}"
+                            Margin="0,0,0,14"
+                            TextWrapping="Wrap"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource AccentBrush}"/>
+
+						<Button
+                            Content="Enable System Protection"
+                            Command="{Binding EnableSystemProtectionCommand}"
+                            IsEnabled="{Binding CanEnableSystemProtection}"
+                            Visibility="{Binding IsSystemProtectionActionRequired,
+                                Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Width="230"
+                            Height="42"
+                            Margin="0,0,0,12"
+                            HorizontalAlignment="Left"/>
+
+						<Button
+                            Content="Create Restore Point"
+                            Command="{Binding CreateRestorePointCommand}"
+                            IsEnabled="{Binding CanCreateRestorePoint}"
+                            Width="210"
+                            Height="42"
+                            HorizontalAlignment="Left"/>
+
+						<TextBlock
+                            Text="{Binding StatusMessage}"
+                            Margin="0,16,0,0"
+                            TextWrapping="Wrap"
+                            Foreground="{StaticResource SecondaryTextBrush}"/>
+
+					</StackPanel>
+
+				</Border>
+
+
+				<!-- ====================================== -->
+				<!-- RESTORE POINTS -->
+				<!-- ====================================== -->
+
+				<Border
+                    Margin="0,20,0,0"
+                    Padding="22"
+                    Style="{StaticResource MetricCardBorderStyle}">
+
+					<StackPanel>
+
+						<TextBlock
+                            Text="Restore Points"
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource TextBrush}"/>
+
+						<TextBlock
+                            Text="Select a restore point to prepare the system recovery process."
+                            Margin="0,8,0,6"
+                            TextWrapping="Wrap"
+                            Foreground="{StaticResource SecondaryTextBrush}"/>
+
+						<TextBlock
+                            Text="{Binding RestorePointsMessage}"
+                            Margin="0,0,0,14"
+                            TextWrapping="Wrap"
+                            FontWeight="SemiBold"
+                            Foreground="{StaticResource AccentBrush}"/>
+
+
+						<!-- ====================================== -->
+						<!-- RESTORE POINT LIST -->
+						<!-- ====================================== -->
+
+						<ListBox
+                            ItemsSource="{Binding RestorePoints}"
+                            SelectedItem="{Binding SelectedRestorePoint,
+                                Mode=TwoWay}"
+                            MaxHeight="320"
+                            Style="{StaticResource RecoveryRestorePointsListStyle}">
+
+							<ListBox.ItemContainerStyle>
+
+								<Style
+                                    TargetType="ListBoxItem">
+
+									<Setter
+                                        Property="HorizontalContentAlignment"
+                                        Value="Stretch"/>
+
+									<Setter
+                                        Property="Padding"
+                                        Value="0"/>
+
+									<Setter
+                                        Property="Margin"
+                                        Value="0,0,0,10"/>
+
+								</Style>
+
+							</ListBox.ItemContainerStyle>
+
+
+							<ListBox.ItemTemplate>
+
+								<DataTemplate>
+
+									<Border
+                                        Padding="14"
+                                        CornerRadius="8"
+                                        BorderThickness="1">
+
+										<Border.Style>
+
+											<Style
+                                                TargetType="Border">
+
+												<Setter
+                                                    Property="Background"
+                                                    Value="#24272B"/>
+
+												<Setter
+                                                    Property="BorderBrush"
+                                                    Value="#3A3D42"/>
+
+												<Style.Triggers>
+
+													<DataTrigger
+                                                        Binding="{Binding IsWinBoostRestorePoint}"
+                                                        Value="True">
+
+														<Setter
+                                                            Property="BorderBrush"
+                                                            Value="{StaticResource AccentBrush}"/>
+
+													</DataTrigger>
+
+												</Style.Triggers>
+
+											</Style>
+
+										</Border.Style>
+
+
+										<Grid
+                                            MinWidth="650">
+
+											<Grid.ColumnDefinitions>
+
+												<ColumnDefinition
+                                                    Width="180"/>
+
+												<ColumnDefinition
+                                                    Width="*"/>
+
+												<ColumnDefinition
+                                                    Width="130"/>
+
+											</Grid.ColumnDefinitions>
+
+
+											<!-- DATE -->
+
+											<StackPanel
+                                                Grid.Column="0"
+                                                VerticalAlignment="Center">
+
+												<TextBlock
+                                                    Text="Created"
+                                                    FontSize="11"
+                                                    Foreground="{StaticResource SecondaryTextBrush}"/>
+
+												<TextBlock
+                                                    Text="{Binding CreatedAtDisplay}"
+                                                    Margin="0,3,0,0"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{StaticResource TextBrush}"/>
+
+											</StackPanel>
+
+
+											<!-- DESCRIPTION -->
+
+											<StackPanel
+                                                Grid.Column="1"
+                                                Margin="15,0"
+                                                VerticalAlignment="Center">
+
+												<TextBlock
+                                                    Text="{Binding Description}"
+                                                    ToolTip="{Binding Description}"
+                                                    FontWeight="SemiBold"
+                                                    TextWrapping="Wrap"
+                                                    Foreground="{StaticResource TextBrush}"/>
+
+												<TextBlock
+                                                    Text="WinBoost Restore Point"
+                                                    Margin="0,4,0,0"
+                                                    FontSize="11"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{StaticResource AccentBrush}"
+                                                    Visibility="{Binding IsWinBoostRestorePoint,
+                                                        Converter={StaticResource BooleanToVisibilityConverter}}"/>
+
+											</StackPanel>
+
+
+											<!-- TYPE -->
+
+											<StackPanel
+                                                Grid.Column="2"
+                                                VerticalAlignment="Center">
+
+												<TextBlock
+                                                    Text="Type"
+                                                    HorizontalAlignment="Center"
+                                                    FontSize="11"
+                                                    Foreground="{StaticResource SecondaryTextBrush}"/>
+
+												<TextBlock
+                                                    Text="{Binding RestorePointTypeName}"
+                                                    Margin="0,3,0,0"
+                                                    HorizontalAlignment="Center"
+                                                    TextAlignment="Center"
+                                                    FontWeight="SemiBold"
+                                                    Foreground="{StaticResource TextBrush}"/>
+
+											</StackPanel>
+
+										</Grid>
+
+									</Border>
+
+								</DataTemplate>
+
+							</ListBox.ItemTemplate>
+
+						</ListBox>
+
+						<Button
+                         Content="Restore System"
+                         Command="{Binding RestoreSystemCommand}"
+                         IsEnabled="{Binding CanRestoreSystem}"
+                         Width="210"
+                         Height="42"
+                          Margin="0,16,0,0"
+                          HorizontalAlignment="Left"/>
+						
+					</StackPanel>
+
+				</Border>
+
+			</StackPanel>
+
+		</ScrollViewer>
+
+	</Grid>
+
+</UserControl>

@@ -34,6 +34,8 @@ namespace WinBoost.App
 
         private SettingsView? _settingsView;
 
+        private RecoveryView?
+            _recoveryView;
         public MainWindow()
         {
             InitializeComponent();
@@ -149,6 +151,12 @@ namespace WinBoost.App
             NavigateToServices();
         }
 
+        private void RecoveryButton_Click(
+             object sender,
+               RoutedEventArgs e)
+        {
+            NavigateToRecovery();
+        }
         private void WindowsUpdateButton_Click(
             object sender,
             RoutedEventArgs e)
@@ -168,6 +176,17 @@ namespace WinBoost.App
                 WindowsUpdateButton);
         }
 
+        public void NavigateToRecovery()
+        {
+            _recoveryView ??=
+                new RecoveryView();
+
+            MainContent.Content =
+                _recoveryView;
+
+            SetActiveButton(
+                RecoveryButton);
+        }
         private void AppsButton_Click(
             object sender,
             RoutedEventArgs e)
@@ -261,6 +280,10 @@ namespace WinBoost.App
             StartupButton.Style =
                 (Style)FindResource(
                     "SidebarButtonStyle");
+
+            RecoveryButton.Style =
+             (Style)FindResource(
+             "SidebarButtonStyle");
 
             activeButton.Style =
                 (Style)FindResource(
