@@ -150,7 +150,6 @@
 
 		<!-- ====================================== -->
 		<!-- MAIN PAGE SCROLL -->
-		<!-- STIL GLOBAL WINBOOST -->
 		<!-- ====================================== -->
 
 		<ScrollViewer
@@ -164,13 +163,13 @@
 				<!-- ====================================== -->
 
 				<TextBlock
-                    Text="Recovery &amp; Safety"
+                    Text="{DynamicResource RecoveryPageTitle}"
                     FontSize="30"
                     FontWeight="SemiBold"
                     Foreground="{StaticResource TextBrush}"/>
 
 				<TextBlock
-                    Text="Create and manage Windows restore points before important system changes."
+                    Text="{DynamicResource RecoveryPageDescription}"
                     Margin="0,8,0,25"
                     FontSize="14"
                     TextWrapping="Wrap"
@@ -188,13 +187,13 @@
 					<StackPanel>
 
 						<TextBlock
-                            Text="System Restore Point"
+                            Text="{DynamicResource RecoverySystemRestorePointTitle}"
                             FontSize="20"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource TextBrush}"/>
 
 						<TextBlock
-                            Text="Create a safety restore point for the current Windows configuration."
+                            Text="{DynamicResource RecoverySystemRestorePointDescription}"
                             Margin="0,8,0,18"
                             TextWrapping="Wrap"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
@@ -207,7 +206,7 @@
                             Foreground="{StaticResource AccentBrush}"/>
 
 						<Button
-                            Content="Enable System Protection"
+                            Content="{DynamicResource RecoveryEnableSystemProtection}"
                             Command="{Binding EnableSystemProtectionCommand}"
                             IsEnabled="{Binding CanEnableSystemProtection}"
                             Visibility="{Binding IsSystemProtectionActionRequired,
@@ -218,7 +217,7 @@
                             HorizontalAlignment="Left"/>
 
 						<Button
-                            Content="Create Restore Point"
+                            Content="{DynamicResource RecoveryCreateRestorePoint}"
                             Command="{Binding CreateRestorePointCommand}"
                             IsEnabled="{Binding CanCreateRestorePoint}"
                             Width="210"
@@ -248,13 +247,13 @@
 					<StackPanel>
 
 						<TextBlock
-                            Text="Restore Points"
+                            Text="{DynamicResource RecoveryRestorePointsTitle}"
                             FontSize="20"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource TextBrush}"/>
 
 						<TextBlock
-                            Text="Select a restore point to prepare the system recovery process."
+                            Text="{DynamicResource RecoveryRestorePointsDescription}"
                             Margin="0,8,0,6"
                             TextWrapping="Wrap"
                             Foreground="{StaticResource SecondaryTextBrush}"/>
@@ -365,7 +364,7 @@
                                                 VerticalAlignment="Center">
 
 												<TextBlock
-                                                    Text="Created"
+                                                    Text="{DynamicResource RecoveryCreated}"
                                                     FontSize="11"
                                                     Foreground="{StaticResource SecondaryTextBrush}"/>
 
@@ -386,14 +385,14 @@
                                                 VerticalAlignment="Center">
 
 												<TextBlock
-                                                    Text="{Binding Description}"
+                                                    Text="{Binding DisplayDescription}"
                                                     ToolTip="{Binding Description}"
                                                     FontWeight="SemiBold"
                                                     TextWrapping="Wrap"
                                                     Foreground="{StaticResource TextBrush}"/>
 
 												<TextBlock
-                                                    Text="WinBoost Restore Point"
+                                                    Text="{DynamicResource RecoveryWinBoostRestorePoint}"
                                                     Margin="0,4,0,0"
                                                     FontSize="11"
                                                     FontWeight="SemiBold"
@@ -411,13 +410,13 @@
                                                 VerticalAlignment="Center">
 
 												<TextBlock
-                                                    Text="Type"
+                                                    Text="{DynamicResource RecoveryType}"
                                                     HorizontalAlignment="Center"
                                                     FontSize="11"
                                                     Foreground="{StaticResource SecondaryTextBrush}"/>
 
 												<TextBlock
-                                                    Text="{Binding RestorePointTypeName}"
+                                                    Text="{Binding DisplayRestorePointTypeName}"
                                                     Margin="0,3,0,0"
                                                     HorizontalAlignment="Center"
                                                     TextAlignment="Center"
@@ -436,15 +435,73 @@
 
 						</ListBox>
 
+
+						<!-- ====================================== -->
+						<!-- RESTORE SYSTEM -->
+						<!-- ====================================== -->
+
 						<Button
-                         Content="Restore System"
-                         Command="{Binding RestoreSystemCommand}"
-                         IsEnabled="{Binding CanRestoreSystem}"
-                         Width="210"
-                         Height="42"
-                          Margin="0,16,0,0"
-                          HorizontalAlignment="Left"/>
-						
+                            Content="{DynamicResource RecoveryRestoreSystem}"
+                            Command="{Binding RestoreSystemCommand}"
+                            IsEnabled="{Binding CanRestoreSystem}"
+                            Width="210"
+                            Height="42"
+                            Margin="0,16,0,0"
+                            HorizontalAlignment="Left"/>
+
+
+						<!-- ====================================== -->
+						<!-- RESTART REQUIRED -->
+						<!-- ====================================== -->
+
+						<Border
+                            Visibility="{Binding IsRestartRequired,
+                                Converter={StaticResource BooleanToVisibilityConverter}}"
+                            Margin="0,20,0,0"
+                            Padding="16"
+                            CornerRadius="8"
+                            Background="#24272B"
+                            BorderBrush="{StaticResource AccentBrush}"
+                            BorderThickness="1">
+
+							<StackPanel>
+
+								<TextBlock
+                                    Text="{DynamicResource RecoveryRestartRequired}"
+                                    FontSize="16"
+                                    FontWeight="SemiBold"
+                                    Foreground="{StaticResource AccentBrush}"/>
+
+								<TextBlock
+                                    Text="{DynamicResource RecoveryRestartRequiredDescription}"
+                                    Margin="0,6,0,14"
+                                    TextWrapping="Wrap"
+                                    Foreground="{StaticResource SecondaryTextBrush}"/>
+
+								<StackPanel
+                                    Orientation="Horizontal">
+
+									<Button
+                                        Content="{DynamicResource RecoveryRestartNow}"
+                                        Command="{Binding RestartNowCommand}"
+                                        IsEnabled="{Binding CanRestartNow}"
+                                        Width="150"
+                                        Height="42"
+                                        Margin="0,0,12,0"/>
+
+									<Button
+                                        Content="{DynamicResource RecoveryRestartLater}"
+                                        Command="{Binding RestartLaterCommand}"
+                                        IsEnabled="{Binding CanRestartLater}"
+                                        Width="150"
+                                        Height="42"/>
+
+								</StackPanel>
+
+							</StackPanel>
+
+						</Border>
+
 					</StackPanel>
 
 				</Border>

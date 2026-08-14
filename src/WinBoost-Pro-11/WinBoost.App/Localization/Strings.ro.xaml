@@ -2303,5 +2303,267 @@
 	<sys:String x:Key="WindowsUpdateAdvisorMessageRecommendedUpdates">
 		Au fost detectate {0} actualizări Windows recomandate.
 	</sys:String>
-	
+
+	<!-- ====================================== -->
+	<!-- RECOVERY & SAFETY -->
+	<!-- ====================================== -->
+
+	<sys:String x:Key="RecoveryPageTitle">
+		Recuperare și siguranță
+	</sys:String>
+
+	<sys:String x:Key="RecoveryPageDescription">
+		Creează și gestionează punctele de restaurare Windows înainte de modificări importante ale sistemului.
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemRestorePointTitle">
+		Punct de restaurare sistem
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemRestorePointDescription">
+		Creează un punct de restaurare de siguranță pentru configurația curentă Windows.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryEnableSystemProtection">
+		Activează protecția sistemului
+	</sys:String>
+
+	<sys:String x:Key="RecoveryCreateRestorePoint">
+		Creează punct de restaurare
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointsTitle">
+		Puncte de restaurare
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointsDescription">
+		Selectează un punct de restaurare pentru a pregăti procesul de recuperare a sistemului.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryCreated">
+		Creat
+	</sys:String>
+
+	<sys:String x:Key="RecoveryWinBoostRestorePoint">
+		Punct de restaurare WinBoost
+	</sys:String>
+
+	<sys:String x:Key="RecoveryType">
+		Tip
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreSystem">
+		Restaurează sistemul
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartRequired">
+		Repornire necesară
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartRequiredDescription">
+		Restaurarea sistemului este pregătită. Salvează lucrul înainte de a reporni Windows.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartNow">
+		Repornește acum
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartLater">
+		Repornește mai târziu
+	</sys:String>
+
+
+	<!-- RECOVERY - STATUS ȘI MESAJE -->
+
+	<sys:String x:Key="RecoveryCheckingAvailability">
+		Se verifică disponibilitatea System Restore...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryLoadingRestorePoints">
+		Se încarcă punctele de restaurare...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryNoRestorePoints">
+		Nu au fost găsite puncte de restaurare.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointsFound">
+		Au fost găsite {0} puncte de restaurare.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryCreatingRestorePoint">
+		Se creează punctul de restaurare...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointCreated">
+		Punctul de restaurare a fost creat cu succes.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointCreateFailed">
+		Punctul de restaurare nu a putut fi creat: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoverySelectRestorePoint">
+		Selectează un punct de restaurare înainte de a continua.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreConfirmationTitle">
+		Confirmare restaurare sistem
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreConfirmationMessage">
+		Windows va reveni la punctul de restaurare selectat.
+
+		Salvează toate documentele și închide aplicațiile deschise înainte de a continua.
+
+		Dorești să continui?
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreCancelled">
+		Restaurarea sistemului a fost anulată.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryStartingRestore">
+		Se pornește restaurarea sistemului...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePrepared">
+		Restaurarea sistemului este pregătită. Repornește Windows pentru a finaliza restaurarea.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreFailed">
+		Restaurarea sistemului nu a putut fi pregătită: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartLaterMessage">
+		Restaurarea sistemului este pregătită. Repornește Windows manual când ești pregătit.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartingWindows">
+		Windows se va reporni pentru a continua restaurarea sistemului...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartFailed">
+		Windows nu a putut fi repornit: {0}
+	</sys:String>
+
+	<!-- RECOVERY - MESAJE SUPLIMENTARE -->
+
+	<sys:String x:Key="RecoveryRestorePointsLoadFailed">
+		Punctele de restaurare nu au putut fi încărcate: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointCreatedWithDate">
+		Punctul de restaurare a fost creat cu succes. Creat la: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemProtectionDisabled">
+		Protecția sistemului este dezactivată pentru unitatea de sistem. Activează Protecția sistemului înainte de a crea un punct de restaurare.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointError">
+		Eroare la crearea punctului de restaurare: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoveryEnablingSystemProtection">
+		Se activează Protecția sistemului...
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemProtectionEnabled">
+		Protecția sistemului a fost activată cu succes.
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemProtectionError">
+		Eroare Protecția sistemului: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoveryNoRestorePointSelected">
+		Nu este selectat niciun punct de restaurare.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreDialogTitle">
+		WinBoost Pro 11 - Restaurare sistem
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreDialogMessage">
+		Windows va fi restaurat la:
+
+		{0}
+		{1}
+
+		Aplicațiile, driverele și setările de sistem instalate după acest punct de restaurare pot fi afectate.
+
+		Dorești să continui?
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreError">
+		Eroare la restaurarea sistemului: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartDialogTitle">
+		WinBoost Pro 11 - Repornire Windows
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartDialogMessage">
+		Windows este pregătit să finalizeze restaurarea sistemului.
+
+		Salvează toate fișierele deschise și închide celelalte aplicații înainte de a continua.
+
+		Repornești calculatorul acum?
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartCancelled">
+		Repornirea a fost anulată. Restaurarea sistemului așteaptă în continuare repornirea Windows.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestarting">
+		Se repornește Windows...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryWindowsRestartError">
+		Eroare la repornirea Windows: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemRestoreAvailable">
+		System Restore este disponibil.
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemRestoreUnavailable">
+		System Restore nu este disponibil.
+	</sys:String>
+
+	<!-- RECOVERY - RESTORE POINT DATA -->
+
+	<sys:String x:Key="RecoveryRestoreOperation">
+		Operațiune de restaurare
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeApplicationInstall">
+		Instalare aplicație
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeApplicationUninstall">
+		Dezinstalare aplicație
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeDeviceDriverInstall">
+		Instalare driver dispozitiv
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeSystem">
+		Sistem
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeCancelledOperation">
+		Operațiune anulată
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeOther">
+		Altul
+	</sys:String>
+
+	<sys:String x:Key="RecoveryWinBoostSafetyRestorePoint">
+		WinBoost Pro 11 - Punct de restaurare de siguranță
+	</sys:String>
+
 </ResourceDictionary>

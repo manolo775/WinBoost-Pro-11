@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using WinBoost.App.Commands;
+using WinBoost.App.Helpers;
+using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Recovery;
+
 
 namespace WinBoost.App.ViewModels
 {
@@ -31,6 +35,12 @@ namespace WinBoost.App.ViewModels
         private readonly AsyncRelayCommand
             _restoreSystemCommand;
 
+        private readonly AsyncRelayCommand
+            _restartNowCommand;
+
+        private readonly AsyncRelayCommand
+            _restartLaterCommand;
+
         private bool _isCheckingAvailability;
 
         private bool _isCreatingRestorePoint;
@@ -40,6 +50,8 @@ namespace WinBoost.App.ViewModels
         private bool _isLoadingRestorePoints;
 
         private bool _isRestoringSystem;
+
+        private bool _isRestartRequired;
 
         private bool _isSystemRestoreAvailable;
 
@@ -87,6 +99,18 @@ namespace WinBoost.App.ViewModels
                     () =>
                         CanRestoreSystem);
 
+            _restartNowCommand =
+                new AsyncRelayCommand(
+                    RestartNowAsync,
+                    () =>
+                        CanRestartNow);
+
+            _restartLaterCommand =
+                new AsyncRelayCommand(
+                    RestartLaterAsync,
+                    () =>
+                        CanRestartLater);
+
             CreateRestorePointCommand =
                 _createRestorePointCommand;
 
@@ -95,6 +119,18 @@ namespace WinBoost.App.ViewModels
 
             RestoreSystemCommand =
                 _restoreSystemCommand;
+
+            RestartNowCommand =
+                _restartNowCommand;
+
+            RestartLaterCommand =
+                _restartLaterCommand;
+
+            WeakEventManager<LanguageManager, EventArgs>
+             .AddHandler(
+             LanguageManager.Instance,
+              nameof(LanguageManager.LanguageChanged),
+              OnLanguageChanged);
         }
 
 
@@ -109,6 +145,16 @@ namespace WinBoost.App.ViewModels
         }
 
         public ICommand RestoreSystemCommand
+        {
+            get;
+        }
+
+        public ICommand RestartNowCommand
+        {
+            get;
+        }
+
+        public ICommand RestartLaterCommand
         {
             get;
         }
@@ -138,11 +184,9 @@ namespace WinBoost.App.ViewModels
 
                 OnPropertyChanged();
 
-                OnPropertyChanged(
-                    nameof(CanRestoreSystem));
 
-                _restoreSystemCommand
-                    .RaiseCanExecuteChanged();
+
+                NotifyCommandStates();
             }
         }
 
@@ -252,6 +296,27 @@ namespace WinBoost.App.ViewModels
         }
 
 
+        public bool IsRestartRequired
+        {
+            get => _isRestartRequired;
+
+            private set
+            {
+                if (_isRestartRequired == value)
+                {
+                    return;
+                }
+
+                _isRestartRequired =
+                    value;
+
+                OnPropertyChanged();
+
+                NotifyCommandStates();
+            }
+        }
+
+
         public bool IsSystemRestoreAvailable
         {
             get => _isSystemRestoreAvailable;
@@ -300,7 +365,8 @@ namespace WinBoost.App.ViewModels
             !IsCreatingRestorePoint &&
             !IsEnablingSystemProtection &&
             !IsLoadingRestorePoints &&
-            !IsRestoringSystem;
+            !IsRestoringSystem &&
+            !IsRestartRequired;
 
 
         public bool CanEnableSystemProtection =>
@@ -310,7 +376,8 @@ namespace WinBoost.App.ViewModels
             !IsCreatingRestorePoint &&
             !IsEnablingSystemProtection &&
             !IsLoadingRestorePoints &&
-            !IsRestoringSystem;
+            !IsRestoringSystem &&
+            !IsRestartRequired;
 
 
         public bool CanRestoreSystem =>
@@ -320,6 +387,17 @@ namespace WinBoost.App.ViewModels
             !IsCreatingRestorePoint &&
             !IsEnablingSystemProtection &&
             !IsLoadingRestorePoints &&
+            !IsRestoringSystem &&
+            !IsRestartRequired;
+
+
+        public bool CanRestartNow =>
+            IsRestartRequired &&
+            !IsRestoringSystem;
+
+
+        public bool CanRestartLater =>
+            IsRestartRequired &&
             !IsRestoringSystem;
 
 
@@ -380,6 +458,10 @@ namespace WinBoost.App.ViewModels
         }
 
 
+        // ======================================
+        // CHECK AVAILABILITY
+        // ======================================
+
         public async Task CheckAvailabilityAsync()
         {
             if (IsCheckingAvailability)
@@ -391,7 +473,8 @@ namespace WinBoost.App.ViewModels
                 true;
 
             AvailabilityMessage =
-                "Checking System Restore availability...";
+                LocalizationHelper.Get(
+                    "RecoveryCheckingAvailability");
 
             try
             {
@@ -402,8 +485,16 @@ namespace WinBoost.App.ViewModels
                 IsSystemRestoreAvailable =
                     result.IsAvailable;
 
+                /*
+                 * Mesajul serviciului rămâne folosit momentan
+                 * deoarece conține și eventualele detalii WMI.
+                 */
                 AvailabilityMessage =
-                    result.Message;
+                          result.IsAvailable
+                         ? LocalizationHelper.Get(
+                          "RecoverySystemRestoreAvailable")
+                         : LocalizationHelper.Get(
+                          "RecoverySystemRestoreUnavailable");
             }
             catch (Exception ex)
             {
@@ -421,6 +512,10 @@ namespace WinBoost.App.ViewModels
         }
 
 
+        // ======================================
+        // LOAD RESTORE POINTS
+        // ======================================
+
         public async Task LoadRestorePointsAsync()
         {
             if (IsLoadingRestorePoints)
@@ -432,7 +527,8 @@ namespace WinBoost.App.ViewModels
                 true;
 
             RestorePointsMessage =
-                "Loading restore points...";
+                LocalizationHelper.Get(
+                    "RecoveryLoadingRestorePoints");
 
             try
             {
@@ -456,8 +552,11 @@ namespace WinBoost.App.ViewModels
 
                 RestorePointsMessage =
                     RestorePoints.Count == 0
-                        ? "No restore points were found."
-                        : $"{RestorePoints.Count} restore point(s) found.";
+                        ? LocalizationHelper.Get(
+                            "RecoveryNoRestorePoints")
+                        : LocalizationHelper.Format(
+                            "RecoveryRestorePointsFound",
+                            RestorePoints.Count);
             }
             catch (Exception ex)
             {
@@ -467,7 +566,9 @@ namespace WinBoost.App.ViewModels
                     null;
 
                 RestorePointsMessage =
-                    $"Could not load restore points: {ex.Message}";
+                    LocalizationHelper.Format(
+                        "RecoveryRestorePointsLoadFailed",
+                        ex.Message);
             }
             finally
             {
@@ -476,6 +577,10 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+
+        // ======================================
+        // CREATE RESTORE POINT
+        // ======================================
 
         private async Task CreateRestorePointAsync()
         {
@@ -488,7 +593,8 @@ namespace WinBoost.App.ViewModels
                 true;
 
             StatusMessage =
-                "Creating system restore point...";
+                LocalizationHelper.Get(
+                    "RecoveryCreatingRestorePoint");
 
             try
             {
@@ -510,8 +616,10 @@ namespace WinBoost.App.ViewModels
                         false;
 
                     StatusMessage =
-                        $"Restore point created successfully. " +
-                        $"Created at: {createdAt:dd.MM.yyyy HH:mm:ss}";
+                        LocalizationHelper.Format(
+                            "RecoveryRestorePointCreatedWithDate",
+                            createdAt.ToString(
+                                "dd.MM.yyyy HH:mm:ss"));
 
                     await Task.Delay(
                         TimeSpan.FromSeconds(2));
@@ -528,19 +636,23 @@ namespace WinBoost.App.ViewModels
                         true;
 
                     StatusMessage =
-                        "System Protection is disabled for the system drive. " +
-                        "Enable System Protection before creating a restore point.";
+                        LocalizationHelper.Get(
+                            "RecoverySystemProtectionDisabled");
 
                     return;
                 }
 
                 StatusMessage =
-                    result.Message;
+                    LocalizationHelper.Format(
+                        "RecoveryRestorePointCreateFailed",
+                        result.Message);
             }
             catch (Exception ex)
             {
                 StatusMessage =
-                    $"Restore point error: {ex.Message}";
+                    LocalizationHelper.Format(
+                        "RecoveryRestorePointError",
+                        ex.Message);
             }
             finally
             {
@@ -549,6 +661,10 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+
+        // ======================================
+        // ENABLE SYSTEM PROTECTION
+        // ======================================
 
         private async Task EnableSystemProtectionAsync()
         {
@@ -561,7 +677,8 @@ namespace WinBoost.App.ViewModels
                 true;
 
             StatusMessage =
-                "Enabling System Protection...";
+                LocalizationHelper.Get(
+                    "RecoveryEnablingSystemProtection");
 
             try
             {
@@ -572,13 +689,16 @@ namespace WinBoost.App.ViewModels
                 if (!result.IsSuccessful)
                 {
                     StatusMessage =
-                        result.Message;
+                        LocalizationHelper.Format(
+                            "RecoverySystemProtectionError",
+                            result.Message);
 
                     return;
                 }
 
                 StatusMessage =
-                    "System Protection was enabled successfully.";
+                    LocalizationHelper.Get(
+                        "RecoverySystemProtectionEnabled");
 
                 IsSystemProtectionActionRequired =
                     false;
@@ -591,7 +711,9 @@ namespace WinBoost.App.ViewModels
             catch (Exception ex)
             {
                 StatusMessage =
-                    $"System Protection error: {ex.Message}";
+                    LocalizationHelper.Format(
+                        "RecoverySystemProtectionError",
+                        ex.Message);
             }
             finally
             {
@@ -614,20 +736,26 @@ namespace WinBoost.App.ViewModels
             if (selectedRestorePoint == null)
             {
                 StatusMessage =
-                    "No restore point selected.";
+                    LocalizationHelper.Get(
+                        "RecoveryNoRestorePointSelected");
 
                 return;
             }
 
+            string confirmationMessage =
+                LocalizationHelper.Format(
+                    "RecoveryRestoreDialogMessage",
+                    selectedRestorePoint.CreatedAtDisplay,
+                    selectedRestorePoint.Description);
+
+            string confirmationTitle =
+                LocalizationHelper.Get(
+                    "RecoveryRestoreDialogTitle");
+
             MessageBoxResult confirmation =
                 MessageBox.Show(
-                    $"You are about to restore Windows to:\n\n" +
-                    $"{selectedRestorePoint.CreatedAtDisplay}\n" +
-                    $"{selectedRestorePoint.Description}\n\n" +
-                    "Applications, drivers and system settings installed " +
-                    "after this restore point may be affected.\n\n" +
-                    "Do you want to continue?",
-                    "WinBoost Pro 11 - System Restore",
+                    confirmationMessage,
+                    confirmationTitle,
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning);
 
@@ -635,7 +763,8 @@ namespace WinBoost.App.ViewModels
                 MessageBoxResult.Yes)
             {
                 StatusMessage =
-                    "System Restore was cancelled.";
+                    LocalizationHelper.Get(
+                        "RecoveryRestoreCancelled");
 
                 return;
             }
@@ -644,7 +773,8 @@ namespace WinBoost.App.ViewModels
                 true;
 
             StatusMessage =
-                "Starting System Restore...";
+                LocalizationHelper.Get(
+                    "RecoveryStartingRestore");
 
             try
             {
@@ -655,27 +785,38 @@ namespace WinBoost.App.ViewModels
 
                 if (!result.IsSuccessful)
                 {
+                    IsRestartRequired =
+                        false;
+
                     StatusMessage =
-                        result.Message;
+                        LocalizationHelper.Format(
+                            "RecoveryRestoreFailed",
+                            result.Message);
 
                     return;
                 }
 
-                StatusMessage =
-                    result.Message;
+                /*
+                 * Windows a acceptat restaurarea.
+                 * Calculatorul NU este repornit automat aici.
+                 */
 
-                MessageBox.Show(
-                    "System Restore was started successfully.\n\n" +
-                    "Windows must be restarted to complete the restoration.\n\n" +
-                    "WinBoost will not restart the computer automatically yet.",
-                    "WinBoost Pro 11 - System Restore",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                IsRestartRequired =
+                    true;
+
+                StatusMessage =
+                    LocalizationHelper.Get(
+                        "RecoveryRestorePrepared");
             }
             catch (Exception ex)
             {
+                IsRestartRequired =
+                    false;
+
                 StatusMessage =
-                    $"System Restore error: {ex.Message}";
+                    LocalizationHelper.Format(
+                        "RecoveryRestoreError",
+                        ex.Message);
             }
             finally
             {
@@ -684,6 +825,109 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+
+        // ======================================
+        // RESTART NOW
+        // ======================================
+
+        private Task RestartNowAsync()
+        {
+            if (!CanRestartNow)
+            {
+                return Task.CompletedTask;
+            }
+
+            string confirmationMessage =
+                LocalizationHelper.Get(
+                    "RecoveryRestartDialogMessage");
+
+            string confirmationTitle =
+                LocalizationHelper.Get(
+                    "RecoveryRestartDialogTitle");
+
+            MessageBoxResult confirmation =
+                MessageBox.Show(
+                    confirmationMessage,
+                    confirmationTitle,
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning);
+
+            if (confirmation !=
+                MessageBoxResult.Yes)
+            {
+                StatusMessage =
+                    LocalizationHelper.Get(
+                        "RecoveryRestartCancelled");
+
+                return Task.CompletedTask;
+            }
+
+            try
+            {
+                StatusMessage =
+                    LocalizationHelper.Get(
+                        "RecoveryRestarting");
+
+                var startInfo =
+                    new ProcessStartInfo
+                    {
+                        FileName =
+                            "shutdown.exe",
+
+                        Arguments =
+                            "/r /t 0",
+
+                        UseShellExecute =
+                            false,
+
+                        CreateNoWindow =
+                            true
+                    };
+
+                Process.Start(
+                    startInfo);
+            }
+            catch (Exception ex)
+            {
+                StatusMessage =
+                    LocalizationHelper.Format(
+                        "RecoveryWindowsRestartError",
+                        ex.Message);
+            }
+
+            return Task.CompletedTask;
+        }
+
+
+        // ======================================
+        // RESTART LATER
+        // ======================================
+
+        private Task RestartLaterAsync()
+        {
+            if (!CanRestartLater)
+            {
+                return Task.CompletedTask;
+            }
+
+            /*
+             * Nu schimbăm IsRestartRequired în false.
+             *
+             * Restaurarea rămâne pregătită, iar zona
+             * Restart required trebuie să rămână vizibilă.
+             */
+
+            StatusMessage =
+                LocalizationHelper.Get(
+                    "RecoveryRestartLaterMessage");
+
+            return Task.CompletedTask;
+        }
+
+
+        // ======================================
+        // SYSTEM PROTECTION ERROR DETECTION
+        // ======================================
 
         private static bool
             IsSystemProtectionDisabledResult(
@@ -701,6 +945,66 @@ namespace WinBoost.App.ViewModels
         }
 
 
+        // ======================================
+        // COMMAND STATES
+        // ======================================
+
+        private async void OnLanguageChanged(
+            object? sender,
+              EventArgs e)
+        {
+            /*
+             * Refacem mesajele dinamice atunci când
+             * utilizatorul schimbă limba RO / EN.
+             */
+
+            if (IsSystemRestoreAvailable)
+            {
+                AvailabilityMessage =
+                    LocalizationHelper.Get(
+                        "RecoverySystemRestoreAvailable");
+            }
+            else
+            {
+                AvailabilityMessage =
+                    LocalizationHelper.Get(
+                        "RecoverySystemRestoreUnavailable");
+            }
+
+            if (!IsLoadingRestorePoints)
+            {
+                RestorePointsMessage =
+                    RestorePoints.Count == 0
+                        ? LocalizationHelper.Get(
+                            "RecoveryNoRestorePoints")
+                        : LocalizationHelper.Format(
+                            "RecoveryRestorePointsFound",
+                            RestorePoints.Count);
+            }
+
+            if (IsRestartRequired)
+            {
+                StatusMessage =
+                    LocalizationHelper.Get(
+                        "RecoveryRestorePrepared");
+            }
+            else
+            {
+                StatusMessage =
+                    string.Empty;
+            }
+
+            /*
+             * Reîncărcăm punctele de restaurare pentru ca
+             * DisplayDescription și DisplayRestorePointTypeName
+             * să fie recalculate în limba nou selectată.
+             */
+
+            if (!IsLoadingRestorePoints)
+            {
+                await LoadRestorePointsAsync();
+            }
+        }
         private void NotifyCommandStates()
         {
             OnPropertyChanged(
@@ -712,6 +1016,12 @@ namespace WinBoost.App.ViewModels
             OnPropertyChanged(
                 nameof(CanRestoreSystem));
 
+            OnPropertyChanged(
+                nameof(CanRestartNow));
+
+            OnPropertyChanged(
+                nameof(CanRestartLater));
+
             _createRestorePointCommand
                 .RaiseCanExecuteChanged();
 
@@ -719,6 +1029,12 @@ namespace WinBoost.App.ViewModels
                 .RaiseCanExecuteChanged();
 
             _restoreSystemCommand
+                .RaiseCanExecuteChanged();
+
+            _restartNowCommand
+                .RaiseCanExecuteChanged();
+
+            _restartLaterCommand
                 .RaiseCanExecuteChanged();
         }
 

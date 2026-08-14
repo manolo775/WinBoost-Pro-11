@@ -1,4 +1,6 @@
 ﻿using System;
+using WinBoost.App.Helpers;
+using WinBoost.App.Localization;
 
 namespace WinBoost.App.Models
 {
@@ -44,5 +46,72 @@ namespace WinBoost.App.Models
             Description.StartsWith(
                 "WinBoost Pro 11",
                 StringComparison.OrdinalIgnoreCase);
+
+
+        // ======================================
+        // LOCALIZED DESCRIPTION
+        // ======================================
+
+        public string DisplayDescription
+        {
+            get
+            {
+                if (Description.Equals(
+                        "Restore Operation",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return LocalizationHelper.Get(
+                        "RecoveryRestoreOperation");
+                }
+
+                if (Description.StartsWith(
+                        "WinBoost Pro 11 - Safety Restore Point",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return LocalizationHelper.Get(
+                        "RecoveryWinBoostSafetyRestorePoint");
+                }
+
+                return Description;
+            }
+        }
+
+
+        // ======================================
+        // LOCALIZED RESTORE POINT TYPE
+        // ======================================
+
+        public string DisplayRestorePointTypeName
+        {
+            get
+            {
+                return RestorePointType switch
+                {
+                    0 =>
+                        LocalizationHelper.Get(
+                            "RecoveryTypeApplicationInstall"),
+
+                    1 =>
+                        LocalizationHelper.Get(
+                            "RecoveryTypeApplicationUninstall"),
+
+                    10 =>
+                        LocalizationHelper.Get(
+                            "RecoveryTypeDeviceDriverInstall"),
+
+                    12 =>
+                        LocalizationHelper.Get(
+                            "RecoveryTypeSystem"),
+
+                    13 =>
+                        LocalizationHelper.Get(
+                            "RecoveryTypeCancelledOperation"),
+
+                    _ =>
+                        LocalizationHelper.Get(
+                            "RecoveryTypeOther")
+                };
+            }
+        }
     }
 }

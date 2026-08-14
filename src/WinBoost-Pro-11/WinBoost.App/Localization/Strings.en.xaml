@@ -2302,5 +2302,267 @@
 	<sys:String x:Key="WindowsUpdateAdvisorMessageRecommendedUpdates">
 		{0} recommended Windows updates were detected.
 	</sys:String>
-	
+
+	<!-- ====================================== -->
+	<!-- RECOVERY & SAFETY -->
+	<!-- ====================================== -->
+
+	<sys:String x:Key="RecoveryPageTitle">
+		Recovery &amp; Safety
+	</sys:String>
+
+	<sys:String x:Key="RecoveryPageDescription">
+		Create and manage Windows restore points before important system changes.
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemRestorePointTitle">
+		System Restore Point
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemRestorePointDescription">
+		Create a safety restore point for the current Windows configuration.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryEnableSystemProtection">
+		Enable System Protection
+	</sys:String>
+
+	<sys:String x:Key="RecoveryCreateRestorePoint">
+		Create Restore Point
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointsTitle">
+		Restore Points
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointsDescription">
+		Select a restore point to prepare the system recovery process.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryCreated">
+		Created
+	</sys:String>
+
+	<sys:String x:Key="RecoveryWinBoostRestorePoint">
+		WinBoost Restore Point
+	</sys:String>
+
+	<sys:String x:Key="RecoveryType">
+		Type
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreSystem">
+		Restore System
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartRequired">
+		Restart required
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartRequiredDescription">
+		System Restore is prepared. Save your work before restarting Windows.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartNow">
+		Restart Now
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartLater">
+		Restart Later
+	</sys:String>
+
+
+	<!-- RECOVERY - STATUS AND MESSAGES -->
+
+	<sys:String x:Key="RecoveryCheckingAvailability">
+		Checking System Restore availability...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryLoadingRestorePoints">
+		Loading restore points...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryNoRestorePoints">
+		No restore points were found.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointsFound">
+		{0} restore points were found.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryCreatingRestorePoint">
+		Creating restore point...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointCreated">
+		The restore point was created successfully.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointCreateFailed">
+		The restore point could not be created: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoverySelectRestorePoint">
+		Select a restore point before continuing.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreConfirmationTitle">
+		System Restore Confirmation
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreConfirmationMessage">
+		Windows will return to the selected restore point.
+
+		Save all documents and close open applications before continuing.
+
+		Do you want to continue?
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreCancelled">
+		System Restore was cancelled.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryStartingRestore">
+		Starting System Restore...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePrepared">
+		System Restore is prepared. Restart Windows to complete the restoration.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreFailed">
+		System Restore could not be prepared: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartLaterMessage">
+		System Restore is prepared. Restart Windows manually when you are ready.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartingWindows">
+		Windows will restart to continue System Restore...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartFailed">
+		Windows could not be restarted: {0}
+	</sys:String>
+
+	<!-- RECOVERY - ADDITIONAL MESSAGES -->
+
+	<sys:String x:Key="RecoveryRestorePointsLoadFailed">
+		Restore points could not be loaded: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointCreatedWithDate">
+		The restore point was created successfully. Created at: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemProtectionDisabled">
+		System Protection is disabled for the system drive. Enable System Protection before creating a restore point.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestorePointError">
+		Restore point creation error: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoveryEnablingSystemProtection">
+		Enabling System Protection...
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemProtectionEnabled">
+		System Protection was enabled successfully.
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemProtectionError">
+		System Protection error: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoveryNoRestorePointSelected">
+		No restore point is selected.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreDialogTitle">
+		WinBoost Pro 11 - System Restore
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreDialogMessage">
+		Windows will be restored to:
+
+		{0}
+		{1}
+
+		Applications, drivers, and system settings installed after this restore point may be affected.
+
+		Do you want to continue?
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreError">
+		System Restore error: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartDialogTitle">
+		WinBoost Pro 11 - Restart Windows
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartDialogMessage">
+		Windows is ready to complete System Restore.
+
+		Save all open files and close other applications before continuing.
+
+		Restart the computer now?
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestartCancelled">
+		Restart was cancelled. System Restore is still waiting for a Windows restart.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestarting">
+		Restarting Windows...
+	</sys:String>
+
+	<sys:String x:Key="RecoveryWindowsRestartError">
+		Windows restart error: {0}
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemRestoreAvailable">
+		System Restore is available.
+	</sys:String>
+
+	<sys:String x:Key="RecoverySystemRestoreUnavailable">
+		System Restore is unavailable.
+	</sys:String>
+
+	<!-- RECOVERY - RESTORE POINT DATA -->
+
+	<sys:String x:Key="RecoveryRestoreOperation">
+		Restore Operation
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeApplicationInstall">
+		Application Install
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeApplicationUninstall">
+		Application Uninstall
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeDeviceDriverInstall">
+		Device Driver Install
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeSystem">
+		System
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeCancelledOperation">
+		Cancelled Operation
+	</sys:String>
+
+	<sys:String x:Key="RecoveryTypeOther">
+		Other
+	</sys:String>
+
+	<sys:String x:Key="RecoveryWinBoostSafetyRestorePoint">
+		WinBoost Pro 11 - Safety Restore Point
+	</sys:String>
+
 </ResourceDictionary>
