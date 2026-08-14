@@ -1,6 +1,4 @@
-﻿using System.Windows.Controls;
-using WinBoost.App.ViewModels;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using WinBoost.App.ViewModels;
 
