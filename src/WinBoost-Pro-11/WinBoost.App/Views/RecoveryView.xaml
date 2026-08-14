@@ -25,8 +25,8 @@
                 Value="Auto"/>
 
 			<Setter
-                Property="HorizontalScrollBarVisibility"
-                Value="Auto"/>
+                  Property="HorizontalScrollBarVisibility"
+                 Value="Disabled"/>
 
 			<Setter
                 Property="CanContentScroll"
@@ -129,7 +129,7 @@
 						<ScrollViewer
                             Style="{StaticResource RecoveryRestorePointsScrollViewerStyle}"
                             VerticalScrollBarVisibility="Auto"
-                            HorizontalScrollBarVisibility="Auto">
+                            HorizontalScrollBarVisibility="Disabled">
 
 							<ItemsPresenter/>
 
@@ -171,7 +171,7 @@
 				<TextBlock
                     Text="{DynamicResource RecoveryPageDescription}"
                     Margin="0,8,0,25"
-                    FontSize="14"
+                    FontSize="16"
                     TextWrapping="Wrap"
                     Foreground="{StaticResource SecondaryTextBrush}"/>
 
@@ -340,19 +340,21 @@
 										</Border.Style>
 
 
-										<Grid
-                                            MinWidth="650">
+										<Grid>
 
 											<Grid.ColumnDefinitions>
 
 												<ColumnDefinition
-                                                    Width="180"/>
+													Width="Auto"
+													MinWidth="145"/>
 
 												<ColumnDefinition
-                                                    Width="*"/>
+													Width="*"
+													MinWidth="180"/>
 
 												<ColumnDefinition
-                                                    Width="130"/>
+													Width="Auto"
+													MinWidth="90"/>
 
 											</Grid.ColumnDefinitions>
 
@@ -485,7 +487,7 @@
                                         Content="{DynamicResource RecoveryRestartNow}"
                                         Command="{Binding RestartNowCommand}"
                                         IsEnabled="{Binding CanRestartNow}"
-                                        Width="150"
+                                        Width="220"
                                         Height="42"
                                         Margin="0,0,12,0"/>
 
@@ -493,7 +495,7 @@
                                         Content="{DynamicResource RecoveryRestartLater}"
                                         Command="{Binding RestartLaterCommand}"
                                         IsEnabled="{Binding CanRestartLater}"
-                                        Width="150"
+                                        Width="220"
                                         Height="42"/>
 
 								</StackPanel>

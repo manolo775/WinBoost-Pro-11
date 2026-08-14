@@ -117,9 +117,7 @@ namespace WinBoost.App.Services.Recovery
                         SuccessCode,
 
                     Message =
-                        "Windows reported success, but no new restore point " +
-                        "was created. Windows may have skipped creation " +
-                        "because another restore point was created recently."
+                         "RECOVERY_NO_NEW_RESTORE_POINT"
                 };
             }
             catch (UnauthorizedAccessException ex)

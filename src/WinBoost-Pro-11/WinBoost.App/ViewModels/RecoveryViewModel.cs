@@ -131,6 +131,7 @@ namespace WinBoost.App.ViewModels
              LanguageManager.Instance,
               nameof(LanguageManager.LanguageChanged),
               OnLanguageChanged);
+
         }
 
 
@@ -642,10 +643,20 @@ namespace WinBoost.App.ViewModels
                     return;
                 }
 
-                StatusMessage =
-                    LocalizationHelper.Format(
-                        "RecoveryRestorePointCreateFailed",
-                        result.Message);
+                if (result.Message ==
+       "RECOVERY_NO_NEW_RESTORE_POINT")
+                {
+                    StatusMessage =
+                        LocalizationHelper.Get(
+                            "RecoveryNoNewRestorePoint");
+                }
+                else
+                {
+                    StatusMessage =
+                        LocalizationHelper.Format(
+                            "RecoveryRestorePointCreateFailed",
+                            result.Message);
+                }
             }
             catch (Exception ex)
             {

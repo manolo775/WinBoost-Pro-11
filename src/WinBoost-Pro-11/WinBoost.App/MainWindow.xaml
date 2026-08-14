@@ -310,7 +310,7 @@
 							Foreground="#4CAF50"/>
 
 						<TextBlock
-							Text="Recovery &amp; Safety"
+							Text="{DynamicResource MenuRecovery}"
 							VerticalAlignment="Center"/>
 
 					</StackPanel>

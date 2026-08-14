@@ -2566,4 +2566,12 @@
 		WinBoost Pro 11 - Punct de restaurare de siguranță
 	</sys:String>
 
+	<sys:String x:Key="MenuRecovery">
+		Recuperare și siguranță
+	</sys:String>
+
+	<sys:String x:Key="RecoveryNoNewRestorePoint">
+		Nu a fost creat un punct nou de restaurare. Windows poate limita crearea punctelor de restaurare atunci când unul a fost creat recent.
+	</sys:String>
+	
 </ResourceDictionary>

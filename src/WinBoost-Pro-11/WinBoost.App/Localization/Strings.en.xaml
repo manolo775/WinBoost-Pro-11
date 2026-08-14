@@ -2565,4 +2565,12 @@
 		WinBoost Pro 11 - Safety Restore Point
 	</sys:String>
 
+	<sys:String x:Key="MenuRecovery">
+		Recovery &amp; Safety
+	</sys:String>
+
+	<sys:String x:Key="RecoveryNoNewRestorePoint">
+		No new restore point was created. Windows may limit restore point creation when another restore point was created recently.
+	</sys:String>
+	
 </ResourceDictionary>
