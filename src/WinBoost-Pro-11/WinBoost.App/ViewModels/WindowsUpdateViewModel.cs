@@ -776,9 +776,7 @@ namespace WinBoost.App.ViewModels
 
                 if (update == null)
                 {
-                    item.IsSelected =
-                        false;
-
+                    item.IsSelected = false;
                     continue;
                 }
 
@@ -787,10 +785,7 @@ namespace WinBoost.App.ViewModels
                         .Analyze(update);
 
                 item.IsSelected =
-                    advisorResult.Type ==
-                        WindowsUpdateAdvisorType.Security ||
-                    advisorResult.Type ==
-                        WindowsUpdateAdvisorType.System;
+                    advisorResult.IsRecommended;
             }
 
             OnPropertyChanged(
@@ -1282,10 +1277,7 @@ namespace WinBoost.App.ViewModels
                         .Analyze(update);
 
                 bool isSelectedByDefault =
-                    advisorResult.Type ==
-                        WindowsUpdateAdvisorType.Security ||
-                    advisorResult.Type ==
-                        WindowsUpdateAdvisorType.System;
+                     advisorResult.IsRecommended;
 
                 bool isSelected =
                     hadExistingItems

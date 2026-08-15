@@ -226,6 +226,26 @@
 	<sys:String x:Key="ServicesOperationErrorTitle">The operation could not be completed</sys:String>
 	<sys:String x:Key="ServicesOperationCompleted">{0}: {1}</sys:String>
 
+	<sys:String x:Key="ServicesOperationErrorAccessDenied">
+		Windows denied the operation for the “{0}” service. Run WinBoost as administrator and try again.
+	</sys:String>
+
+	<sys:String x:Key="ServicesOperationErrorTimeout">
+		The “{0}” service did not respond within the allowed time. The operation could not be completed.
+	</sys:String>
+
+	<sys:String x:Key="ServicesOperationErrorStart">
+		The “{0}” service could not be started.
+	</sys:String>
+
+	<sys:String x:Key="ServicesOperationErrorStop">
+		The “{0}” service could not be stopped.
+	</sys:String>
+
+	<sys:String x:Key="ServicesOperationErrorGeneric">
+		The operation for the “{0}” service could not be completed.
+	</sys:String>
+
 	<sys:String x:Key="ServicesStartConfirmation">
 		Do you want to start this service?
 
@@ -2594,4 +2614,40 @@
 		No
 	</sys:String>
 
+	<sys:String x:Key="ServicesApplyStartupType">
+		Apply
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeBlockedTitle">
+		Operation blocked
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeBlockedMessage">
+		WinBoost does not allow changing the startup type for this critical service.
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeConfirmationTitle">
+		Confirm startup type
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeConfirmation">
+		Do you want to change the startup type for the “{0}” service ({1}) from “{2}” to “{3}”?
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeApplyFailedTitle">
+		The change could not be applied
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeApplyFailedMessage">
+		The startup type for the “{0}” service could not be changed.
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeUpdatedTitle">
+		Startup type updated
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeUpdatedMessage">
+		The startup type for the “{0}” service was changed to “{1}”.
+	</sys:String>
+	
 </ResourceDictionary>

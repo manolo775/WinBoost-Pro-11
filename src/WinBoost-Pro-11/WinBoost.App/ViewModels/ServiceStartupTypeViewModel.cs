@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Windows;
+using WinBoost.App.Helpers;
+using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.ServicesManager;
 
@@ -28,9 +30,10 @@ namespace WinBoost.App.ViewModels
             if (!service.CanChangeStartupType)
             {
                 MessageBox.Show(
-                    "WinBoost nu permite schimbarea tipului de pornire " +
-                    "pentru acest serviciu critic.",
-                    "Operație blocată",
+                    LocalizationHelper.Get(
+                        "ServicesStartupTypeBlockedMessage"),
+                    LocalizationHelper.Get(
+                        "ServicesStartupTypeBlockedTitle"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
 
@@ -50,18 +53,25 @@ namespace WinBoost.App.ViewModels
             string selectedStartupType =
                 service.SelectedStartupType;
 
-            MessageBoxResult confirmation =
-                MessageBox.Show(
-                    $"Dorești să schimbi tipul de pornire pentru:\n\n" +
-                    $"{service.DisplayName}\n" +
-                    $"({service.ServiceName})\n\n" +
-                    $"Din: {previousStartupType}\n" +
-                    $"În: {selectedStartupType}",
-                    "Confirmare tip pornire",
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
+            bool confirmed =
+                NativeConfirmationDialog.Ask(
+                    Application.Current.MainWindow,
+                    LocalizationHelper.Get(
+                        "ServicesStartupTypeConfirmationTitle"),
+                    LocalizationHelper.Format(
+                        "ServicesStartupTypeConfirmation",
+                        service.DisplayName,
+                        service.ServiceName,
+                        GetStartupTypeText(
+                            previousStartupType),
+                        GetStartupTypeText(
+                            selectedStartupType)),
+                    LocalizationHelper.Get(
+                        "WindowsUpdateYes"),
+                    LocalizationHelper.Get(
+                        "WindowsUpdateNo"));
 
-            if (confirmation != MessageBoxResult.Yes)
+            if (!confirmed)
             {
                 service.CancelStartupTypeChange();
 
@@ -83,8 +93,11 @@ namespace WinBoost.App.ViewModels
                     service.CancelStartupTypeChange();
 
                     MessageBox.Show(
-                        result.Message,
-                        "Modificarea nu a putut fi aplicată",
+                        LocalizationHelper.Format(
+                            "ServicesStartupTypeApplyFailedMessage",
+                            service.DisplayName),
+                        LocalizationHelper.Get(
+                            "ServicesStartupTypeApplyFailedTitle"),
                         MessageBoxButton.OK,
                         MessageBoxImage.Warning);
 
@@ -94,21 +107,28 @@ namespace WinBoost.App.ViewModels
                 service.ConfirmStartupTypeChange();
 
                 MessageBox.Show(
-                    result.Message,
-                    "Tip de pornire actualizat",
+                    LocalizationHelper.Format(
+                        "ServicesStartupTypeUpdatedMessage",
+                        service.DisplayName,
+                        GetStartupTypeText(
+                            service.StartType)),
+                    LocalizationHelper.Get(
+                        "ServicesStartupTypeUpdatedTitle"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Information);
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 service.CancelStartupTypeChange();
 
                 MessageBox.Show(
-                    $"Tipul de pornire nu a putut fi schimbat:\n\n" +
-                    ex.Message,
-                    "Eroare",
+                    LocalizationHelper.Format(
+                        "ServicesStartupTypeApplyFailedMessage",
+                        service.DisplayName),
+                    LocalizationHelper.Get(
+                        "ServicesStartupTypeApplyFailedTitle"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Error);
 
@@ -118,6 +138,32 @@ namespace WinBoost.App.ViewModels
             {
                 service.IsBusy = false;
             }
+        }
+
+        private static string GetStartupTypeText(
+            string startupType)
+        {
+            return startupType switch
+            {
+                WindowsServiceInfo.StartupAutomatic =>
+                    LocalizationHelper.Get(
+                        "ServicesStartupAutomatic"),
+
+                WindowsServiceInfo.StartupAutomaticDelayed =>
+                    LocalizationHelper.Get(
+                        "ServicesStartupAutomaticDelayed"),
+
+                WindowsServiceInfo.StartupManual =>
+                    LocalizationHelper.Get(
+                        "ServicesStartupManual"),
+
+                WindowsServiceInfo.StartupDisabled =>
+                    LocalizationHelper.Get(
+                        "ServicesStartupDisabled"),
+
+                _ =>
+                    startupType
+            };
         }
     }
 }

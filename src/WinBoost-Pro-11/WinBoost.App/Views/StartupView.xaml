@@ -467,11 +467,10 @@
 			<!-- LISTA APLICAȚIILOR -->
 
 			<Border
-                Grid.Row="3"
-                Margin="0,20,0,0"
-                Padding="22"
-                CornerRadius="10"
-                Background="{StaticResource CardBrush}">
+    Grid.Row="3"
+    Margin="0,20,0,0"
+    Padding="22"
+    Style="{StaticResource InteractiveCardStyle}">
 
 				<Grid>
 

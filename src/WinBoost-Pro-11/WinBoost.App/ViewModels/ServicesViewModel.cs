@@ -10,6 +10,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using WinBoost.App.Commands;
+using WinBoost.App.Helpers;
 using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Health;
@@ -511,7 +512,7 @@ namespace WinBoost.App.ViewModels
         }
 
         private async Task StartServiceAsync(
-            WindowsServiceInfo? service)
+     WindowsServiceInfo? service)
         {
             if (service == null ||
                 service.IsBusy)
@@ -519,19 +520,21 @@ namespace WinBoost.App.ViewModels
                 return;
             }
 
-            MessageBoxResult confirmation =
-                MessageBox.Show(
+            bool confirmed =
+                NativeConfirmationDialog.Ask(
+                    Application.Current.MainWindow,
+                    LocalizationHelper.Get(
+                        "ServicesStartDialogTitle"),
                     LocalizationHelper.Format(
                         "ServicesStartConfirmation",
                         service.DisplayName,
                         service.ServiceName),
                     LocalizationHelper.Get(
-                        "ServicesStartDialogTitle"),
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
+                        "WindowsUpdateYes"),
+                    LocalizationHelper.Get(
+                        "WindowsUpdateNo"));
 
-            if (confirmation !=
-                MessageBoxResult.Yes)
+            if (!confirmed)
             {
                 return;
             }
@@ -565,19 +568,21 @@ namespace WinBoost.App.ViewModels
                 return;
             }
 
-            MessageBoxResult confirmation =
-                MessageBox.Show(
+            bool confirmed =
+                NativeConfirmationDialog.Ask(
+                    Application.Current.MainWindow,
+                    LocalizationHelper.Get(
+                        "ServicesStopDialogTitle"),
                     LocalizationHelper.Format(
                         "ServicesStopConfirmation",
                         service.DisplayName,
                         service.ServiceName),
                     LocalizationHelper.Get(
-                        "ServicesStopDialogTitle"),
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
+                        "WindowsUpdateYes"),
+                    LocalizationHelper.Get(
+                        "WindowsUpdateNo"));
 
-            if (confirmation !=
-                MessageBoxResult.Yes)
+            if (!confirmed)
             {
                 return;
             }
@@ -611,19 +616,21 @@ namespace WinBoost.App.ViewModels
                 return;
             }
 
-            MessageBoxResult confirmation =
-                MessageBox.Show(
+            bool confirmed =
+                NativeConfirmationDialog.Ask(
+                    Application.Current.MainWindow,
+                    LocalizationHelper.Get(
+                        "ServicesRestartDialogTitle"),
                     LocalizationHelper.Format(
                         "ServicesRestartConfirmation",
                         service.DisplayName,
                         service.ServiceName),
                     LocalizationHelper.Get(
-                        "ServicesRestartDialogTitle"),
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Question);
+                        "WindowsUpdateYes"),
+                    LocalizationHelper.Get(
+                        "WindowsUpdateNo"));
 
-            if (confirmation !=
-                MessageBoxResult.Yes)
+            if (!confirmed)
             {
                 return;
             }
@@ -649,13 +656,14 @@ namespace WinBoost.App.ViewModels
         }
 
         private void HandleOperationResult(
-            WindowsServiceInfo service,
-            ServiceOperationResult result,
-            string fallbackStatus)
+    WindowsServiceInfo service,
+    ServiceOperationResult result,
+    string fallbackStatus)
         {
             if (!result.IsSuccessful)
             {
                 ShowOperationError(
+                    service,
                     result.Message);
 
                 return;
@@ -706,15 +714,99 @@ namespace WinBoost.App.ViewModels
             ApplyFilter();
         }
 
-        private static void ShowOperationError(
+        private void ShowOperationError(
+            WindowsServiceInfo service,
             string message)
         {
+            string localizedMessage =
+                GetLocalizedOperationError(
+                    service,
+                    message);
+
             MessageBox.Show(
-                message,
+                localizedMessage,
                 LocalizationHelper.Get(
                     "ServicesOperationErrorTitle"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Warning);
+        }
+
+        private static string GetLocalizedOperationError(
+            WindowsServiceInfo service,
+            string message)
+        {
+            string sourceMessage =
+                message ?? string.Empty;
+
+            if (sourceMessage.Contains(
+                    "access is denied",
+                    StringComparison.OrdinalIgnoreCase) ||
+                sourceMessage.Contains(
+                    "access denied",
+                    StringComparison.OrdinalIgnoreCase) ||
+                sourceMessage.Contains(
+                    "refuzat",
+                    StringComparison.OrdinalIgnoreCase) ||
+                sourceMessage.Contains(
+                    "administrator",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return LocalizationHelper.Format(
+                    "ServicesOperationErrorAccessDenied",
+                    service.DisplayName);
+            }
+
+            if (sourceMessage.Contains(
+                    "specified time interval",
+                    StringComparison.OrdinalIgnoreCase) ||
+                sourceMessage.Contains(
+                    "timed out",
+                    StringComparison.OrdinalIgnoreCase) ||
+                sourceMessage.Contains(
+                    "timeout",
+                    StringComparison.OrdinalIgnoreCase) ||
+                sourceMessage.Contains(
+                    "did not respond",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return LocalizationHelper.Format(
+                    "ServicesOperationErrorTimeout",
+                    service.DisplayName);
+            }
+
+            if (sourceMessage.Contains(
+                    "could not be started",
+                    StringComparison.OrdinalIgnoreCase) ||
+                sourceMessage.Contains(
+                    "cannot start",
+                    StringComparison.OrdinalIgnoreCase) ||
+                sourceMessage.Contains(
+                    "could not start",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return LocalizationHelper.Format(
+                    "ServicesOperationErrorStart",
+                    service.DisplayName);
+            }
+
+            if (sourceMessage.Contains(
+                    "could not be stopped",
+                    StringComparison.OrdinalIgnoreCase) ||
+                sourceMessage.Contains(
+                    "cannot stop",
+                    StringComparison.OrdinalIgnoreCase) ||
+                sourceMessage.Contains(
+                    "could not stop",
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                return LocalizationHelper.Format(
+                    "ServicesOperationErrorStop",
+                    service.DisplayName);
+            }
+
+            return LocalizationHelper.Format(
+                "ServicesOperationErrorGeneric",
+                service.DisplayName);
         }
 
         private void RestartSearchDelay()

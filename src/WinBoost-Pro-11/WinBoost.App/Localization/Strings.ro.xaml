@@ -226,6 +226,26 @@
 	<sys:String x:Key="ServicesOperationErrorTitle">Operația nu a putut fi executată</sys:String>
 	<sys:String x:Key="ServicesOperationCompleted">{0}: {1}</sys:String>
 
+	<sys:String x:Key="ServicesOperationErrorAccessDenied">
+		Windows a refuzat operația pentru serviciul „{0}”. Pornește WinBoost ca administrator și încearcă din nou.
+	</sys:String>
+
+	<sys:String x:Key="ServicesOperationErrorTimeout">
+		Serviciul „{0}” nu a răspuns în timpul permis. Operația nu a putut fi finalizată.
+	</sys:String>
+
+	<sys:String x:Key="ServicesOperationErrorStart">
+		Serviciul „{0}” nu a putut fi pornit.
+	</sys:String>
+
+	<sys:String x:Key="ServicesOperationErrorStop">
+		Serviciul „{0}” nu a putut fi oprit.
+	</sys:String>
+
+	<sys:String x:Key="ServicesOperationErrorGeneric">
+		Operația pentru serviciul „{0}” nu a putut fi finalizată.
+	</sys:String>
+	
 	<sys:String x:Key="ServicesStartConfirmation">
 		Dorești să pornești serviciul:
 
@@ -2592,6 +2612,42 @@
 
 	<sys:String x:Key="RecoveryRestoreConfirmNo">
 		Nu
+	</sys:String>
+
+	<sys:String x:Key="ServicesApplyStartupType">
+		Aplică
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeBlockedTitle">
+		Operație blocată
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeBlockedMessage">
+		WinBoost nu permite schimbarea tipului de pornire pentru acest serviciu critic.
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeConfirmationTitle">
+		Confirmare tip pornire
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeConfirmation">
+		Dorești să schimbi tipul de pornire pentru serviciul „{0}” ({1}) de la „{2}” la „{3}”?
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeApplyFailedTitle">
+		Modificarea nu a putut fi aplicată
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeApplyFailedMessage">
+		Tipul de pornire pentru serviciul „{0}” nu a putut fi schimbat.
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeUpdatedTitle">
+		Tip de pornire actualizat
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeUpdatedMessage">
+		Tipul de pornire pentru serviciul „{0}” a fost schimbat în „{1}”.
 	</sys:String>
 	
 </ResourceDictionary>
