@@ -50,9 +50,9 @@ namespace WinBoost.RecoveryWorker
                 }
 
                 if (string.Equals(
-                        command,
-                        "--list",
-                        StringComparison.OrdinalIgnoreCase))
+                 command,
+                 "--list",
+                 StringComparison.OrdinalIgnoreCase))
                 {
                     string outputPath =
                         ParseArgumentValue(
@@ -67,6 +67,29 @@ namespace WinBoost.RecoveryWorker
 
                     return WriteRestorePointList(
                         outputPath);
+                }
+
+                if (string.Equals(
+                        command,
+                        "--restore",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    string sequenceNumberText =
+                        ParseArgumentValue(
+                            args,
+                            "--sequence-number=");
+
+                    if (!uint.TryParse(
+                            sequenceNumberText,
+                            NumberStyles.Integer,
+                            CultureInfo.InvariantCulture,
+                            out uint sequenceNumber))
+                    {
+                        return InvalidArgumentsExitCode;
+                    }
+
+                    return RestoreSystem(
+                        sequenceNumber);
                 }
 
                 return InvalidArgumentsExitCode;
@@ -248,6 +271,70 @@ namespace WinBoost.RecoveryWorker
             }
 
             return sequenceNumbers;
+        }
+
+        private static int RestoreSystem(
+    uint sequenceNumber)
+        {
+            var connectionOptions =
+                new ConnectionOptions
+                {
+                    Impersonation =
+                        ImpersonationLevel.Impersonate,
+
+                    EnablePrivileges =
+                        true
+                };
+
+            var scope =
+                new ManagementScope(
+                    @"\\.\root\default",
+                    connectionOptions);
+
+            scope.Connect();
+
+            var path =
+                new ManagementPath(
+                    "SystemRestore");
+
+            using var restoreClass =
+                new ManagementClass(
+                    scope,
+                    path,
+                    null);
+
+            using ManagementBaseObject?
+                inputParameters =
+                    restoreClass
+                        .GetMethodParameters(
+                            "Restore");
+
+            if (inputParameters == null)
+            {
+                return OperationFailedExitCode;
+            }
+
+            inputParameters[
+                "SequenceNumber"] =
+                    sequenceNumber;
+
+            using ManagementBaseObject?
+                outputParameters =
+                    restoreClass
+                        .InvokeMethod(
+                            "Restore",
+                            inputParameters,
+                            null);
+
+            uint returnCode =
+                Convert.ToUInt32(
+                    outputParameters?[
+                        "ReturnValue"]
+                    ?? 1u);
+
+            return returnCode == 0
+                ? SuccessExitCode
+                : OperationFailedExitCode;
         }
 
         private static int WriteRestorePointList(

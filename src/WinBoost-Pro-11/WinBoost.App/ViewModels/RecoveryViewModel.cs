@@ -13,6 +13,8 @@ using WinBoost.App.Models;
 using WinBoost.App.Services.Recovery;
 using System.Text.Json;
 using System.IO;
+using System.Xml.Linq;
+using System.Linq;
 
 namespace WinBoost.App.ViewModels
 {
@@ -29,6 +31,15 @@ namespace WinBoost.App.ViewModels
                "WinBoost Pro 11",
               "Recovery",
                "restore-points-cache.json");
+
+        private static readonly string
+    PendingRestorePath =
+        Path.Combine(
+            Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData),
+            "WinBoost Pro 11",
+            "Recovery",
+            "pending-restore.json");
 
         private readonly SystemRestorePointService
             _restorePointService;
@@ -79,6 +90,11 @@ namespace WinBoost.App.ViewModels
         private string _statusMessage =
             string.Empty;
 
+        private string? _statusMessageResourceKey;
+
+        private object[] _statusMessageArguments =
+            Array.Empty<object>();
+
         private string _restorePointsMessage =
             string.Empty;
 
@@ -101,17 +117,17 @@ namespace WinBoost.App.ViewModels
                         CanCreateRestorePoint);
 
             _refreshRestorePointsCommand =
-                    new AsyncRelayCommand(
-LoadRestorePointsAsync,
-() =>
-!IsLoadingRestorePoints);
+      new AsyncRelayCommand(
+          RefreshRestorePointsAsync,
+          () =>
+              !IsLoadingRestorePoints);
 
             _enableSystemProtectionCommand =
                 new AsyncRelayCommand(
                     EnableSystemProtectionAsync,
                     () =>
                         CanEnableSystemProtection);
-  
+
             _restoreSystemCommand =
                 new AsyncRelayCommand(
                     RestoreSystemAsync,
@@ -544,6 +560,13 @@ LoadRestorePointsAsync,
         // LOAD RESTORE POINTS
         // ======================================
 
+
+        private async Task RefreshRestorePointsAsync()
+        {
+            ClearStatusMessage();
+
+            await LoadRestorePointsAsync();
+        }
         public async Task LoadRestorePointsAsync()
         {
             if (IsLoadingRestorePoints)
@@ -747,9 +770,8 @@ LoadRestorePointsAsync,
             IsCreatingRestorePoint =
                 true;
 
-            StatusMessage =
-                LocalizationHelper.Get(
-                    "RecoveryCreatingRestorePoint");
+            SetLocalizedStatusMessage(
+                "RecoveryCreatingRestorePoint");
 
             try
             {
@@ -768,10 +790,9 @@ LoadRestorePointsAsync,
                 if (!System.IO.File.Exists(
                         workerPath))
                 {
-                    StatusMessage =
-                        LocalizationHelper.Format(
-                            "RecoveryRestorePointError",
-                            $"Recovery worker not found: {workerPath}");
+                    SetLocalizedStatusMessage(
+                        "RecoveryRestorePointError",
+                        $"Recovery worker not found: {workerPath}");
 
                     return;
                 }
@@ -801,10 +822,9 @@ LoadRestorePointsAsync,
 
                 if (workerProcess == null)
                 {
-                    StatusMessage =
-                        LocalizationHelper.Format(
-                            "RecoveryRestorePointError",
-                            "WinBoost Recovery Worker could not be started.");
+                    SetLocalizedStatusMessage(
+                        "RecoveryRestorePointError",
+                        "WinBoost Recovery Worker could not be started.");
 
                     return;
                 }
@@ -814,9 +834,8 @@ LoadRestorePointsAsync,
 
                 if (workerProcess.ExitCode == 21)
                 {
-                    StatusMessage =
-                        LocalizationHelper.Get(
-                            "RecoveryNoNewRestorePoint");
+                    SetLocalizedStatusMessage(
+                        "RecoveryNoNewRestorePoint");
 
                     await LoadRestorePointsAsync();
 
@@ -825,11 +844,10 @@ LoadRestorePointsAsync,
 
                 if (workerProcess.ExitCode != 0)
                 {
-                    StatusMessage =
-                        LocalizationHelper.Format(
-                            "RecoveryRestorePointCreateFailed",
-                            $"Recovery Worker exit code: " +
-                            $"{workerProcess.ExitCode}");
+                    SetLocalizedStatusMessage(
+                        "RecoveryRestorePointCreateFailed",
+                        $"Recovery Worker exit code: " +
+                        $"{workerProcess.ExitCode}");
 
                     return;
                 }
@@ -837,11 +855,10 @@ LoadRestorePointsAsync,
                 IsSystemProtectionActionRequired =
                     false;
 
-                StatusMessage =
-                    LocalizationHelper.Format(
-                        "RecoveryRestorePointCreatedWithDate",
-                        createdAt.ToString(
-                            "dd.MM.yyyy HH:mm:ss"));
+                SetLocalizedStatusMessage(
+                    "RecoveryRestorePointCreatedWithDate",
+                    createdAt.ToString(
+                        "dd.MM.yyyy HH:mm:ss"));
 
                 await Task.Delay(
                     TimeSpan.FromSeconds(2));
@@ -852,23 +869,20 @@ LoadRestorePointsAsync,
             {
                 if (ex.NativeErrorCode == 1223)
                 {
-                    StatusMessage =
-                        string.Empty;
+                    ClearStatusMessage();
 
                     return;
                 }
 
-                StatusMessage =
-                    LocalizationHelper.Format(
-                        "RecoveryRestorePointError",
-                        ex.Message);
+                SetLocalizedStatusMessage(
+                    "RecoveryRestorePointError",
+                    ex.Message);
             }
             catch (Exception ex)
             {
-                StatusMessage =
-                    LocalizationHelper.Format(
-                        "RecoveryRestorePointError",
-                        ex.Message);
+                SetLocalizedStatusMessage(
+                    "RecoveryRestorePointError",
+                    ex.Message);
             }
             finally
             {
@@ -892,9 +906,8 @@ LoadRestorePointsAsync,
             IsEnablingSystemProtection =
                 true;
 
-            StatusMessage =
-                LocalizationHelper.Get(
-                    "RecoveryEnablingSystemProtection");
+            SetLocalizedStatusMessage(
+                "RecoveryEnablingSystemProtection");
 
             try
             {
@@ -904,17 +917,15 @@ LoadRestorePointsAsync,
 
                 if (!result.IsSuccessful)
                 {
-                    StatusMessage =
-                        LocalizationHelper.Format(
-                            "RecoverySystemProtectionError",
-                            result.Message);
+                    SetLocalizedStatusMessage(
+                        "RecoverySystemProtectionError",
+                        result.Message);
 
                     return;
                 }
 
-                StatusMessage =
-                    LocalizationHelper.Get(
-                        "RecoverySystemProtectionEnabled");
+                SetLocalizedStatusMessage(
+                    "RecoverySystemProtectionEnabled");
 
                 IsSystemProtectionActionRequired =
                     false;
@@ -926,10 +937,9 @@ LoadRestorePointsAsync,
             }
             catch (Exception ex)
             {
-                StatusMessage =
-                    LocalizationHelper.Format(
-                        "RecoverySystemProtectionError",
-                        ex.Message);
+                SetLocalizedStatusMessage(
+                    "RecoverySystemProtectionError",
+                    ex.Message);
             }
             finally
             {
@@ -951,66 +961,118 @@ LoadRestorePointsAsync,
 
             if (selectedRestorePoint == null)
             {
-                StatusMessage =
-                    LocalizationHelper.Get(
-                        "RecoveryNoRestorePointSelected");
+                SetLocalizedStatusMessage(
+                    "RecoveryNoRestorePointSelected");
 
                 return;
             }
 
             string confirmationMessage =
-                LocalizationHelper.Format(
-                    "RecoveryRestoreDialogMessage",
-                    selectedRestorePoint.CreatedAtDisplay,
-                    selectedRestorePoint.Description);
+           LocalizationHelper.Format(
+               "RecoveryRestoreDialogMessage",
+               selectedRestorePoint.CreatedAtDisplay,
+               selectedRestorePoint.Description);
 
             string confirmationTitle =
                 LocalizationHelper.Get(
                     "RecoveryRestoreDialogTitle");
 
-            MessageBoxResult confirmation =
-                MessageBox.Show(
-                    confirmationMessage,
-                    confirmationTitle,
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
+            bool confirmation =
+      NativeConfirmationDialog.Ask(
+          Application.Current.MainWindow,
+          confirmationTitle,
+          confirmationMessage,
+          LocalizationHelper.Get(
+              "RecoveryRestoreConfirmYes"),
+          LocalizationHelper.Get(
+              "RecoveryRestoreConfirmNo"));
 
-            if (confirmation !=
-                MessageBoxResult.Yes)
+            if (!confirmation)
             {
-                StatusMessage =
-                    LocalizationHelper.Get(
-                        "RecoveryRestoreCancelled");
+                SetLocalizedStatusMessage(
+                    "RecoveryRestoreCancelled");
 
                 return;
             }
-
             IsRestoringSystem =
                 true;
 
-            StatusMessage =
-                LocalizationHelper.Get(
-                    "RecoveryStartingRestore");
+            SetLocalizedStatusMessage(
+                "RecoveryStartingRestore");
 
             try
             {
-                SystemRestorePointResult result =
-                    await _restorePointService
-                        .RestoreSystemAsync(
-                            selectedRestorePoint.SequenceNumber);
+                string workerPath =
+                    Path.Combine(
+                        AppContext.BaseDirectory,
+                        "WinBoost.RecoveryWorker.exe");
 
-                if (!result.IsSuccessful)
+                if (!File.Exists(
+                        workerPath))
                 {
                     IsRestartRequired =
                         false;
 
-                    StatusMessage =
-                        LocalizationHelper.Format(
-                            "RecoveryRestoreFailed",
-                            result.Message);
+                    SetLocalizedStatusMessage(
+                        "RecoveryRestoreError",
+                        $"Recovery worker not found: {workerPath}");
 
                     return;
                 }
+
+                var startInfo =
+                    new ProcessStartInfo
+                    {
+                        FileName =
+                            workerPath,
+
+                        UseShellExecute =
+                            true,
+
+                        Verb =
+                            "runas"
+                    };
+
+                startInfo.ArgumentList.Add(
+                    "--restore");
+
+                startInfo.ArgumentList.Add(
+                    $"--sequence-number={selectedRestorePoint.SequenceNumber}");
+
+                Process? workerProcess =
+                    Process.Start(
+                        startInfo);
+
+                if (workerProcess == null)
+                {
+                    IsRestartRequired =
+                        false;
+
+                    SetLocalizedStatusMessage(
+                        "RecoveryRestoreError",
+                        "WinBoost Recovery Worker could not be started.");
+
+                    return;
+                }
+
+                await workerProcess
+                    .WaitForExitAsync();
+
+                if (workerProcess.ExitCode != 0)
+                {
+                    IsRestartRequired =
+                        false;
+
+                    SetLocalizedStatusMessage(
+                        "RecoveryRestoreFailed",
+                        $"Recovery Worker exit code: " +
+                        $"{workerProcess.ExitCode}");
+
+                    return;
+                }
+
+                await SavePendingRestoreAsync(
+                    selectedRestorePoint);
 
                 /*
                  * Windows a acceptat restaurarea.
@@ -1020,19 +1082,26 @@ LoadRestorePointsAsync,
                 IsRestartRequired =
                     true;
 
-                StatusMessage =
-                    LocalizationHelper.Get(
-                        "RecoveryRestorePrepared");
+                SetLocalizedStatusMessage(
+                    "RecoveryRestorePrepared");
+            }
+            catch (System.ComponentModel.Win32Exception ex)
+                when (ex.NativeErrorCode == 1223)
+            {
+                IsRestartRequired =
+                    false;
+
+                SetLocalizedStatusMessage(
+                    "RecoveryRestoreCancelled");
             }
             catch (Exception ex)
             {
                 IsRestartRequired =
                     false;
 
-                StatusMessage =
-                    LocalizationHelper.Format(
-                        "RecoveryRestoreError",
-                        ex.Message);
+                SetLocalizedStatusMessage(
+                    "RecoveryRestoreError",
+                    ex.Message);
             }
             finally
             {
@@ -1071,18 +1140,16 @@ LoadRestorePointsAsync,
             if (confirmation !=
                 MessageBoxResult.Yes)
             {
-                StatusMessage =
-                    LocalizationHelper.Get(
-                        "RecoveryRestartCancelled");
+                SetLocalizedStatusMessage(
+                    "RecoveryRestartCancelled");
 
                 return Task.CompletedTask;
             }
 
             try
             {
-                StatusMessage =
-                    LocalizationHelper.Get(
-                        "RecoveryRestarting");
+                SetLocalizedStatusMessage(
+                    "RecoveryRestarting");
 
                 var startInfo =
                     new ProcessStartInfo
@@ -1105,10 +1172,9 @@ LoadRestorePointsAsync,
             }
             catch (Exception ex)
             {
-                StatusMessage =
-                    LocalizationHelper.Format(
-                        "RecoveryWindowsRestartError",
-                        ex.Message);
+                SetLocalizedStatusMessage(
+                    "RecoveryWindowsRestartError",
+                    ex.Message);
             }
 
             return Task.CompletedTask;
@@ -1133,9 +1199,8 @@ LoadRestorePointsAsync,
              * Restart required trebuie să rămână vizibilă.
              */
 
-            StatusMessage =
-                LocalizationHelper.Get(
-                    "RecoveryRestartLaterMessage");
+            SetLocalizedStatusMessage(
+                "RecoveryRestartLaterMessage");
 
             return Task.CompletedTask;
         }
@@ -1327,6 +1392,286 @@ LoadRestorePointsAsync,
                 json);
         }
 
+        private sealed class PendingRestoreInfo
+        {
+            public uint SequenceNumber
+            {
+                get;
+                init;
+            }
+
+            public string Description
+            {
+                get;
+                init;
+            } = string.Empty;
+
+            public DateTime RestorePointCreatedAt
+            {
+                get;
+                init;
+            }
+
+            public DateTime RequestedAt
+            {
+                get;
+                init;
+            }
+        }
+
+        private static async Task SavePendingRestoreAsync(
+    SystemRestorePointInfo restorePoint)
+        {
+            string? directory =
+                Path.GetDirectoryName(
+                    PendingRestorePath);
+
+            if (!string.IsNullOrWhiteSpace(
+                    directory))
+            {
+                Directory.CreateDirectory(
+                    directory);
+            }
+
+            var pendingRestore =
+                new PendingRestoreInfo
+                {
+                    SequenceNumber =
+                        restorePoint.SequenceNumber,
+
+                    Description =
+                        restorePoint.Description,
+
+                    RestorePointCreatedAt =
+                        restorePoint.CreatedAt,
+
+                    RequestedAt =
+                        DateTime.Now
+                };
+
+            string json =
+                JsonSerializer.Serialize(
+                    pendingRestore,
+                    new JsonSerializerOptions
+                    {
+                        WriteIndented =
+                            true
+                    });
+
+            await File.WriteAllTextAsync(
+                PendingRestorePath,
+                json);
+        }
+
+        private static async Task<DateTime?>
+    GetLastSuccessfulSystemRestoreAsync()
+        {
+            var startInfo =
+                new ProcessStartInfo
+                {
+                    FileName =
+                        "wevtutil.exe",
+
+                    Arguments =
+                        "qe Application " +
+                        "/q:\"*[System[(EventID=8202)]]\" " +
+                        "/rd:true /c:1 /f:xml",
+
+                    UseShellExecute =
+                        false,
+
+                    RedirectStandardOutput =
+                        true,
+
+                    RedirectStandardError =
+                        true,
+
+                    CreateNoWindow =
+                        true
+                };
+
+            using Process? process =
+                Process.Start(
+                    startInfo);
+
+            if (process == null)
+            {
+                return null;
+            }
+
+            string output =
+                await process.StandardOutput
+                    .ReadToEndAsync();
+
+            await process.WaitForExitAsync();
+
+            if (process.ExitCode != 0 ||
+                string.IsNullOrWhiteSpace(output))
+            {
+                return null;
+            }
+
+            try
+            {
+                XDocument document =
+                    XDocument.Parse(
+                        output);
+
+                XNamespace ns =
+                    "http://schemas.microsoft.com/win/2004/08/events/event";
+
+                XElement? timeCreated =
+                    document
+                        .Descendants(
+                            ns + "TimeCreated")
+                        .FirstOrDefault();
+
+                string? systemTime =
+                    timeCreated?
+                        .Attribute(
+                            "SystemTime")?
+                        .Value;
+
+                if (DateTime.TryParse(
+                        systemTime,
+                        null,
+                        System.Globalization.DateTimeStyles
+                            .RoundtripKind,
+                        out DateTime eventTime))
+                {
+                    return eventTime
+                        .ToLocalTime();
+                }
+            }
+            catch
+            {
+                // Dacă jurnalul nu poate fi interpretat,
+                // nu raportăm fals succes.
+            }
+
+            return null;
+        }
+
+        public async Task CheckPendingRestoreResultAsync()
+        {
+            if (!File.Exists(
+                    PendingRestorePath))
+            {
+                return;
+            }
+
+            try
+            {
+                string json =
+                    await File.ReadAllTextAsync(
+                        PendingRestorePath);
+
+                PendingRestoreInfo?
+                    pendingRestore =
+                        JsonSerializer.Deserialize<
+                            PendingRestoreInfo>(
+                                json);
+
+                if (pendingRestore == null)
+                {
+                    return;
+                }
+
+                DateTime? successfulRestoreAt =
+                    await GetLastSuccessfulSystemRestoreAsync();
+
+                if (!successfulRestoreAt.HasValue)
+                {
+                    return;
+                }
+
+                /*
+                 * Evenimentul de succes trebuie să fie ulterior
+                 * momentului în care WinBoost a cerut restaurarea.
+                 *
+                 * Tolerăm un minut pentru diferențe foarte mici
+                 * de timp între procese / jurnalizare.
+                 */
+
+                if (successfulRestoreAt.Value <
+                    pendingRestore.RequestedAt
+                        .AddMinutes(-1))
+                {
+                    return;
+                }
+
+                SetLocalizedStatusMessage(
+                    "RecoveryRestoreCompletedSuccessfully",
+                    pendingRestore
+                        .RestorePointCreatedAt
+                        .ToString(
+                            "dd.MM.yyyy HH:mm:ss"));
+
+                try
+                {
+                    File.Delete(
+                        PendingRestorePath);
+                }
+                catch
+                {
+                    /*
+                     * Mesajul de succes rămâne valid chiar dacă
+                     * fișierul temporar nu poate fi șters.
+                     */
+                }
+            }
+            catch
+            {
+                /*
+                 * Nu raportăm succes sau eșec dacă starea
+                 * persistentă nu poate fi verificată.
+                 */
+            }
+        }
+
+        private void SetLocalizedStatusMessage(
+            string resourceKey,
+            params object[] arguments)
+        {
+            _statusMessageResourceKey =
+                resourceKey;
+
+            _statusMessageArguments =
+                arguments ?? Array.Empty<object>();
+
+            RefreshLocalizedStatusMessage();
+        }
+
+        private void ClearStatusMessage()
+        {
+            _statusMessageResourceKey =
+                null;
+
+            _statusMessageArguments =
+                Array.Empty<object>();
+
+            StatusMessage =
+                string.Empty;
+        }
+
+        private void RefreshLocalizedStatusMessage()
+        {
+            if (string.IsNullOrWhiteSpace(
+                    _statusMessageResourceKey))
+            {
+                return;
+            }
+
+            StatusMessage =
+                _statusMessageArguments.Length == 0
+                    ? LocalizationHelper.Get(
+                        _statusMessageResourceKey)
+                    : LocalizationHelper.Format(
+                        _statusMessageResourceKey,
+                        _statusMessageArguments);
+        }
+
+
         // ======================================
         // COMMAND STATES
         // ======================================
@@ -1364,17 +1709,7 @@ LoadRestorePointsAsync,
                             RestorePoints.Count);
             }
 
-            if (IsRestartRequired)
-            {
-                StatusMessage =
-                    LocalizationHelper.Get(
-                        "RecoveryRestorePrepared");
-            }
-            else
-            {
-                StatusMessage =
-                    string.Empty;
-            }
+            RefreshLocalizedStatusMessage();
 
             /*
              * Reîncărcăm punctele de restaurare pentru ca
@@ -1384,7 +1719,7 @@ LoadRestorePointsAsync,
 
             if (!IsLoadingRestorePoints)
             {
-                await LoadRestorePointsAsync();
+                await LoadCachedRestorePointsAsync();
             }
         }
         private void NotifyCommandStates()

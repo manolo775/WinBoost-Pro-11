@@ -24,8 +24,8 @@ namespace WinBoost.App.Views
         }
 
         private async void RecoveryView_Loaded(
-            object sender,
-            RoutedEventArgs e)
+    object sender,
+    RoutedEventArgs e)
         {
             Loaded -=
                 RecoveryView_Loaded;
@@ -35,6 +35,9 @@ namespace WinBoost.App.Views
 
             await _viewModel
                 .LoadCachedRestorePointsAsync();
+
+            await _viewModel
+                .CheckPendingRestoreResultAsync();
         }
     }
 }

@@ -206,23 +206,25 @@
                             Foreground="{StaticResource AccentBrush}"/>
 
 						<Button
-                            Content="{DynamicResource RecoveryEnableSystemProtection}"
-                            Command="{Binding EnableSystemProtectionCommand}"
-                            IsEnabled="{Binding CanEnableSystemProtection}"
-                            Visibility="{Binding IsSystemProtectionActionRequired,
-                                Converter={StaticResource BooleanToVisibilityConverter}}"
-                            Width="230"
-                            Height="42"
-                            Margin="0,0,0,12"
-                            HorizontalAlignment="Left"/>
+    Content="{DynamicResource RecoveryEnableSystemProtection}"
+    Command="{Binding EnableSystemProtectionCommand}"
+    IsEnabled="{Binding CanEnableSystemProtection}"
+    Visibility="{Binding IsSystemProtectionActionRequired,
+        Converter={StaticResource BooleanToVisibilityConverter}}"
+    MinWidth="260"
+    Height="42"
+    Padding="18,0"
+    Margin="0,0,0,12"
+    HorizontalAlignment="Left"/>
 
 						<Button
-                            Content="{DynamicResource RecoveryCreateRestorePoint}"
-                            Command="{Binding CreateRestorePointCommand}"
-                            IsEnabled="{Binding CanCreateRestorePoint}"
-                            Width="210"
-                            Height="42"
-                            HorizontalAlignment="Left"/>
+							Content="{DynamicResource RecoveryCreateRestorePoint}"
+							Command="{Binding CreateRestorePointCommand}"
+							IsEnabled="{Binding CanCreateRestorePoint}"
+							MinWidth="260"
+							Height="42"
+							Padding="18,0"
+							HorizontalAlignment="Left"/>
 
 						<TextBlock
                             Text="{Binding StatusMessage}"

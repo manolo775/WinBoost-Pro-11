@@ -2484,16 +2484,16 @@
 	<sys:String x:Key="RecoveryRestoreDialogTitle">
 		WinBoost Pro 11 - Restaurare sistem
 	</sys:String>
-
 	<sys:String x:Key="RecoveryRestoreDialogMessage">
-		Windows va fi restaurat la:
+		Sigur dorești să restaurezi sistemul folosind punctul din {0}?
 
-		{0}
 		{1}
 
-		Aplicațiile, driverele și setările de sistem instalate după acest punct de restaurare pot fi afectate.
+		Atenție: restaurarea sistemului poate elimina sau modifica aplicații, drivere și actualizări instalate după data acestui punct de restaurare. Unele aplicații pot necesita reparare sau reinstalare după restaurare.
 
-		Dorești să continui?
+		Fișierele personale nu sunt, în mod normal, afectate.
+
+		Continuăm cu restaurarea?
 	</sys:String>
 
 	<sys:String x:Key="RecoveryRestoreError">
@@ -2582,4 +2582,16 @@
 		Lista punctelor de restaurare nu a fost încă încărcată. Apasă Reîmprospătează pentru verificare.
 	</sys:String>
 
+	<sys:String x:Key="RecoveryRestoreCompletedSuccessfully">
+		Restaurarea sistemului a fost finalizată cu succes. Windows a fost restaurat la punctul din {0}.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreConfirmYes">
+		Da
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreConfirmNo">
+		Nu
+	</sys:String>
+	
 </ResourceDictionary>

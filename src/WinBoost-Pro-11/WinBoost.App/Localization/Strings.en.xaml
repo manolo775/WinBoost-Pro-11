@@ -2485,14 +2485,15 @@
 	</sys:String>
 
 	<sys:String x:Key="RecoveryRestoreDialogMessage">
-		Windows will be restored to:
+		Are you sure you want to restore the system using the restore point from {0}?
 
-		{0}
 		{1}
 
-		Applications, drivers, and system settings installed after this restore point may be affected.
+		Warning: System Restore may remove or modify applications, drivers, and updates installed after this restore point was created. Some applications may need to be repaired or reinstalled after the restoration.
 
-		Do you want to continue?
+		Personal files are normally not affected.
+
+		Continue with System Restore?
 	</sys:String>
 
 	<sys:String x:Key="RecoveryRestoreError">
@@ -2580,5 +2581,17 @@
 	<sys:String x:Key="RecoveryNoCachedRestorePoints">
 		The restore point list has not been loaded yet. Click Refresh to check.
 	</sys:String>
-	
+
+	<sys:String x:Key="RecoveryRestoreCompletedSuccessfully">
+		System Restore completed successfully. Windows was restored to the restore point from {0}.
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreConfirmYes">
+		Yes
+	</sys:String>
+
+	<sys:String x:Key="RecoveryRestoreConfirmNo">
+		No
+	</sys:String>
+
 </ResourceDictionary>
