@@ -11,7 +11,8 @@ using WinBoost.App.Helpers;
 using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Recovery;
-
+using System.Text.Json;
+using System.IO;
 
 namespace WinBoost.App.ViewModels
 {
@@ -19,6 +20,15 @@ namespace WinBoost.App.ViewModels
     {
         private const uint ServiceDisabledHResult =
             0x80070422u;
+
+        private static readonly string
+              RestorePointsCachePath =
+             Path.Combine(
+              Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData),
+               "WinBoost Pro 11",
+              "Recovery",
+               "restore-points-cache.json");
 
         private readonly SystemRestorePointService
             _restorePointService;
@@ -28,6 +38,9 @@ namespace WinBoost.App.ViewModels
 
         private readonly AsyncRelayCommand
             _createRestorePointCommand;
+
+        private readonly AsyncRelayCommand
+           _refreshRestorePointsCommand;
 
         private readonly AsyncRelayCommand
             _enableSystemProtectionCommand;
@@ -87,12 +100,18 @@ namespace WinBoost.App.ViewModels
                     () =>
                         CanCreateRestorePoint);
 
+            _refreshRestorePointsCommand =
+                    new AsyncRelayCommand(
+LoadRestorePointsAsync,
+() =>
+!IsLoadingRestorePoints);
+
             _enableSystemProtectionCommand =
                 new AsyncRelayCommand(
                     EnableSystemProtectionAsync,
                     () =>
                         CanEnableSystemProtection);
-
+  
             _restoreSystemCommand =
                 new AsyncRelayCommand(
                     RestoreSystemAsync,
@@ -113,6 +132,9 @@ namespace WinBoost.App.ViewModels
 
             CreateRestorePointCommand =
                 _createRestorePointCommand;
+
+            RefreshRestorePointsCommand =
+                _refreshRestorePointsCommand;
 
             EnableSystemProtectionCommand =
                 _enableSystemProtectionCommand;
@@ -136,6 +158,11 @@ namespace WinBoost.App.ViewModels
 
 
         public ICommand CreateRestorePointCommand
+        {
+            get;
+        }
+
+        public ICommand RefreshRestorePointsCommand
         {
             get;
         }
@@ -531,19 +558,120 @@ namespace WinBoost.App.ViewModels
                 LocalizationHelper.Get(
                     "RecoveryLoadingRestorePoints");
 
+            string? outputPath =
+                null;
+
             try
             {
-                var restorePoints =
-                    await _restorePointScanner
-                        .ScanAsync();
+                string workerPath =
+                    System.IO.Path.Combine(
+                        AppContext.BaseDirectory,
+                        "WinBoost.RecoveryWorker.exe");
+
+                if (!System.IO.File.Exists(
+                        workerPath))
+                {
+                    throw new System.IO.FileNotFoundException(
+                        "WinBoost Recovery Worker was not found.",
+                        workerPath);
+                }
+
+                outputPath =
+                    System.IO.Path.Combine(
+                        System.IO.Path.GetTempPath(),
+                        $"WinBoost-RestorePoints-" +
+                        $"{Guid.NewGuid():N}.json");
+
+                var startInfo =
+                    new ProcessStartInfo
+                    {
+                        FileName =
+                            workerPath,
+
+                        UseShellExecute =
+                            true,
+
+                        Verb =
+                            "runas"
+                    };
+
+                startInfo.ArgumentList.Add(
+                    "--list");
+
+                startInfo.ArgumentList.Add(
+                    $"--output={outputPath}");
+
+                Process? workerProcess =
+                    Process.Start(
+                        startInfo);
+
+                if (workerProcess == null)
+                {
+                    throw new InvalidOperationException(
+                        "WinBoost Recovery Worker could not be started.");
+                }
+
+                await workerProcess
+                    .WaitForExitAsync();
+
+                if (workerProcess.ExitCode != 0)
+                {
+                    throw new InvalidOperationException(
+                        $"Recovery Worker exit code: " +
+                        $"{workerProcess.ExitCode}");
+                }
+
+                if (!System.IO.File.Exists(
+                        outputPath))
+                {
+                    throw new System.IO.FileNotFoundException(
+                        "Recovery Worker did not create the restore point list.");
+                }
+
+                string json =
+                    await System.IO.File
+                        .ReadAllTextAsync(
+                            outputPath);
+
+                List<RestorePointWorkerItem>?
+                    restorePoints =
+                        JsonSerializer.Deserialize<
+                            List<RestorePointWorkerItem>>(
+                                json);
+
+                if (restorePoints != null)
+                {
+                    await SaveRestorePointsCacheAsync(
+                        restorePoints);
+                }
 
                 RestorePoints.Clear();
 
-                foreach (SystemRestorePointInfo
-                         restorePoint in restorePoints)
+                if (restorePoints != null)
                 {
-                    RestorePoints.Add(
-                        restorePoint);
+                    foreach (RestorePointWorkerItem
+                             restorePoint in restorePoints)
+                    {
+                        RestorePoints.Add(
+                            new SystemRestorePointInfo
+                            {
+                                SequenceNumber =
+                                    restorePoint.SequenceNumber,
+
+                                Description =
+                                    restorePoint.Description,
+
+                                RestorePointType =
+                                    restorePoint.RestorePointType,
+
+                                RestorePointTypeName =
+                                    GetRestorePointTypeName(
+                                        restorePoint.RestorePointType),
+
+                                CreatedAt =
+                                    restorePoint.CreatedAt
+                            });
+                    }
                 }
 
                 SelectedRestorePoint =
@@ -559,6 +687,13 @@ namespace WinBoost.App.ViewModels
                             "RecoveryRestorePointsFound",
                             RestorePoints.Count);
             }
+            catch (System.ComponentModel.Win32Exception ex)
+                when (ex.NativeErrorCode == 1223)
+            {
+                RestorePointsMessage =
+                    LocalizationHelper.Get(
+                        "RecoveryNoRestorePoints");
+            }
             catch (Exception ex)
             {
                 RestorePoints.Clear();
@@ -573,6 +708,25 @@ namespace WinBoost.App.ViewModels
             }
             finally
             {
+                if (!string.IsNullOrWhiteSpace(
+                        outputPath))
+                {
+                    try
+                    {
+                        if (System.IO.File.Exists(
+                                outputPath))
+                        {
+                            System.IO.File.Delete(
+                                outputPath);
+                        }
+                    }
+                    catch
+                    {
+                        // Temporary file cleanup must not
+                        // interrupt the Recovery page.
+                    }
+                }
+
                 IsLoadingRestorePoints =
                     false;
             }
@@ -606,57 +760,108 @@ namespace WinBoost.App.ViewModels
                     $"WinBoost Pro 11 - Safety Restore Point - " +
                     $"{createdAt:dd.MM.yyyy HH:mm:ss}";
 
-                SystemRestorePointResult result =
-                    await _restorePointService
-                        .CreateRestorePointAsync(
-                            restorePointDescription);
+                string workerPath =
+                    System.IO.Path.Combine(
+                        AppContext.BaseDirectory,
+                        "WinBoost.RecoveryWorker.exe");
 
-                if (result.IsSuccessful)
+                if (!System.IO.File.Exists(
+                        workerPath))
                 {
-                    IsSystemProtectionActionRequired =
-                        false;
-
                     StatusMessage =
                         LocalizationHelper.Format(
-                            "RecoveryRestorePointCreatedWithDate",
-                            createdAt.ToString(
-                                "dd.MM.yyyy HH:mm:ss"));
+                            "RecoveryRestorePointError",
+                            $"Recovery worker not found: {workerPath}");
 
-                    await Task.Delay(
-                        TimeSpan.FromSeconds(2));
+                    return;
+                }
+
+                var startInfo =
+                    new ProcessStartInfo
+                    {
+                        FileName =
+                            workerPath,
+
+                        UseShellExecute =
+                            true,
+
+                        Verb =
+                            "runas"
+                    };
+
+                startInfo.ArgumentList.Add(
+                    "--create");
+
+                startInfo.ArgumentList.Add(
+                    $"--description={restorePointDescription}");
+
+                Process? workerProcess =
+                    Process.Start(
+                        startInfo);
+
+                if (workerProcess == null)
+                {
+                    StatusMessage =
+                        LocalizationHelper.Format(
+                            "RecoveryRestorePointError",
+                            "WinBoost Recovery Worker could not be started.");
+
+                    return;
+                }
+
+                await workerProcess
+                    .WaitForExitAsync();
+
+                if (workerProcess.ExitCode == 21)
+                {
+                    StatusMessage =
+                        LocalizationHelper.Get(
+                            "RecoveryNoNewRestorePoint");
 
                     await LoadRestorePointsAsync();
 
                     return;
                 }
 
-                if (IsSystemProtectionDisabledResult(
-                        result))
-                {
-                    IsSystemProtectionActionRequired =
-                        true;
-
-                    StatusMessage =
-                        LocalizationHelper.Get(
-                            "RecoverySystemProtectionDisabled");
-
-                    return;
-                }
-
-                if (result.Message ==
-       "RECOVERY_NO_NEW_RESTORE_POINT")
-                {
-                    StatusMessage =
-                        LocalizationHelper.Get(
-                            "RecoveryNoNewRestorePoint");
-                }
-                else
+                if (workerProcess.ExitCode != 0)
                 {
                     StatusMessage =
                         LocalizationHelper.Format(
                             "RecoveryRestorePointCreateFailed",
-                            result.Message);
+                            $"Recovery Worker exit code: " +
+                            $"{workerProcess.ExitCode}");
+
+                    return;
                 }
+
+                IsSystemProtectionActionRequired =
+                    false;
+
+                StatusMessage =
+                    LocalizationHelper.Format(
+                        "RecoveryRestorePointCreatedWithDate",
+                        createdAt.ToString(
+                            "dd.MM.yyyy HH:mm:ss"));
+
+                await Task.Delay(
+                    TimeSpan.FromSeconds(2));
+
+                await LoadRestorePointsAsync();
+            }
+            catch (System.ComponentModel.Win32Exception ex)
+            {
+                if (ex.NativeErrorCode == 1223)
+                {
+                    StatusMessage =
+                        string.Empty;
+
+                    return;
+                }
+
+                StatusMessage =
+                    LocalizationHelper.Format(
+                        "RecoveryRestorePointError",
+                        ex.Message);
             }
             catch (Exception ex)
             {
@@ -935,6 +1140,61 @@ namespace WinBoost.App.ViewModels
             return Task.CompletedTask;
         }
 
+        // ======================================
+        // RECOVERY WORKER DATA
+        // ======================================
+
+        private static string GetRestorePointTypeName(
+            uint restorePointType)
+        {
+            return restorePointType switch
+            {
+                0 =>
+                    "Application Install",
+
+                1 =>
+                    "Application Uninstall",
+
+                10 =>
+                    "Device Driver Install",
+
+                12 =>
+                    "System",
+
+                13 =>
+                    "Cancelled Operation",
+
+                _ =>
+                    "Other"
+            };
+        }
+
+        private sealed class RestorePointWorkerItem
+        {
+            public uint SequenceNumber
+            {
+                get;
+                init;
+            }
+
+            public string Description
+            {
+                get;
+                init;
+            } = string.Empty;
+
+            public uint RestorePointType
+            {
+                get;
+                init;
+            }
+
+            public DateTime CreatedAt
+            {
+                get;
+                init;
+            }
+        }
 
         // ======================================
         // SYSTEM PROTECTION ERROR DETECTION
@@ -955,6 +1215,117 @@ namespace WinBoost.App.ViewModels
                 StringComparison.OrdinalIgnoreCase);
         }
 
+        public async Task LoadCachedRestorePointsAsync()
+        {
+            try
+            {
+                if (!File.Exists(
+                        RestorePointsCachePath))
+                {
+                    RestorePoints.Clear();
+
+                    SelectedRestorePoint =
+                        null;
+
+                    RestorePointsMessage =
+                        LocalizationHelper.Get(
+                            "RecoveryNoCachedRestorePoints");
+
+                    return;
+                }
+
+                string json =
+                    await File.ReadAllTextAsync(
+                        RestorePointsCachePath);
+
+                List<RestorePointWorkerItem>?
+                    restorePoints =
+                        JsonSerializer.Deserialize<
+                            List<RestorePointWorkerItem>>(
+                                json);
+
+                RestorePoints.Clear();
+
+                if (restorePoints != null)
+                {
+                    foreach (RestorePointWorkerItem
+                             restorePoint in restorePoints)
+                    {
+                        RestorePoints.Add(
+                            new SystemRestorePointInfo
+                            {
+                                SequenceNumber =
+                                    restorePoint.SequenceNumber,
+
+                                Description =
+                                    restorePoint.Description,
+
+                                RestorePointType =
+                                    restorePoint.RestorePointType,
+
+                                RestorePointTypeName =
+                                    GetRestorePointTypeName(
+                                        restorePoint.RestorePointType),
+
+                                CreatedAt =
+                                    restorePoint.CreatedAt
+                            });
+                    }
+                }
+
+                SelectedRestorePoint =
+                    RestorePoints.Count > 0
+                        ? RestorePoints[0]
+                        : null;
+
+                RestorePointsMessage =
+                    RestorePoints.Count == 0
+                        ? LocalizationHelper.Get(
+                            "RecoveryNoRestorePoints")
+                        : LocalizationHelper.Format(
+                            "RecoveryRestorePointsFound",
+                            RestorePoints.Count);
+            }
+            catch
+            {
+                RestorePoints.Clear();
+
+                SelectedRestorePoint =
+                    null;
+
+                RestorePointsMessage =
+                    LocalizationHelper.Get(
+                        "RecoveryNoCachedRestorePoints");
+            }
+        }
+
+        private static async Task SaveRestorePointsCacheAsync(
+            List<RestorePointWorkerItem> restorePoints)
+        {
+            string? directory =
+                Path.GetDirectoryName(
+                    RestorePointsCachePath);
+
+            if (!string.IsNullOrWhiteSpace(
+                    directory))
+            {
+                Directory.CreateDirectory(
+                    directory);
+            }
+
+            string json =
+                JsonSerializer.Serialize(
+                    restorePoints,
+                    new JsonSerializerOptions
+                    {
+                        WriteIndented =
+                            true
+                    });
+
+            await File.WriteAllTextAsync(
+                RestorePointsCachePath,
+                json);
+        }
 
         // ======================================
         // COMMAND STATES
@@ -1034,6 +1405,9 @@ namespace WinBoost.App.ViewModels
                 nameof(CanRestartLater));
 
             _createRestorePointCommand
+                .RaiseCanExecuteChanged();
+
+            _refreshRestorePointsCommand
                 .RaiseCanExecuteChanged();
 
             _enableSystemProtectionCommand

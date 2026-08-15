@@ -22,84 +22,97 @@ namespace WinBoost.App.Services.Recovery
             var restorePoints =
                 new List<SystemRestorePointInfo>();
 
-            var connectionOptions =
-                new ConnectionOptions
-                {
-                    Impersonation =
-                        ImpersonationLevel.Impersonate,
-
-                    EnablePrivileges =
-                        true
-                };
-
-            var scope =
-                new ManagementScope(
-                    @"\\.\root\default",
-                    connectionOptions);
-
-            scope.Connect();
-
-            var query =
-                new ObjectQuery(
-                    "SELECT * FROM SystemRestore");
-
-            using var searcher =
-                new ManagementObjectSearcher(
-                    scope,
-                    query);
-
-            using ManagementObjectCollection
-                results =
-                    searcher.Get();
-
-            foreach (ManagementObject item
-                     in results)
+            try
             {
-                uint sequenceNumber =
-                    Convert.ToUInt32(
-                        item["SequenceNumber"]
-                        ?? 0u);
-
-                string description =
-                    Convert.ToString(
-                        item["Description"],
-                        CultureInfo.InvariantCulture)
-                    ?? string.Empty;
-
-                uint restorePointType =
-                    Convert.ToUInt32(
-                        item["RestorePointType"]
-                        ?? 0u);
-
-                string creationTime =
-                    Convert.ToString(
-                        item["CreationTime"],
-                        CultureInfo.InvariantCulture)
-                    ?? string.Empty;
-
-                DateTime createdAt =
-                    ParseCreationTime(
-                        creationTime);
-
-                restorePoints.Add(
-                    new SystemRestorePointInfo
+                var connectionOptions =
+                    new ConnectionOptions
                     {
-                        SequenceNumber =
-                            sequenceNumber,
+                        Impersonation =
+                            ImpersonationLevel.Impersonate,
 
-                        Description =
-                            description,
+                        EnablePrivileges =
+                            true
+                    };
 
-                        RestorePointType =
-                            restorePointType,
+                var scope =
+                    new ManagementScope(
+                        @"\\.\root\default",
+                        connectionOptions);
 
-                        RestorePointTypeName =
-                            GetRestorePointTypeName(
-                                restorePointType),
+                scope.Connect();
 
-                        CreatedAt =
-                            createdAt
-                    });
+                var query =
+                    new ObjectQuery(
+                        "SELECT * FROM SystemRestore");
+
+                using var searcher =
+                    new ManagementObjectSearcher(
+                        scope,
+                        query);
+
+                using ManagementObjectCollection
+                    results =
+                        searcher.Get();
+
+                foreach (ManagementObject item
+                         in results)
+                {
+                    uint sequenceNumber =
+                        Convert.ToUInt32(
+                            item["SequenceNumber"]
+                            ?? 0u);
+
+                    string description =
+                        Convert.ToString(
+                            item["Description"],
+                            CultureInfo.InvariantCulture)
+                        ?? string.Empty;
+
+                    uint restorePointType =
+                        Convert.ToUInt32(
+                            item["RestorePointType"]
+                            ?? 0u);
+
+                    string creationTime =
+                        Convert.ToString(
+                            item["CreationTime"],
+                            CultureInfo.InvariantCulture)
+                        ?? string.Empty;
+
+                    DateTime createdAt =
+                        ParseCreationTime(
+                            creationTime);
+
+                    restorePoints.Add(
+                        new SystemRestorePointInfo
+                        {
+                            SequenceNumber =
+                                sequenceNumber,
+
+                            Description =
+                                description,
+
+                            RestorePointType =
+                                restorePointType,
+
+                            RestorePointTypeName =
+                                GetRestorePointTypeName(
+                                    restorePointType),
+
+                            CreatedAt =
+                                createdAt
+                        });
+                }
+            }
+            catch (ManagementException ex)
+                when (ex.ErrorCode ==
+                      ManagementStatus.AccessDenied)
+            {
+                return Array.Empty<SystemRestorePointInfo>();
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return Array.Empty<SystemRestorePointInfo>();
             }
 
             restorePoints.Sort(

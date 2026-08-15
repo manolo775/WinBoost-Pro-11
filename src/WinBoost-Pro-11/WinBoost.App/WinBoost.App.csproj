@@ -1,38 +1,40 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <UseWPF>true</UseWPF>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
-  </PropertyGroup>
+	<PropertyGroup>
+		<OutputType>WinExe</OutputType>
+		<TargetFramework>net10.0-windows</TargetFramework>
+		<Nullable>enable</Nullable>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<UseWPF>true</UseWPF>
+		<ApplicationManifest></ApplicationManifest>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Assets\" />
-    <Folder Include="Resources\" />
-    <Folder Include="Services\Services\" />
-  </ItemGroup>
+	<ItemGroup>
+		<Folder Include="Assets\" />
+		<Folder Include="Resources\" />
+		<Folder Include="Services\Services\" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6" />
-    <PackageReference Include="LiteDB" Version="5.0.21" />
-    <PackageReference Include="MaterialDesignThemes" Version="5.3.2" />
-    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.10" />
-  </ItemGroup>
+	<ItemGroup>
+		<PackageReference Include="LibreHardwareMonitorLib" Version="0.9.6" />
+		<PackageReference Include="LiteDB" Version="5.0.21" />
+		<PackageReference Include="MaterialDesignThemes" Version="5.3.2" />
+		<PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.10" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\WinBoost.UpdateWorker\WinBoost.UpdateWorker.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\WinBoost.UpdateWorker\WinBoost.UpdateWorker.csproj" />
+		<ProjectReference Include="..\WinBoost.RecoveryWorker\WinBoost.RecoveryWorker.csproj" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="ViewModels\DashboardViewModel.cs">
-      <Generator>MSBuild:Compile</Generator>
-    </Compile>
-    <Compile Update="ViewModels\WindowsUpdateViewModel.cs">
-      <Generator>MSBuild:Compile</Generator>
-    </Compile>
-  </ItemGroup>
+	<ItemGroup>
+		<Compile Update="ViewModels\DashboardViewModel.cs">
+			<Generator>MSBuild:Compile</Generator>
+		</Compile>
+
+		<Compile Update="ViewModels\WindowsUpdateViewModel.cs">
+			<Generator>MSBuild:Compile</Generator>
+		</Compile>
+	</ItemGroup>
 
 </Project>

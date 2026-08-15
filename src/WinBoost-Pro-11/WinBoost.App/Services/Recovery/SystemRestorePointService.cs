@@ -280,45 +280,58 @@ namespace WinBoost.App.Services.Recovery
         // ======================================
 
         private static HashSet<uint>
-            GetRestorePointSequenceNumbers()
+    GetRestorePointSequenceNumbers()
         {
             var sequenceNumbers =
                 new HashSet<uint>();
 
-            ManagementScope scope =
-                CreateManagementScope();
-
-            var query =
-                new ObjectQuery(
-                    "SELECT SequenceNumber FROM SystemRestore");
-
-            using var searcher =
-                new ManagementObjectSearcher(
-                    scope,
-                    query);
-
-            using ManagementObjectCollection
-                results =
-                    searcher.Get();
-
-            foreach (ManagementObject
-                     restorePoint in results)
+            try
             {
-                object? sequenceValue =
-                    restorePoint[
-                        "SequenceNumber"];
+                ManagementScope scope =
+                    CreateManagementScope();
 
-                if (sequenceValue == null)
+                var query =
+                    new ObjectQuery(
+                        "SELECT SequenceNumber FROM SystemRestore");
+
+                using var searcher =
+                    new ManagementObjectSearcher(
+                        scope,
+                        query);
+
+                using ManagementObjectCollection
+                    results =
+                        searcher.Get();
+
+                foreach (ManagementObject
+                         restorePoint in results)
                 {
-                    continue;
+                    object? sequenceValue =
+                        restorePoint[
+                            "SequenceNumber"];
+
+                    if (sequenceValue == null)
+                    {
+                        continue;
+                    }
+
+                    uint sequenceNumber =
+                        Convert.ToUInt32(
+                            sequenceValue);
+
+                    sequenceNumbers.Add(
+                        sequenceNumber);
                 }
-
-                uint sequenceNumber =
-                    Convert.ToUInt32(
-                        sequenceValue);
-
-                sequenceNumbers.Add(
-                    sequenceNumber);
+            }
+            catch (ManagementException ex)
+                when (ex.ErrorCode ==
+                      ManagementStatus.AccessDenied)
+            {
+                return sequenceNumbers;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                return sequenceNumbers;
             }
 
             return sequenceNumbers;

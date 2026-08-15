@@ -2572,5 +2572,13 @@
 	<sys:String x:Key="RecoveryNoNewRestorePoint">
 		No new restore point was created. Windows may limit restore point creation when another restore point was created recently.
 	</sys:String>
+
+	<sys:String x:Key="RecoveryRefreshRestorePoints">
+		Refresh
+	</sys:String>
+
+	<sys:String x:Key="RecoveryNoCachedRestorePoints">
+		The restore point list has not been loaded yet. Click Refresh to check.
+	</sys:String>
 	
 </ResourceDictionary>

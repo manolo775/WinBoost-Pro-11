@@ -2573,5 +2573,13 @@
 	<sys:String x:Key="RecoveryNoNewRestorePoint">
 		Nu a fost creat un punct nou de restaurare. Windows poate limita crearea punctelor de restaurare atunci când unul a fost creat recent.
 	</sys:String>
-	
+
+	<sys:String x:Key="RecoveryRefreshRestorePoints">
+		Reîmprospătează
+	</sys:String>
+
+	<sys:String x:Key="RecoveryNoCachedRestorePoints">
+		Lista punctelor de restaurare nu a fost încă încărcată. Apasă Reîmprospătează pentru verificare.
+	</sys:String>
+
 </ResourceDictionary>

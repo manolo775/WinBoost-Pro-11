@@ -34,7 +34,7 @@ namespace WinBoost.App.Views
                 .CheckAvailabilityAsync();
 
             await _viewModel
-                .LoadRestorePointsAsync();
+                .LoadCachedRestorePointsAsync();
         }
     }
 }

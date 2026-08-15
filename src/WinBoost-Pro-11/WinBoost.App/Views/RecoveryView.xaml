@@ -265,6 +265,14 @@
                             FontWeight="SemiBold"
                             Foreground="{StaticResource AccentBrush}"/>
 
+						<Button
+                            Content="{DynamicResource RecoveryRefreshRestorePoints}"
+                            Command="{Binding RefreshRestorePointsCommand}"
+                            Width="160"
+                            Height="38"
+                            Margin="0,0,0,14"
+                            HorizontalAlignment="Left"/>
+
 
 						<!-- ====================================== -->
 						<!-- RESTORE POINT LIST -->
