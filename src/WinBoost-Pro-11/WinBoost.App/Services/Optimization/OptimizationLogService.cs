@@ -55,6 +55,51 @@ namespace WinBoost.App.Services.Optimization
                 });
         }
 
+        public void AddResource(
+            string resourceKey,
+            OptimizationLogLevel level =
+                OptimizationLogLevel.Information,
+            params object[] resourceArguments)
+        {
+            _entries.Add(
+                new OptimizationLogEntry
+                {
+                    Timestamp =
+                        DateTime.Now,
+
+                    ResourceKey =
+                        resourceKey,
+
+                    ResourceArguments =
+                        resourceArguments,
+
+                    Level =
+                        level
+                });
+        }
+
+        public void AddResource(
+            string resourceKey,
+            string argumentResourceKey,
+            OptimizationLogLevel level)
+        {
+            _entries.Add(
+                new OptimizationLogEntry
+                {
+                    Timestamp =
+                        DateTime.Now,
+
+                    ResourceKey =
+                        resourceKey,
+
+                    ArgumentResourceKey =
+                        argumentResourceKey,
+
+                    Level =
+                        level
+                });
+        }
+
         public void Clear()
         {
             _entries.Clear();

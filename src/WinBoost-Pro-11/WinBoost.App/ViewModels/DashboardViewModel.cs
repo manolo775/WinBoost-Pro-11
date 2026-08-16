@@ -955,7 +955,8 @@ namespace WinBoost.App.ViewModels
         public string HealthStatus =>
             HealthSummary.OverallHealthStatus;
 
-        public void StartMonitoring()
+        public void StartMonitoring(
+    bool loadHistory = true)
         {
             if (_refreshTimer.IsEnabled)
             {
@@ -965,7 +966,11 @@ namespace WinBoost.App.ViewModels
             _refreshTimer.Start();
 
             _ = UpdateSystemInfoAsync();
-            _ = LoadSelectedHistoryAsync();
+
+            if (loadHistory)
+            {
+                _ = LoadSelectedHistoryAsync();
+            }
         }
 
         public void StopMonitoring()

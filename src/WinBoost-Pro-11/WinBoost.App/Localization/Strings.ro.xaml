@@ -2691,5 +2691,21 @@
 	<sys:String x:Key="AdministratorRequiredMessage">
 		Această operație necesită drepturi de administrator. Dorești să mergi la Setări pentru a reporni WinBoost ca administrator?
 	</sys:String>
+
+	<sys:String x:Key="OptimizationHistoryStatusSuccess">
+		Succes
+	</sys:String>
+
+	<sys:String x:Key="OptimizationHistoryStatusCompletedWithErrors">
+		Finalizat cu erori
+	</sys:String>
+
+	<sys:String x:Key="OptimizationHistoryDurationFormat">
+		{0:F1} sec
+	</sys:String>
+
+	<sys:String x:Key="OptimizationHistoryOperationsFormat">
+		{0} reușite, {1} eșuate, {2} omise
+	</sys:String>
 	
 </ResourceDictionary>

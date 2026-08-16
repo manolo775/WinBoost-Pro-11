@@ -1,9 +1,16 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using WinBoost.App.Localization;
 
 namespace WinBoost.App.Models
 {
     public sealed class OptimizationLogEntry
+        : INotifyPropertyChanged
     {
+        private string _message =
+            string.Empty;
+
         public DateTime Timestamp
         {
             get;
@@ -18,12 +25,57 @@ namespace WinBoost.App.Models
         } =
             OptimizationLogLevel.Information;
 
-        public string Message
+        public string ResourceKey
         {
             get;
             set;
         } =
             string.Empty;
+
+        public string ArgumentResourceKey
+        {
+            get;
+            set;
+        } =
+            string.Empty;
+
+        public object[] ResourceArguments
+        {
+            get;
+            set;
+        } =
+            Array.Empty<object>();
+
+        public string Message
+        {
+            get
+            {
+                if (!string.IsNullOrWhiteSpace(
+                        ResourceKey))
+                {
+                    if (!string.IsNullOrWhiteSpace(
+                            ArgumentResourceKey))
+                    {
+                        return LocalizationHelper.Format(
+                            ResourceKey,
+                            LocalizationHelper.Get(
+                                ArgumentResourceKey));
+                    }
+
+                    return LocalizationHelper.Format(
+                        ResourceKey,
+                        ResourceArguments);
+                }
+
+                return _message;
+            }
+
+            set
+            {
+                _message =
+                    value ?? string.Empty;
+            }
+        }
 
         public string TimeText =>
             Timestamp.ToString(
@@ -66,6 +118,25 @@ namespace WinBoost.App.Models
                 _ =>
                     "#42A5F5"
             };
+
+        public void RefreshLocalization()
+        {
+            OnPropertyChanged(
+                nameof(Message));
+        }
+
+        public event PropertyChangedEventHandler?
+            PropertyChanged;
+
+        private void OnPropertyChanged(
+            [CallerMemberName]
+            string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(
+                this,
+                new PropertyChangedEventArgs(
+                    propertyName));
+        }
     }
 
     public enum OptimizationLogLevel

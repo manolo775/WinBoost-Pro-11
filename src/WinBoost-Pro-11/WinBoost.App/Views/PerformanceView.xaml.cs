@@ -20,12 +20,11 @@ namespace WinBoost.App.Views
         }
 
         private void PerformanceView_Loaded(
-            object sender,
-            RoutedEventArgs e)
+           object sender,
+           RoutedEventArgs e)
         {
             _viewModel.StartPerformanceMonitoring();
         }
-
         private void PerformanceView_Unloaded(
             object sender,
             RoutedEventArgs e)

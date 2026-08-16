@@ -105,9 +105,8 @@ namespace WinBoost.App.Services.Optimization
 
             _optimizationLogService.Clear();
 
-            _optimizationLogService.Add(
-                LocalizationHelper.Get(
-                    "OptimizationLogStarted"),
+            _optimizationLogService.AddResource(
+               "OptimizationLogStarted",
                 OptimizationLogLevel.Information);
 
             var stopwatch =
@@ -137,9 +136,9 @@ namespace WinBoost.App.Services.Optimization
                     report.Message,
                     100);
 
-                _optimizationLogService.Add(
-                    report.Message,
-                    OptimizationLogLevel.Warning);
+                _optimizationLogService.AddResource(
+                      "OptimizationLogNoOperations",
+                       OptimizationLogLevel.Warning);
 
                 return report;
             }
@@ -159,11 +158,14 @@ namespace WinBoost.App.Services.Optimization
                             operations.Count);
 
                     OnProgressChanged(
-                        operation.StartMessage,
-                        startProgress);
+      operation.StartMessage,
+      startProgress,
+      GetStartResourceKey(
+          operation.OperationId));
 
-                    _optimizationLogService.Add(
-                        operation.StartMessage,
+                    _optimizationLogService.AddResource(
+                        GetStartResourceKey(
+                        operation.OperationId),
                         OptimizationLogLevel.Information);
 
                     OptimizationResult result =
@@ -182,18 +184,61 @@ namespace WinBoost.App.Services.Optimization
                         GetCompletionLevel(
                             result);
 
-                    _optimizationLogService.Add(
-                        completionMessage,
-                        completionLevel);
+                    if (result.WasSkipped)
+                    {
+                        _optimizationLogService.AddResource(
+                            "OptimizationLogOperationSkippedFormat",
+                            GetStartResourceKey(
+                                operation.OperationId),
+                            completionLevel);
+                    }
+                    else if (!result.IsSuccessful)
+                    {
+                        _optimizationLogService.AddResource(
+                            "OptimizationLogOperationFailedFormat",
+                            GetStartResourceKey(
+                                operation.OperationId),
+                            completionLevel);
+                    }
+                    else
+                    {
+                        _optimizationLogService.AddResource(
+                            GetSuccessResourceKey(
+                                operation.OperationId),
+                            completionLevel);
+                    }
 
                     int completedProgress =
                         CalculateProgress(
                             index + 1,
                             operations.Count);
 
-                    OnProgressChanged(
-                        completionMessage,
-                        completedProgress);
+                    if (result.WasSkipped)
+                    {
+                        OnProgressChanged(
+                            completionMessage,
+                            completedProgress,
+                            "OptimizationLogOperationSkippedFormat",
+                            GetStartResourceKey(
+                                operation.OperationId));
+                    }
+                    else if (!result.IsSuccessful)
+                    {
+                        OnProgressChanged(
+                            completionMessage,
+                            completedProgress,
+                            "OptimizationLogOperationFailedFormat",
+                            GetStartResourceKey(
+                                operation.OperationId));
+                    }
+                    else
+                    {
+                        OnProgressChanged(
+                            completionMessage,
+                            completedProgress,
+                            GetSuccessResourceKey(
+                                operation.OperationId));
+                    }
                 }
 
                 report.IsSuccessful =
@@ -209,11 +254,13 @@ namespace WinBoost.App.Services.Optimization
                         : LocalizationHelper.Get(
                             "OptimizationLogCompletedWithErrors");
 
-                _optimizationLogService.Add(
-                    report.Message,
-                    report.IsSuccessful
-                        ? OptimizationLogLevel.Success
-                        : OptimizationLogLevel.Error);
+                _optimizationLogService.AddResource(
+       report.IsSuccessful
+           ? "OptimizationLogCompleted"
+           : "OptimizationLogCompletedWithErrors",
+       report.IsSuccessful
+           ? OptimizationLogLevel.Success
+           : OptimizationLogLevel.Error);
             }
             catch (Exception ex)
             {
@@ -228,9 +275,10 @@ namespace WinBoost.App.Services.Optimization
                     report.Message,
                     100);
 
-                _optimizationLogService.Add(
-                    report.Message,
-                    OptimizationLogLevel.Error);
+                _optimizationLogService.AddResource(
+     "OptimizationLogFailedFormat",
+     OptimizationLogLevel.Error,
+     ex.Message);
             }
             finally
             {
@@ -372,6 +420,67 @@ namespace WinBoost.App.Services.Optimization
             return operations;
         }
 
+        private static string GetStartResourceKey(
+    string operationId)
+        {
+            return operationId switch
+            {
+                "temp-files" =>
+                    "OptimizationLogTempStart",
+
+                "recycle-bin" =>
+                    "OptimizationLogRecycleBinStart",
+
+                "dns-cache" =>
+                    "OptimizationLogDnsStart",
+
+                "thumbnail-cache" =>
+                    "OptimizationLogThumbnailStart",
+
+                "prefetch" =>
+                    "OptimizationLogPrefetchStart",
+
+                "windows-error-reports" =>
+                    "OptimizationLogErrorReportsStart",
+
+                "windows-logs" =>
+                    "OptimizationLogWindowsLogsStart",
+
+                _ =>
+                    string.Empty
+            };
+        }
+
+        private static string GetSuccessResourceKey(
+            string operationId)
+        {
+            return operationId switch
+            {
+                "temp-files" =>
+                    "OptimizationLogTempCompleted",
+
+                "recycle-bin" =>
+                    "OptimizationLogRecycleBinCompleted",
+
+                "dns-cache" =>
+                    "OptimizationLogDnsCompleted",
+
+                "thumbnail-cache" =>
+                    "OptimizationLogThumbnailCompleted",
+
+                "prefetch" =>
+                    "OptimizationLogPrefetchCompleted",
+
+                "windows-error-reports" =>
+                    "OptimizationLogErrorReportsCompleted",
+
+                "windows-logs" =>
+                    "OptimizationLogWindowsLogsCompleted",
+
+                _ =>
+                    string.Empty
+            };
+        }
         private static int CalculateProgress(
             int completedOperations,
             int totalOperations)
@@ -432,14 +541,20 @@ namespace WinBoost.App.Services.Optimization
         }
 
         private void OnProgressChanged(
-            string operationName,
-            int progressPercentage)
+    string operationName,
+    int progressPercentage,
+    string resourceKey = "",
+    string argumentResourceKey = "",
+    params object[] resourceArguments)
         {
             ProgressChanged?.Invoke(
                 this,
                 new OptimizationProgressEventArgs(
                     operationName,
-                    progressPercentage));
+                    progressPercentage,
+                    resourceKey,
+                    argumentResourceKey,
+                    resourceArguments));
         }
 
         private static void AddResult(
@@ -653,11 +768,14 @@ namespace WinBoost.App.Services.Optimization
     }
 
     public sealed class OptimizationProgressEventArgs :
-        EventArgs
+            EventArgs
     {
         public OptimizationProgressEventArgs(
             string operationName,
-            int progressPercentage)
+            int progressPercentage,
+            string resourceKey = "",
+            string argumentResourceKey = "",
+            params object[] resourceArguments)
         {
             OperationName =
                 operationName;
@@ -667,6 +785,16 @@ namespace WinBoost.App.Services.Optimization
                     progressPercentage,
                     0,
                     100);
+
+            ResourceKey =
+                resourceKey;
+
+            ArgumentResourceKey =
+                argumentResourceKey;
+
+            ResourceArguments =
+                resourceArguments ??
+                Array.Empty<object>();
         }
 
         public string OperationName
@@ -677,6 +805,43 @@ namespace WinBoost.App.Services.Optimization
         public int ProgressPercentage
         {
             get;
+        }
+
+        public string ResourceKey
+        {
+            get;
+        }
+
+        public string ArgumentResourceKey
+        {
+            get;
+        }
+
+        public object[] ResourceArguments
+        {
+            get;
+        }
+
+        public string GetLocalizedOperationName()
+        {
+            if (string.IsNullOrWhiteSpace(
+                    ResourceKey))
+            {
+                return OperationName;
+            }
+
+            if (!string.IsNullOrWhiteSpace(
+                    ArgumentResourceKey))
+            {
+                return LocalizationHelper.Format(
+                    ResourceKey,
+                    LocalizationHelper.Get(
+                        ArgumentResourceKey));
+            }
+
+            return LocalizationHelper.Format(
+                ResourceKey,
+                ResourceArguments);
         }
     }
 }

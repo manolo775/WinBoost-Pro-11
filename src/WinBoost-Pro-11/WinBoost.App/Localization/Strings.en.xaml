@@ -2687,5 +2687,21 @@
 	<sys:String x:Key="AdministratorRequiredMessage">
 		This operation requires administrator privileges. Do you want to go to Settings to restart WinBoost as administrator?
 	</sys:String>
+
+	<sys:String x:Key="OptimizationHistoryStatusSuccess">
+		Success
+	</sys:String>
+
+	<sys:String x:Key="OptimizationHistoryStatusCompletedWithErrors">
+		Completed with errors
+	</sys:String>
+
+	<sys:String x:Key="OptimizationHistoryDurationFormat">
+		{0:F1} sec
+	</sys:String>
+
+	<sys:String x:Key="OptimizationHistoryOperationsFormat">
+		{0} successful, {1} failed, {2} skipped
+	</sys:String>
 	
 </ResourceDictionary>

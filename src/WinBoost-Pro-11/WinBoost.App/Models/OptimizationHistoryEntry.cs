@@ -1,8 +1,13 @@
 ﻿using System;
+using System.ComponentModel;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+using WinBoost.App.Localization;
 
 namespace WinBoost.App.Models
 {
     public sealed class OptimizationHistoryEntry
+        : INotifyPropertyChanged
     {
         public DateTime CompletedAt
         {
@@ -58,23 +63,48 @@ namespace WinBoost.App.Models
 
         public string StatusText =>
             IsSuccessful
-                ? "Succes"
-                : "Finalizat cu erori";
+                ? LocalizationHelper.Get(
+                    "OptimizationHistoryStatusSuccess")
+                : LocalizationHelper.Get(
+                    "OptimizationHistoryStatusCompletedWithErrors");
 
         public string RecoveredSpaceText =>
             FormatBytes(
                 RecoveredBytes);
 
         public string DeletedFilesText =>
-            DeletedFiles.ToString();
+            DeletedFiles.ToString(
+                CultureInfo.CurrentCulture);
 
         public string DurationText =>
-            $"{DurationSeconds:F1} sec";
+            LocalizationHelper.Format(
+                "OptimizationHistoryDurationFormat",
+                DurationSeconds);
 
         public string OperationsText =>
-            $"{SuccessfulOperations} reușite, " +
-            $"{FailedOperations} eșuate, " +
-            $"{SkippedOperations} omise";
+            LocalizationHelper.Format(
+                "OptimizationHistoryOperationsFormat",
+                SuccessfulOperations,
+                FailedOperations,
+                SkippedOperations);
+
+        public void RefreshLocalization()
+        {
+            OnPropertyChanged(
+                nameof(StatusText));
+
+            OnPropertyChanged(
+                nameof(RecoveredSpaceText));
+
+            OnPropertyChanged(
+                nameof(DeletedFilesText));
+
+            OnPropertyChanged(
+                nameof(DurationText));
+
+            OnPropertyChanged(
+                nameof(OperationsText));
+        }
 
         private static string FormatBytes(
             long bytes)
@@ -93,20 +123,34 @@ namespace WinBoost.App.Models
                     0,
                     bytes);
 
-            int unitIndex =
-                0;
+            int unitIndex = 0;
 
             while (value >= 1024 &&
                    unitIndex < units.Length - 1)
             {
-                value /=
-                    1024;
+                value /= 1024;
 
                 unitIndex++;
             }
 
-            return
-                $"{value:F2} {units[unitIndex]}";
+            return string.Format(
+                CultureInfo.CurrentCulture,
+                "{0:F2} {1}",
+                value,
+                units[unitIndex]);
+        }
+
+        public event PropertyChangedEventHandler?
+            PropertyChanged;
+
+        private void OnPropertyChanged(
+            [CallerMemberName]
+            string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(
+                this,
+                new PropertyChangedEventArgs(
+                    propertyName));
         }
     }
 }

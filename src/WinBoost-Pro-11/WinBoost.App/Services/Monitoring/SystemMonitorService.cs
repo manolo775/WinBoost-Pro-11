@@ -39,7 +39,7 @@ namespace WinBoost.App.Services.Monitoring
         }
 
         public async Task<SystemMetrics>
-     GetSystemMetricsAsync()
+            GetSystemMetricsAsync()
         {
             float cpuUsage =
                 await GetSystemCpuUsageAsync();

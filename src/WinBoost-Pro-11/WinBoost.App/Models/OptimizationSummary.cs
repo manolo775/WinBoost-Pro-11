@@ -1,6 +1,11 @@
-﻿namespace WinBoost.App.Models
+﻿using System.ComponentModel;
+using System.Globalization;
+using System.Runtime.CompilerServices;
+
+namespace WinBoost.App.Models
 {
-    public sealed class OptimizationSummary
+    public sealed class OptimizationSummary :
+        INotifyPropertyChanged
     {
         public bool IsVisible
         {
@@ -60,13 +65,36 @@
                 RecoveredBytes);
 
         public string DeletedFilesText =>
-            DeletedFiles.ToString();
+            DeletedFiles.ToString(
+                CultureInfo.CurrentCulture);
 
         public string DurationText =>
-            $"{DurationSeconds:F1} sec";
+            string.Format(
+                CultureInfo.CurrentCulture,
+                "{0:F1} sec",
+                DurationSeconds);
 
         public string OperationsText =>
-            $"{SuccessfulOperations}/{TotalOperations}";
+            string.Format(
+                CultureInfo.CurrentCulture,
+                "{0}/{1}",
+                SuccessfulOperations,
+                TotalOperations);
+
+        public void RefreshLocalization()
+        {
+            OnPropertyChanged(
+                nameof(RecoveredSpaceText));
+
+            OnPropertyChanged(
+                nameof(DeletedFilesText));
+
+            OnPropertyChanged(
+                nameof(DurationText));
+
+            OnPropertyChanged(
+                nameof(OperationsText));
+        }
 
         private static string FormatBytes(
             long bytes)
@@ -85,20 +113,34 @@
                     0,
                     bytes);
 
-            int unitIndex =
-                0;
+            int unitIndex = 0;
 
             while (value >= 1024 &&
                    unitIndex < units.Length - 1)
             {
-                value /=
-                    1024;
+                value /= 1024;
 
                 unitIndex++;
             }
 
-            return
-                $"{value:F2} {units[unitIndex]}";
+            return string.Format(
+                CultureInfo.CurrentCulture,
+                "{0:F2} {1}",
+                value,
+                units[unitIndex]);
+        }
+
+        public event PropertyChangedEventHandler?
+            PropertyChanged;
+
+        private void OnPropertyChanged(
+            [CallerMemberName]
+            string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(
+                this,
+                new PropertyChangedEventArgs(
+                    propertyName));
         }
     }
 }

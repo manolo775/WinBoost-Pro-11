@@ -46,20 +46,20 @@
 
 				<Border
 					Margin="0,0,12,0"
-					Padding="20"
+					Padding="12"
 					Style="{StaticResource InteractiveCardStyle}">
 
 					<StackPanel>
 
 						<TextBlock
 							Text="{DynamicResource PerformanceCpuUsage}"
-							FontSize="16"
+							FontSize="14"
 							Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
 							Text="{Binding CpuUsage}"
 							Margin="0,12,0,0"
-							FontSize="34"
+							FontSize="28"
 							FontWeight="Bold"
 							Foreground="{StaticResource TextBrush}"/>
 
@@ -77,20 +77,20 @@
 
 				<Border
 					Margin="6,0"
-					Padding="20"
+					Padding="12"
 					Style="{StaticResource InteractiveCardStyle}">
 
 					<StackPanel>
 
 						<TextBlock
 							Text="{DynamicResource PerformanceRamUsage}"
-							FontSize="16"
+							FontSize="14"
 							Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
 							Text="{Binding RamUsage}"
 							Margin="0,12,0,0"
-							FontSize="34"
+							FontSize="28"
 							FontWeight="Bold"
 							Foreground="{StaticResource TextBrush}"/>
 
@@ -108,20 +108,20 @@
 
 				<Border
 					Margin="12,0,0,0"
-					Padding="20"
+				   Padding="12"
 					Style="{StaticResource InteractiveCardStyle}">
 
 					<StackPanel>
 
 						<TextBlock
 							Text="{DynamicResource PerformanceDiskUsage}"
-							FontSize="16"
+							FontSize="14"
 							Foreground="{StaticResource SecondaryTextBrush}"/>
 
 						<TextBlock
 							Text="{Binding DiskUsage}"
 							Margin="0,12,0,0"
-							FontSize="34"
+							FontSize="28"
 							FontWeight="Bold"
 							Foreground="{StaticResource TextBrush}"/>
 
@@ -139,7 +139,7 @@
 
 				<Border
 					Margin="12,0,0,0"
-					Padding="20"
+					Padding="12"
 					Style="{StaticResource InteractiveCardStyle}">
 
 					<StackPanel>
@@ -194,11 +194,10 @@
 			<!-- ZONA DE OPTIMIZARE -->
 
 			<Border
-				Grid.Row="2"
-				Margin="0,25,0,0"
-				Padding="22"
-				CornerRadius="10"
-				Background="{StaticResource CardBrush}">
+                 Grid.Row="2"
+                 Margin="0,25,0,0"
+                  Padding="22"
+                  Style="{StaticResource InteractiveCardStyle}">
 
 				<Grid>
 
@@ -1131,12 +1130,11 @@
 
 			<!-- TOP PROCESSES -->
 
-			<Border
-                Grid.Row="3"
-                Margin="0,25,0,0"
-                Padding="22"
-                CornerRadius="10"
-                Background="{StaticResource CardBrush}">
+				<Border
+		             Grid.Row="3"
+		             Margin="0,25,0,0"
+		             Padding="22"
+		             Style="{StaticResource InteractiveCardStyle}">
 
 				<Grid>
 
@@ -1230,10 +1228,10 @@
                         Margin="0,22,0,8">
 
 						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="300"/>
-							<ColumnDefinition Width="115"/>
-							<ColumnDefinition Width="115"/>
-							<ColumnDefinition Width="90"/>
+							<ColumnDefinition Width="2.6*"/>
+							<ColumnDefinition Width="1*"/>
+							<ColumnDefinition Width="1*"/>
+							<ColumnDefinition Width="0.8*"/>
 						</Grid.ColumnDefinitions>
 
 						<TextBlock
@@ -1353,10 +1351,10 @@
 								<Grid Margin="0,7">
 
 									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="300"/>
-										<ColumnDefinition Width="115"/>
-										<ColumnDefinition Width="115"/>
-										<ColumnDefinition Width="90"/>
+										<ColumnDefinition Width="2.6*"/>
+										<ColumnDefinition Width="1*"/>
+										<ColumnDefinition Width="1*"/>
+										<ColumnDefinition Width="0.8*"/>
 									</Grid.ColumnDefinitions>
 
 									<TextBlock

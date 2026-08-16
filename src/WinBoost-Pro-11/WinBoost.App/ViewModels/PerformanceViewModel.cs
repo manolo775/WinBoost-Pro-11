@@ -15,6 +15,7 @@ using WinBoost.App.Services.Health;
 using WinBoost.App.Services.Monitoring;
 using WinBoost.App.Services.Optimization;
 using WinBoost.App.Services.Startup;
+using WinBoost.App.Helpers;
 
 namespace WinBoost.App.ViewModels
 {
@@ -58,6 +59,9 @@ namespace WinBoost.App.ViewModels
 
         private string _currentOptimizationOperation =
             string.Empty;
+
+        private OptimizationProgressEventArgs?
+              _lastOptimizationProgress;
 
         public PerformanceViewModel()
         {
@@ -445,7 +449,8 @@ namespace WinBoost.App.ViewModels
 
         public void StartPerformanceMonitoring()
         {
-            StartMonitoring();
+            StartMonitoring(
+              loadHistory: false);
 
             if (!_processRefreshTimer.IsEnabled)
             {
@@ -534,7 +539,7 @@ namespace WinBoost.App.ViewModels
                 _isRefreshingProcesses = true;
 
                 CommandManager
-                    .InvalidateRequerySuggested();
+                     .InvalidateRequerySuggested();
 
                 List<ProcessInfo> processes =
                     await _processMonitorService
@@ -575,7 +580,7 @@ namespace WinBoost.App.ViewModels
                 _isRefreshingProcesses = false;
 
                 CommandManager
-                    .InvalidateRequerySuggested();
+                 .InvalidateRequerySuggested();
             }
         }
 
@@ -877,17 +882,19 @@ namespace WinBoost.App.ViewModels
                 return;
             }
 
-            MessageBoxResult confirmation =
-                MessageBox.Show(
-                    LocalizationHelper.Get(
-                        "PerformanceOptimizationConfirmMessage"),
-                    LocalizationHelper.Get(
-                        "PerformanceOptimizationConfirmTitle"),
-                    MessageBoxButton.YesNo,
-                    MessageBoxImage.Warning);
+            bool confirmed =
+    NativeConfirmationDialog.Ask(
+        Application.Current.MainWindow,
+        LocalizationHelper.Get(
+            "PerformanceOptimizationConfirmTitle"),
+        LocalizationHelper.Get(
+            "PerformanceOptimizationConfirmMessage"),
+        LocalizationHelper.Get(
+            "CommonYes"),
+        LocalizationHelper.Get(
+            "CommonNo"));
 
-            if (confirmation !=
-                MessageBoxResult.Yes)
+            if (!confirmed)
             {
                 return;
             }
@@ -996,6 +1003,16 @@ namespace WinBoost.App.ViewModels
             OnPropertyChanged(
                 nameof(ApplyButtonText));
 
+            OnPropertyChanged(
+               nameof(PerformanceAnalyzerStatus));
+
+            if (_lastOptimizationProgress != null)
+            {
+                CurrentOptimizationOperation =
+                    _lastOptimizationProgress
+                        .GetLocalizedOperationName();
+            }
+
             UpdateProcessesLastUpdatedText();
 
             if (IsAnalyzing ||
@@ -1017,21 +1034,27 @@ namespace WinBoost.App.ViewModels
         }
 
         private void OptimizationEngine_ProgressChanged(
-            object? sender,
-            OptimizationProgressEventArgs e)
+     object? sender,
+     OptimizationProgressEventArgs e)
         {
+            _lastOptimizationProgress =
+                e;
+
             Application.Current.Dispatcher.Invoke(
                 () =>
                 {
+                    string localizedOperationName =
+                        e.GetLocalizedOperationName();
+
                     OptimizationProgress =
                         e.ProgressPercentage;
 
                     CurrentOptimizationOperation =
-                        e.OperationName;
+                        localizedOperationName;
 
                     OptimizationStatus =
                         $"{e.ProgressPercentage}% - " +
-                        e.OperationName;
+                        localizedOperationName;
                 });
         }
 

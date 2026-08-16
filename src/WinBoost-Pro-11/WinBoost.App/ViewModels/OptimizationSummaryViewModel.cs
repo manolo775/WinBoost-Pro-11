@@ -1,5 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Optimization;
 
@@ -11,6 +13,12 @@ namespace WinBoost.App.ViewModels
         private OptimizationSummary
             _summary =
                 new();
+
+        public OptimizationSummaryViewModel()
+        {
+            LanguageManager.Instance.LanguageChanged +=
+                LanguageManager_LanguageChanged;
+        }
 
         public OptimizationSummary Summary
         {
@@ -67,6 +75,13 @@ namespace WinBoost.App.ViewModels
 
             OnPropertyChanged(
                 nameof(IsVisible));
+        }
+
+        private void LanguageManager_LanguageChanged(
+            object? sender,
+            EventArgs e)
+        {
+            Summary.RefreshLocalization();
         }
 
         public event PropertyChangedEventHandler?
