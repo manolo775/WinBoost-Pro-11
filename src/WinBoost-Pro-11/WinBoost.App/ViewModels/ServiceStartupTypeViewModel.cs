@@ -47,6 +47,22 @@ namespace WinBoost.App.ViewModels
                 return true;
             }
 
+            if (!AdministratorHelper.IsRunningAsAdministrator())
+            {
+                NativeConfirmationDialog.ShowAcknowledgement(
+                    Application.Current.MainWindow,
+                    LocalizationHelper.Get(
+                        "ServicesStartupTypeAdminRequiredTitle"),
+                    LocalizationHelper.Get(
+                        "ServicesStartupTypeAdminRequiredMessage"),
+                    LocalizationHelper.Get(
+                        "CommonAcknowledgementButton"));
+
+                service.CancelStartupTypeChange();
+
+                return false;
+            }
+
             string previousStartupType =
                 service.StartType;
 
@@ -106,16 +122,17 @@ namespace WinBoost.App.ViewModels
 
                 service.ConfirmStartupTypeChange();
 
-                MessageBox.Show(
+                NativeConfirmationDialog.ShowAcknowledgement(
+                    Application.Current.MainWindow,
+                    LocalizationHelper.Get(
+                        "ServicesStartupTypeUpdatedTitle"),
                     LocalizationHelper.Format(
                         "ServicesStartupTypeUpdatedMessage",
                         service.DisplayName,
                         GetStartupTypeText(
                             service.StartType)),
                     LocalizationHelper.Get(
-                        "ServicesStartupTypeUpdatedTitle"),
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
+                        "CommonCloseButton"));
 
                 return true;
             }

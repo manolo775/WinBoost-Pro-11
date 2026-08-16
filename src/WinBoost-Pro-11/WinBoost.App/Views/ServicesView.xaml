@@ -985,12 +985,13 @@
 														VerticalAlignment="Center">
 
 														<ComboBox
-															Width="155"
-															Height="32"
-															SelectedValuePath="Tag"
-															SelectedValue="{Binding SelectedStartupType,
-                                Mode=TwoWay,
-                                UpdateSourceTrigger=PropertyChanged}">
+                                                               Width="155"
+                                                                Height="32"
+                                                                IsEnabled="{Binding CanChangeStartupType}"
+                                                                SelectedValuePath="Tag"
+                                                                SelectedValue="{Binding SelectedStartupType,
+                                                                  Mode=TwoWay,
+                                                                   UpdateSourceTrigger=PropertyChanged}">
 
 															<ComboBoxItem
 																Tag="Automatic"
@@ -1125,10 +1126,10 @@
 													<Border
 														Grid.Column="3"
 														MinWidth="96"
-														Height="34"
+														MinHeight="34"
 														Margin="6,0"
-														Padding="14,0"
-														HorizontalAlignment="Center"
+														Padding="14,6"
+														HorizontalAlignment="Stretch"
 														VerticalAlignment="Center"
 														CornerRadius="17"
 														Background="#252525"
@@ -1140,6 +1141,7 @@
 															HorizontalAlignment="Center"
 															VerticalAlignment="Center"
 															TextAlignment="Center"
+															TextWrapping="Wrap"
 															FontSize="13"
 															FontWeight="SemiBold"
 															Foreground="{Binding RecommendationBrush}"/>

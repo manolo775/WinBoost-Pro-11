@@ -120,7 +120,7 @@
 	</sys:String>
 
 	<sys:String x:Key="ServicesColumnHealth">
-		Sănătate
+		Importanță
 	</sys:String>
 
 	<sys:String x:Key="ServicesColumnActions">
@@ -1228,7 +1228,7 @@
 	</sys:String>
 
 	<sys:String x:Key="ServicesRecommendationReview">
-		Verifică
+		De verificat
 	</sys:String>
 
 	<sys:String x:Key="TempFilesFolderMissing">
@@ -2648,6 +2648,22 @@
 
 	<sys:String x:Key="ServicesStartupTypeUpdatedMessage">
 		Tipul de pornire pentru serviciul „{0}” a fost schimbat în „{1}”.
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeAdminRequiredTitle">
+		Drepturi de administrator necesare
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeAdminRequiredMessage">
+		Schimbarea tipului de pornire al serviciilor necesită drepturi de administrator. Pornește WinBoost ca administrator și încearcă din nou.
+	</sys:String>
+
+	<sys:String x:Key="CommonAcknowledgementButton">
+		De acord
+	</sys:String>
+
+	<sys:String x:Key="CommonCloseButton">
+		Închide
 	</sys:String>
 	
 </ResourceDictionary>

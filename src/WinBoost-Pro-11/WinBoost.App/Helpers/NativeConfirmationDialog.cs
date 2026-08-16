@@ -10,8 +10,12 @@ namespace WinBoost.App.Helpers
         private const int WhCbt = 5;
         private const int HcbtActivate = 5;
 
+        private const int IdOk = 1;
         private const int IdYes = 6;
         private const int IdNo = 7;
+
+        [ThreadStatic]
+        private static string? _okText;
 
         [ThreadStatic]
         private static string? _yesText;
@@ -32,18 +36,11 @@ namespace WinBoost.App.Helpers
             string yesText,
             string noText)
         {
+            _okText = null;
             _yesText = yesText;
             _noText = noText;
 
-            _hookProcedure =
-                ConfirmationDialogHook;
-
-            _hookHandle =
-                SetWindowsHookEx(
-                    WhCbt,
-                    _hookProcedure,
-                    IntPtr.Zero,
-                    GetCurrentThreadId());
+            InstallHook();
 
             try
             {
@@ -59,17 +56,63 @@ namespace WinBoost.App.Helpers
             }
             finally
             {
-                if (_hookHandle != IntPtr.Zero)
-                {
-                    UnhookWindowsHookEx(
-                        _hookHandle);
-                }
-
-                _hookHandle = IntPtr.Zero;
-                _hookProcedure = null;
-                _yesText = null;
-                _noText = null;
+                RemoveHook();
             }
+        }
+
+        public static void ShowAcknowledgement(
+            Window? owner,
+            string title,
+            string message,
+            string buttonText)
+        {
+            _okText = buttonText;
+            _yesText = null;
+            _noText = null;
+
+            InstallHook();
+
+            try
+            {
+                MessageBox.Show(
+                    owner,
+                    message,
+                    title,
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+            finally
+            {
+                RemoveHook();
+            }
+        }
+
+        private static void InstallHook()
+        {
+            _hookProcedure =
+                ConfirmationDialogHook;
+
+            _hookHandle =
+                SetWindowsHookEx(
+                    WhCbt,
+                    _hookProcedure,
+                    IntPtr.Zero,
+                    GetCurrentThreadId());
+        }
+
+        private static void RemoveHook()
+        {
+            if (_hookHandle != IntPtr.Zero)
+            {
+                UnhookWindowsHookEx(
+                    _hookHandle);
+            }
+
+            _hookHandle = IntPtr.Zero;
+            _hookProcedure = null;
+            _okText = null;
+            _yesText = null;
+            _noText = null;
         }
 
         private static IntPtr ConfirmationDialogHook(
@@ -79,6 +122,14 @@ namespace WinBoost.App.Helpers
         {
             if (code == HcbtActivate)
             {
+                if (!string.IsNullOrWhiteSpace(_okText))
+                {
+                    SetDlgItemText(
+                        windowHandle,
+                        IdOk,
+                        _okText);
+                }
+
                 if (!string.IsNullOrWhiteSpace(_yesText))
                 {
                     SetDlgItemText(

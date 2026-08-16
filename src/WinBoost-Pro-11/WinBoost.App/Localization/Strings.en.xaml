@@ -59,10 +59,6 @@
 		Scan Services
 	</sys:String>
 
-	<sys:String x:Key="ServicesHealthTitle">
-		Services Health
-	</sys:String>
-
 	<sys:String x:Key="ServicesHealthDescription">
 		Summary of the Windows services identified during the scan.
 	</sys:String>
@@ -120,7 +116,7 @@
 	</sys:String>
 
 	<sys:String x:Key="ServicesColumnHealth">
-		Health
+		Importance
 	</sys:String>
 
 	<sys:String x:Key="ServicesColumnActions">
@@ -2648,6 +2644,22 @@
 
 	<sys:String x:Key="ServicesStartupTypeUpdatedMessage">
 		The startup type for the “{0}” service was changed to “{1}”.
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeAdminRequiredTitle">
+		Administrator rights required
+	</sys:String>
+
+	<sys:String x:Key="ServicesStartupTypeAdminRequiredMessage">
+		Changing a service startup type requires administrator rights. Run WinBoost as administrator and try again.
+	</sys:String>
+
+	<sys:String x:Key="CommonAcknowledgementButton">
+		OK
+	</sys:String>
+
+	<sys:String x:Key="CommonCloseButton">
+		Close
 	</sys:String>
 	
 </ResourceDictionary>

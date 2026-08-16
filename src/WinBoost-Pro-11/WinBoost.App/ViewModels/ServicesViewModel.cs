@@ -715,20 +715,21 @@ namespace WinBoost.App.ViewModels
         }
 
         private void ShowOperationError(
-            WindowsServiceInfo service,
-            string message)
+      WindowsServiceInfo service,
+      string message)
         {
             string localizedMessage =
                 GetLocalizedOperationError(
                     service,
                     message);
 
-            MessageBox.Show(
-                localizedMessage,
+            NativeConfirmationDialog.ShowAcknowledgement(
+                Application.Current.MainWindow,
                 LocalizationHelper.Get(
                     "ServicesOperationErrorTitle"),
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+                localizedMessage,
+                LocalizationHelper.Get(
+                    "CommonCloseButton"));
         }
 
         private static string GetLocalizedOperationError(
