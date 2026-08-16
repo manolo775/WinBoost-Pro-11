@@ -41,13 +41,13 @@
                 Margin="0,25,0,0"
                 Padding="22"
                 CornerRadius="10"
-                Background="{StaticResource CardBrush}">
+                Style="{StaticResource InteractiveCardStyle}">
 
 				<Grid>
 
 					<Grid.ColumnDefinitions>
 						<ColumnDefinition Width="*"/>
-						<ColumnDefinition Width="190"/>
+						<ColumnDefinition Width="Auto"/>
 					</Grid.ColumnDefinitions>
 
 					<StackPanel
@@ -59,52 +59,55 @@
                             FontSize="20"
                             FontWeight="SemiBold"
                             Foreground="{StaticResource TextBrush}"/>
+						<Grid
+							Margin="0,14,20,0"
+							VerticalAlignment="Center">
 
-						<StackPanel
-                            Margin="0,14,0,0"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center">
+							<Grid.ColumnDefinitions>
+
+								<ColumnDefinition Width="Auto"/>
+
+								<ColumnDefinition Width="*"/>
+
+							</Grid.ColumnDefinitions>
 
 							<Ellipse
-                                Width="16"
-                                Height="16"
-                                Fill="#35C759"
-                                Margin="0,0,18,0"
-                                VerticalAlignment="Center"/>
+								Grid.Column="0"
+								Width="16"
+								Height="16"
+								Fill="#35C759"
+								Margin="0,0,18,0"
+								VerticalAlignment="Center"/>
 
-							<StackPanel
-                                Orientation="Horizontal"
-                                VerticalAlignment="Center">
+							<TextBlock
+								Grid.Column="1"
+								VerticalAlignment="Center"
+								FontSize="17"
+								FontWeight="Bold"
+								Foreground="White"
+								TextWrapping="Wrap">
 
-								<TextBlock
-                                    Text="{DynamicResource PrivacyRecommendationsPrefix}"
-                                    VerticalAlignment="Center"
-                                    FontSize="20"
-                                    FontWeight="Bold"
-                                    Foreground="White"/>
+								<Run
+									Text="{DynamicResource PrivacyRecommendationsPrefix}"/>
 
-								<TextBlock
-                                    Text="{Binding RecommendationCount,
-                                                   Mode=OneWay}"
-                                    Margin="7,0"
-                                    VerticalAlignment="Center"
-                                    FontSize="24"
-                                    FontWeight="ExtraBold"
-                                    Foreground="#35C759"/>
+								<Run Text=" "/>
 
-								<TextBlock
-                                    Text="{DynamicResource PrivacyRecommendationsSuffix}"
-                                    VerticalAlignment="Center"
-                                    FontSize="20"
-                                    FontWeight="Bold"
-                                    TextWrapping="Wrap"
-                                    Foreground="White"/>
+								<Run
+									Text="{Binding RecommendationCount, Mode=OneWay}"
+									Foreground="#35C759"
+									FontSize="24"
+									FontWeight="ExtraBold"/>
 
-							</StackPanel>
+								<Run Text=" "/>
+
+								<Run
+									Text="{DynamicResource PrivacyRecommendationsSuffix}"/>
+
+							</TextBlock>
+
+						</Grid>
 
 						</StackPanel>
-
-					</StackPanel>
 
 					<StackPanel
                         Grid.Column="1"
@@ -178,7 +181,7 @@
 						<Button
                             Content="{Binding ScanButtonText}"
                             Command="{Binding ScanPrivacyCommand}"
-                            Width="170"
+                            Width="220"
                             Height="42"
                             Margin="0,12,0,0"
                             Foreground="White"
@@ -291,7 +294,7 @@
                                 Margin="0,5"
                                 Padding="20"
                                 CornerRadius="8"
-                                Background="{StaticResource CardBrush}">
+                                Style="{StaticResource InteractiveCardStyle}">
 
 								<Grid>
 
@@ -396,8 +399,7 @@
                 Grid.Row="3"
                 Margin="0,20,0,0"
                 Padding="20"
-                CornerRadius="8"
-                Background="{StaticResource CardBrush}">
+                Style="{StaticResource InteractiveCardStyle}">
 
 				<TextBlock
                     Text="{DynamicResource PrivacyInformationMessage}"

@@ -3,7 +3,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using WinBoost.App.Localization;
+using WinBoost.App.Services.Navigation;
 using WinBoost.App.Views;
+
 using AppLanguage =
     WinBoost.App.Localization.Language;
 
@@ -32,22 +34,25 @@ namespace WinBoost.App
         private StartupView?
             _startupView;
 
-        private SettingsView? _settingsView;
+        private SettingsView?
+            _settingsView;
 
         private RecoveryView?
             _recoveryView;
+
         public MainWindow()
         {
             InitializeComponent();
 
+            AppNavigationService.NavigationRequested +=
+                AppNavigationService_NavigationRequested;
+
             _dashboardView =
                 new DashboardView();
 
-            MainContent.Content =
-                _dashboardView;
+            NavigateToDashboard();
 
-            SetActiveButton(
-                DashboardButton);
+            RestorePageAfterPrivilegeRestart();
 
             ContentRendered +=
                 MainWindow_ContentRendered;
@@ -93,18 +98,32 @@ namespace WinBoost.App
                 DispatcherPriority.ApplicationIdle);
         }
 
+        // ======================================
+        // DASHBOARD
+        // ======================================
+
         private void DashboardButton_Click(
-         object sender,
-         RoutedEventArgs e)
+            object sender,
+            RoutedEventArgs e)
         {
             NavigateToDashboard();
         }
 
         public void NavigateToDashboard()
         {
-            MainContent.Content = _dashboardView;
-            SetActiveButton(DashboardButton);
+            MainContent.Content =
+                _dashboardView;
+
+            AppNavigationService.SetCurrentPage(
+                "Dashboard");
+
+            SetActiveButton(
+                DashboardButton);
         }
+
+        // ======================================
+        // PERFORMANCE
+        // ======================================
 
         private void PerformanceButton_Click(
             object sender,
@@ -121,13 +140,20 @@ namespace WinBoost.App
             MainContent.Content =
                 _performanceView;
 
+            AppNavigationService.SetCurrentPage(
+                "Performance");
+
             SetActiveButton(
                 PerformanceButton);
         }
 
+        // ======================================
+        // PRIVACY
+        // ======================================
+
         private void PrivacyButton_Click(
-     object sender,
-     RoutedEventArgs e)
+            object sender,
+            RoutedEventArgs e)
         {
             NavigateToPrivacy();
         }
@@ -140,9 +166,16 @@ namespace WinBoost.App
             MainContent.Content =
                 _privacyView;
 
+            AppNavigationService.SetCurrentPage(
+                "Privacy");
+
             SetActiveButton(
                 PrivacyButton);
         }
+
+        // ======================================
+        // SERVICES
+        // ======================================
 
         private void ServicesButton_Click(
             object sender,
@@ -151,12 +184,25 @@ namespace WinBoost.App
             NavigateToServices();
         }
 
-        private void RecoveryButton_Click(
-             object sender,
-               RoutedEventArgs e)
+        public void NavigateToServices()
         {
-            NavigateToRecovery();
+            _servicesView ??=
+                new ServicesView();
+
+            MainContent.Content =
+                _servicesView;
+
+            AppNavigationService.SetCurrentPage(
+                "Services");
+
+            SetActiveButton(
+                ServicesButton);
         }
+
+        // ======================================
+        // WINDOWS UPDATE
+        // ======================================
+
         private void WindowsUpdateButton_Click(
             object sender,
             RoutedEventArgs e)
@@ -172,24 +218,25 @@ namespace WinBoost.App
             MainContent.Content =
                 _windowsUpdateView;
 
+            AppNavigationService.SetCurrentPage(
+                "WindowsUpdate");
+
             SetActiveButton(
                 WindowsUpdateButton);
         }
 
-        public void NavigateToRecovery()
-        {
-            _recoveryView ??=
-                new RecoveryView();
+        // ======================================
+        // APPS
+        // ======================================
 
-            MainContent.Content =
-                _recoveryView;
-
-            SetActiveButton(
-                RecoveryButton);
-        }
         private void AppsButton_Click(
             object sender,
             RoutedEventArgs e)
+        {
+            NavigateToApps();
+        }
+
+        public void NavigateToApps()
         {
             _appsView ??=
                 new AppsView();
@@ -197,22 +244,22 @@ namespace WinBoost.App
             MainContent.Content =
                 _appsView;
 
+            AppNavigationService.SetCurrentPage(
+                "Apps");
+
             SetActiveButton(
                 AppsButton);
         }
+
+        // ======================================
+        // STARTUP
+        // ======================================
 
         private void StartupButton_Click(
             object sender,
             RoutedEventArgs e)
         {
             NavigateToStartup();
-        }
-
-        private void SettingsButton_Click(
-              object sender,
-                 RoutedEventArgs e)
-        {
-            NavigateToSettings();
         }
 
         public void NavigateToStartup()
@@ -223,29 +270,146 @@ namespace WinBoost.App
             MainContent.Content =
                 _startupView;
 
+            AppNavigationService.SetCurrentPage(
+                "Startup");
+
             SetActiveButton(
                 StartupButton);
         }
 
-        public void NavigateToSettings()
-        {
-            _settingsView ??= new SettingsView();
+        // ======================================
+        // RECOVERY
+        // ======================================
 
-            MainContent.Content = _settingsView;
-            SetActiveButton(SettingsButton);
+        private void RecoveryButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            NavigateToRecovery();
         }
 
-        public void NavigateToServices()
+        public void NavigateToRecovery()
         {
-            _servicesView ??=
-                new ServicesView();
+            _recoveryView ??=
+                new RecoveryView();
 
             MainContent.Content =
-                _servicesView;
+                _recoveryView;
+
+            AppNavigationService.SetCurrentPage(
+                "Recovery");
 
             SetActiveButton(
-                ServicesButton);
+                RecoveryButton);
         }
+
+        // ======================================
+        // SETTINGS
+        // ======================================
+
+        private void SettingsButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            NavigateToSettings();
+        }
+
+        public void NavigateToSettings()
+        {
+            _settingsView ??=
+                new SettingsView();
+
+            MainContent.Content =
+                _settingsView;
+
+            AppNavigationService.SetCurrentPage(
+                "Settings");
+
+            SetActiveButton(
+                SettingsButton);
+        }
+
+        // ======================================
+        // GLOBAL NAVIGATION
+        // ======================================
+        private void RestorePageAfterPrivilegeRestart()
+        {
+            string[] arguments =
+                Environment.GetCommandLineArgs();
+
+            for (int index = 0;
+                 index < arguments.Length - 1;
+                 index++)
+            {
+                if (!string.Equals(
+                        arguments[index],
+                        "--return-page",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    continue;
+                }
+
+                string returnPage =
+                    arguments[index + 1];
+
+                if (string.IsNullOrWhiteSpace(
+                        returnPage))
+                {
+                    return;
+                }
+
+                AppNavigationService.NavigateTo(
+                    returnPage);
+
+                return;
+            }
+        }
+        private void AppNavigationService_NavigationRequested(
+            string page)
+        {
+            switch (page)
+            {
+                case "Dashboard":
+                    NavigateToDashboard();
+                    break;
+
+                case "Performance":
+                    NavigateToPerformance();
+                    break;
+
+                case "Privacy":
+                    NavigateToPrivacy();
+                    break;
+
+                case "Services":
+                    NavigateToServices();
+                    break;
+
+                case "WindowsUpdate":
+                    NavigateToWindowsUpdate();
+                    break;
+
+                case "Apps":
+                    NavigateToApps();
+                    break;
+
+                case "Startup":
+                    NavigateToStartup();
+                    break;
+
+                case "Recovery":
+                    NavigateToRecovery();
+                    break;
+
+                case "Settings":
+                    NavigateToSettings();
+                    break;
+            }
+        }
+
+        // ======================================
+        // SIDEBAR ACTIVE BUTTON
+        // ======================================
 
         private void SetActiveButton(
             Button activeButton)
@@ -263,7 +427,8 @@ namespace WinBoost.App
                     "SidebarButtonStyle");
 
             SettingsButton.Style =
-                  (Style)FindResource("SidebarButtonStyle");
+                (Style)FindResource(
+                    "SidebarButtonStyle");
 
             ServicesButton.Style =
                 (Style)FindResource(
@@ -282,8 +447,8 @@ namespace WinBoost.App
                     "SidebarButtonStyle");
 
             RecoveryButton.Style =
-             (Style)FindResource(
-             "SidebarButtonStyle");
+                (Style)FindResource(
+                    "SidebarButtonStyle");
 
             activeButton.Style =
                 (Style)FindResource(

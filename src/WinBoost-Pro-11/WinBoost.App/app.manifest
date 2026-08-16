@@ -15,7 +15,7 @@
 				xmlns="urn:schemas-microsoft-com:asm.v3">
 
 				<requestedExecutionLevel
-					level="requireAdministrator"
+					level="asInvoker"
 					uiAccess="false"/>
 
 			</requestedPrivileges>

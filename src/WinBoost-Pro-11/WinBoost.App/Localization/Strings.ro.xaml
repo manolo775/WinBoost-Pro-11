@@ -2665,5 +2665,31 @@
 	<sys:String x:Key="CommonCloseButton">
 		Închide
 	</sys:String>
+
+	<sys:String x:Key="SettingsPrivilegeModeAdministrator">
+		Administrator
+	</sys:String>
+
+	<sys:String x:Key="SettingsPrivilegeModeNormal">
+		Normal
+	</sys:String>
+
+	<sys:String x:Key="SettingsRestartNormally">
+		Repornește în mod normal
+	</sys:String>
+
+	<sys:String x:Key="SettingsRestartAsAdministrator">
+		Repornește ca administrator
+	</sys:String>
+
+	<!-- ADMINISTRATOR REQUIREMENT -->
+
+	<sys:String x:Key="AdministratorRequiredTitle">
+		Drepturi de administrator necesare
+	</sys:String>
+
+	<sys:String x:Key="AdministratorRequiredMessage">
+		Această operație necesită drepturi de administrator. Dorești să mergi la Setări pentru a reporni WinBoost ca administrator?
+	</sys:String>
 	
 </ResourceDictionary>

@@ -56,8 +56,34 @@ namespace WinBoost.App.ViewModels
                    new RelayCommand(
                       _ => ResetSettings());
 
+            RestartWithDifferentPrivilegesCommand =
+                   new RelayCommand(
+                     _ => RestartWithDifferentPrivileges());
+
         }
 
+        public ICommand RestartWithDifferentPrivilegesCommand
+        {
+            get;
+        }
+
+        public bool IsRunningAsAdministrator =>
+            ApplicationElevationHelper
+                .IsRunningAsAdministrator();
+
+        public string CurrentPrivilegeModeText =>
+            IsRunningAsAdministrator
+                ? LocalizationHelper.Get(
+                    "SettingsPrivilegeModeAdministrator")
+                : LocalizationHelper.Get(
+                    "SettingsPrivilegeModeNormal");
+
+        public string RestartPrivilegeButtonText =>
+            IsRunningAsAdministrator
+                ? LocalizationHelper.Get(
+                    "SettingsRestartNormally")
+                : LocalizationHelper.Get(
+                    "SettingsRestartAsAdministrator");
         public ICommand ClearHistoryCommand
         {
             get;
@@ -611,6 +637,20 @@ namespace WinBoost.App.ViewModels
                     "SettingsResetSuccessTitle"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
+        }
+
+        private void RestartWithDifferentPrivileges()
+        {
+            if (IsRunningAsAdministrator)
+            {
+                ApplicationElevationHelper
+                    .RestartNormally();
+
+                return;
+            }
+
+            ApplicationElevationHelper
+                .RestartAsAdministrator();
         }
         private void OnPropertyChanged(
             [CallerMemberName]

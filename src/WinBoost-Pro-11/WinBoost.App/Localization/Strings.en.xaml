@@ -2661,5 +2661,31 @@
 	<sys:String x:Key="CommonCloseButton">
 		Close
 	</sys:String>
+
+	<sys:String x:Key="SettingsPrivilegeModeAdministrator">
+		Administrator
+	</sys:String>
+
+	<sys:String x:Key="SettingsPrivilegeModeNormal">
+		Normal
+	</sys:String>
+
+	<sys:String x:Key="SettingsRestartNormally">
+		Restart normally
+	</sys:String>
+
+	<sys:String x:Key="SettingsRestartAsAdministrator">
+		Restart as administrator
+	</sys:String>
+
+	<!-- ADMINISTRATOR REQUIREMENT -->
+
+	<sys:String x:Key="AdministratorRequiredTitle">
+		Administrator privileges required
+	</sys:String>
+
+	<sys:String x:Key="AdministratorRequiredMessage">
+		This operation requires administrator privileges. Do you want to go to Settings to restart WinBoost as administrator?
+	</sys:String>
 	
 </ResourceDictionary>

@@ -31,6 +31,76 @@
 					TextWrapping="Wrap"
 					Foreground="#BDBDBD"/>
 
+				<!-- MOD DE RULARE -->
+
+				<Border
+					Margin="0,18,0,20"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}">
+
+					<Grid>
+
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition Width="*"/>
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+
+						<StackPanel
+							Grid.Column="0"
+							Margin="0,0,24,0">
+
+							<TextBlock
+								Text="{DynamicResource SettingsPrivilegeModeTitle}"
+								FontSize="20"
+								FontWeight="SemiBold"
+								Foreground="White"/>
+
+							<TextBlock
+								Margin="0,6,0,0"
+								Text="{DynamicResource SettingsPrivilegeModeDescription}"
+								TextWrapping="Wrap"
+								Foreground="#BDBDBD"/>
+
+							<StackPanel
+								Margin="0,14,0,0"
+								Orientation="Horizontal">
+
+								<TextBlock
+									Text="{DynamicResource SettingsPrivilegeCurrentMode}"
+									FontSize="16"
+									FontWeight="SemiBold"
+									Foreground="White"/>
+
+								<TextBlock
+									Margin="8,0,0,0"
+									Text="{Binding CurrentPrivilegeModeText}"
+									FontSize="16"
+									FontWeight="Bold"
+									Foreground="#FFD740"/>
+
+							</StackPanel>
+
+						</StackPanel>
+
+						<Button
+							Grid.Column="1"
+							MinWidth="220"
+							Height="40"
+							Padding="14,5"
+							VerticalAlignment="Center"
+							Content="{Binding RestartPrivilegeButtonText}"
+							Command="{Binding RestartWithDifferentPrivilegesCommand}"
+							Background="#25272B"
+							Foreground="White"
+							BorderBrush="#FFD740"
+							BorderThickness="1"/>
+
+					</Grid>
+
+				</Border>
+				
 				<!-- ALERTE -->
 
 				<Border
@@ -872,6 +942,8 @@
 					</StackPanel>
 
 				</Border>
+
+		
 				
 			</StackPanel>
 

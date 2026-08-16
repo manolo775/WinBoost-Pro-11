@@ -401,11 +401,18 @@ namespace WinBoost.App.ViewModels
         }
 
         private async Task ToggleStartupApplicationAsync(
-            StartupAppInfo? application)
+          StartupAppInfo? application)
         {
             if (application == null ||
                 IsScanning ||
                 IsChangingStartupState)
+            {
+                return;
+            }
+
+            if (application.RequiresAdministrator &&
+                !AdministratorRequirementHelper
+                    .EnsureAdministrator())
             {
                 return;
             }

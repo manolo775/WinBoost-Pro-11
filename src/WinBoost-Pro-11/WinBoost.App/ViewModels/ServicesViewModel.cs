@@ -118,36 +118,30 @@ namespace WinBoost.App.ViewModels
                         !IsScanning);
 
             StartServiceCommand =
-                new RelayCommand(
-                    async parameter =>
-                        await StartServiceAsync(
-                            parameter as WindowsServiceInfo),
-                    parameter =>
-                        parameter is WindowsServiceInfo service &&
-                        service.CanStart &&
-                        !IsScanning);
+    new RelayCommand(
+        async parameter =>
+        {
+            if (parameter is not
+                WindowsServiceInfo service)
+            {
+                return;
+            }
+
+            if (!AdministratorRequirementHelper
+                    .EnsureAdministrator())
+            {
+                return;
+            }
+
+            await StartServiceAsync(
+                service);
+        },
+        parameter =>
+            parameter is WindowsServiceInfo service &&
+            service.CanStart &&
+            !IsScanning);
 
             StopServiceCommand =
-                new RelayCommand(
-                    async parameter =>
-                        await StopServiceAsync(
-                            parameter as WindowsServiceInfo),
-                    parameter =>
-                        parameter is WindowsServiceInfo service &&
-                        service.CanStop &&
-                        !IsScanning);
-
-            RestartServiceCommand =
-                new RelayCommand(
-                    async parameter =>
-                        await RestartServiceAsync(
-                            parameter as WindowsServiceInfo),
-                    parameter =>
-                        parameter is WindowsServiceInfo service &&
-                        service.CanRestart &&
-                        !IsScanning);
-
-            ChangeStartupTypeCommand =
                 new RelayCommand(
                     async parameter =>
                     {
@@ -157,29 +151,88 @@ namespace WinBoost.App.ViewModels
                             return;
                         }
 
-                        bool wasApplied =
-                            await _startupTypeViewModel
-                                .ApplyStartupTypeAsync(service);
-
-                        if (wasApplied)
+                        if (!AdministratorRequirementHelper
+                                .EnsureAdministrator())
                         {
-                            ScanMessage =
-                                LocalizationHelper.Format(
-                                    "ServicesStartupTypeChanged",
-                                    service.DisplayName,
-                                    service.StartType);
-
-                            ApplyFilter();
+                            return;
                         }
 
-                        CommandManager
-                            .InvalidateRequerySuggested();
+                        await StopServiceAsync(
+                            service);
                     },
                     parameter =>
                         parameter is WindowsServiceInfo service &&
-                        service.CanChangeStartupType &&
-                        service.HasStartupTypeChanged &&
+                        service.CanStop &&
                         !IsScanning);
+
+            RestartServiceCommand =
+                new RelayCommand(
+                    async parameter =>
+                    {
+                        if (parameter is not
+                            WindowsServiceInfo service)
+                        {
+                            return;
+                        }
+
+                        if (!AdministratorRequirementHelper
+                                .EnsureAdministrator())
+                        {
+                            return;
+                        }
+
+                        await RestartServiceAsync(
+                            service);
+                    },
+                    parameter =>
+                        parameter is WindowsServiceInfo service &&
+                        service.CanRestart &&
+                        !IsScanning);
+            ChangeStartupTypeCommand =
+    new RelayCommand(
+        async parameter =>
+        {
+            if (parameter is not
+                WindowsServiceInfo service)
+            {
+                return;
+            }
+
+            if (!AdministratorRequirementHelper
+                    .EnsureAdministrator())
+            {
+                service.CancelStartupTypeChange();
+
+                CommandManager
+                    .InvalidateRequerySuggested();
+
+                return;
+            }
+
+            bool wasApplied =
+                await _startupTypeViewModel
+                    .ApplyStartupTypeAsync(
+                        service);
+
+            if (wasApplied)
+            {
+                ScanMessage =
+                    LocalizationHelper.Format(
+                        "ServicesStartupTypeChanged",
+                        service.DisplayName,
+                        service.StartType);
+
+                ApplyFilter();
+            }
+
+            CommandManager
+                .InvalidateRequerySuggested();
+        },
+        parameter =>
+            parameter is WindowsServiceInfo service &&
+            service.CanChangeStartupType &&
+            service.HasStartupTypeChanged &&
+            !IsScanning);
 
             LanguageManager.Instance.LanguageChanged +=
                 LanguageManager_LanguageChanged;
