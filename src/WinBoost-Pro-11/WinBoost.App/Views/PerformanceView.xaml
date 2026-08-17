@@ -155,8 +155,8 @@
 							Orientation="Horizontal">
 
 							<TextBlock
-								Text="{Binding PerformanceAnalyzerScore,
-                                   Mode=OneWay}"
+								 Text="{Binding PerformanceAnalyzerScoreText,
+                                           Mode=OneWay}"
 								FontSize="32"
 								FontWeight="Bold"
 								Foreground="{StaticResource TextBrush}"/>
@@ -170,8 +170,8 @@
 						</StackPanel>
 
 						<ProgressBar
-							Value="{Binding PerformanceAnalyzerScore,
-                                Mode=OneWay}"
+							Value="{Binding PerformanceAnalyzerProgressValue,
+                                 Mode=OneWay}"
 							Minimum="0"
 							Maximum="100"
 							Height="8"

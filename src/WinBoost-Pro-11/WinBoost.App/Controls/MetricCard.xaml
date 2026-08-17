@@ -49,7 +49,8 @@
                 Margin="0,14,0,0"
                 HorizontalAlignment="Center"
                 TextAlignment="Center"
-                FontSize="{StaticResource MetricValueFontSize}"
+               FontSize="{Binding ValueFontSize,
+                        RelativeSource={RelativeSource AncestorType=UserControl}}"
                 FontWeight="Bold"
                 Foreground="White"/>
 

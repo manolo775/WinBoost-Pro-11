@@ -5,10 +5,9 @@
     xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
 	<Border
-        Margin="50,10,50,10"
-        Padding="20"
-        CornerRadius="10"
-        Background="#2B2B2B">
+	   Margin="50,15,50,10"
+	   Padding="20"
+	   Style="{StaticResource DashboardCardBorderStyle}">
 
 		<StackPanel>
 

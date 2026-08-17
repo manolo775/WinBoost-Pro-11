@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Runtime.InteropServices;
 
 namespace WinBoost.App.Services.Monitoring
@@ -20,40 +21,63 @@ namespace WinBoost.App.Services.Monitoring
 
             public MemoryStatusEx()
             {
-                Length = (uint)Marshal.SizeOf(typeof(MemoryStatusEx));
+                Length =
+                    (uint)Marshal.SizeOf(
+                        typeof(MemoryStatusEx));
             }
         }
 
-        [DllImport("kernel32.dll", SetLastError = true)]
+        [DllImport(
+            "kernel32.dll",
+            SetLastError = true)]
         private static extern bool GlobalMemoryStatusEx(
             [In, Out] MemoryStatusEx memoryStatus);
 
         public float GetRamUsage()
         {
-            var memoryStatus = new MemoryStatusEx();
+            var memoryStatus =
+                new MemoryStatusEx();
 
-            if (!GlobalMemoryStatusEx(memoryStatus))
-                return 0;
+            if (!GlobalMemoryStatusEx(
+                    memoryStatus))
+            {
+                throw new Win32Exception(
+                    Marshal.GetLastWin32Error(),
+                    "Unable to read system memory status.");
+            }
 
             return memoryStatus.MemoryLoad;
         }
 
-        public (double UsedGB, double TotalGB) GetRamInfo()
+        public (double UsedGB, double TotalGB)
+            GetRamInfo()
         {
-            var memoryStatus = new MemoryStatusEx();
+            var memoryStatus =
+                new MemoryStatusEx();
 
-            if (!GlobalMemoryStatusEx(memoryStatus))
-                return (0, 0);
+            if (!GlobalMemoryStatusEx(
+                    memoryStatus))
+            {
+                throw new Win32Exception(
+                    Marshal.GetLastWin32Error(),
+                    "Unable to read system memory information.");
+            }
 
             double total =
                 memoryStatus.TotalPhysicalMemory /
-                1024d / 1024d / 1024d;
+                1024d /
+                1024d /
+                1024d;
 
             double available =
                 memoryStatus.AvailablePhysicalMemory /
-                1024d / 1024d / 1024d;
+                1024d /
+                1024d /
+                1024d;
 
-            return (total - available, total);
+            return (
+                total - available,
+                total);
         }
     }
 }

@@ -2,10 +2,11 @@
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using WinBoost.App.Helpers;
 using WinBoost.App.Localization;
 using WinBoost.App.Models;
 using WinBoost.App.Services.Optimization;
-using WinBoost.App.Helpers;
+
 namespace WinBoost.App.Controls
 {
     public partial class QuickActionsControl : UserControl
@@ -106,22 +107,24 @@ namespace WinBoost.App.Controls
                               result.RecoveredSpaceText)}"
                         : result.Message;
 
-                MessageBox.Show(
-                    message,
+                NativeConfirmationDialog.ShowAcknowledgement(
+                    Window.GetWindow(this),
                     result.IsSuccessful
                         ? T("QuickActionsTempCleanSuccessTitle")
                         : T("QuickActionsTempCleanErrorTitle"),
-                    MessageBoxButton.OK,
+                    message,
+                    T("CommonYes"),
                     result.IsSuccessful
                         ? MessageBoxImage.Information
                         : MessageBoxImage.Warning);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"{T("QuickActionsTempCleanFailed")}\n\n{ex.Message}",
+                NativeConfirmationDialog.ShowAcknowledgement(
+                    Window.GetWindow(this),
                     T("CommonError"),
-                    MessageBoxButton.OK,
+                    $"{T("QuickActionsTempCleanFailed")}\n\n{ex.Message}",
+                    T("CommonYes"),
                     MessageBoxImage.Error);
             }
             finally
@@ -211,22 +214,24 @@ namespace WinBoost.App.Controls
                         report,
                         emptyRecycleBin);
 
-                MessageBox.Show(
-                    message,
+                NativeConfirmationDialog.ShowAcknowledgement(
+                    window,
                     report.IsSuccessful
                         ? T("QuickActionsOptimizationSuccessTitle")
                         : T("QuickActionsOptimizationWarningTitle"),
-                    MessageBoxButton.OK,
+                    message,
+                    T("CommonYes"),
                     report.IsSuccessful
                         ? MessageBoxImage.Information
                         : MessageBoxImage.Warning);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(
-                    $"{T("QuickActionsOptimizationFailed")}\n\n{ex.Message}",
+                NativeConfirmationDialog.ShowAcknowledgement(
+                    window,
                     T("CommonError"),
-                    MessageBoxButton.OK,
+                    $"{T("QuickActionsOptimizationFailed")}\n\n{ex.Message}",
+                    T("CommonYes"),
                     MessageBoxImage.Error);
             }
             finally
@@ -249,7 +254,9 @@ namespace WinBoost.App.Controls
             var messageBuilder =
                 new StringBuilder();
 
-            messageBuilder.AppendLine(report.Message);
+            messageBuilder.AppendLine(
+                report.Message);
+
             messageBuilder.AppendLine();
 
             foreach (OptimizationResult result
@@ -264,7 +271,8 @@ namespace WinBoost.App.Controls
             if (!recycleBinRequested)
             {
                 messageBuilder.AppendLine(
-                    T("QuickActionsRecycleBinNotEmptied"));
+                    T(
+                        "QuickActionsRecycleBinNotEmptied"));
             }
 
             messageBuilder.AppendLine();

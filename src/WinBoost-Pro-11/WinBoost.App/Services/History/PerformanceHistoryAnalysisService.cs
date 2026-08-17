@@ -28,7 +28,23 @@ namespace WinBoost.App.Services.History
                     nameof(previousRecords));
             }
 
-            if (currentRecords.Count == 0)
+            IReadOnlyList<PerformanceHistoryRecord>
+    validCurrentRecords =
+        currentRecords
+            .Where(record =>
+                record.RamUsage > 0 &&
+                record.DiskUsage > 0)
+            .ToList();
+
+            IReadOnlyList<PerformanceHistoryRecord>
+                validPreviousRecords =
+                    previousRecords
+                        .Where(record =>
+                            record.RamUsage > 0 &&
+                            record.DiskUsage > 0)
+                        .ToList();
+
+            if (validCurrentRecords.Count == 0)
             {
                 return new PerformanceHistoryAnalysis
                 {
@@ -42,67 +58,67 @@ namespace WinBoost.App.Services.History
             }
 
             var analysis =
-                new PerformanceHistoryAnalysis
-                {
-                    HasEnoughData =
-                        currentRecords.Count >= 2,
+    new PerformanceHistoryAnalysis
+    {
+        HasEnoughData =
+            validCurrentRecords.Count >= 2,
 
-                    SampleCount =
-                        currentRecords.Count,
+        SampleCount =
+            validCurrentRecords.Count,
 
-                    AverageCpuUsage =
-                        currentRecords.Average(
-                            record =>
-                                record.CpuUsage),
+        AverageCpuUsage =
+            validCurrentRecords.Average(
+                record =>
+                    record.CpuUsage),
 
-                    MinimumCpuUsage =
-                        currentRecords.Min(
-                            record =>
-                                record.CpuUsage),
+        MinimumCpuUsage =
+            validCurrentRecords.Min(
+                record =>
+                    record.CpuUsage),
 
-                    MaximumCpuUsage =
-                        currentRecords.Max(
-                            record =>
-                                record.CpuUsage),
+        MaximumCpuUsage =
+            validCurrentRecords.Max(
+                record =>
+                    record.CpuUsage),
 
-                    AverageRamUsage =
-                        currentRecords.Average(
-                            record =>
-                                record.RamUsage),
+        AverageRamUsage =
+            validCurrentRecords.Average(
+                record =>
+                    record.RamUsage),
 
-                    MinimumRamUsage =
-                        currentRecords.Min(
-                            record =>
-                                record.RamUsage),
+        MinimumRamUsage =
+            validCurrentRecords.Min(
+                record =>
+                    record.RamUsage),
 
-                    MaximumRamUsage =
-                        currentRecords.Max(
-                            record =>
-                                record.RamUsage),
+        MaximumRamUsage =
+            validCurrentRecords.Max(
+                record =>
+                    record.RamUsage),
 
-                    AverageDiskUsage =
-                        currentRecords.Average(
-                            record =>
-                                record.DiskUsage),
+        AverageDiskUsage =
+            validCurrentRecords.Average(
+                record =>
+                    record.DiskUsage),
 
-                    MinimumDiskUsage =
-                        currentRecords.Min(
-                            record =>
-                                record.DiskUsage),
+        MinimumDiskUsage =
+            validCurrentRecords.Min(
+                record =>
+                    record.DiskUsage),
 
-                    MaximumDiskUsage =
-                        currentRecords.Max(
-                            record =>
-                                record.DiskUsage)
-                };
+        MaximumDiskUsage =
+            validCurrentRecords.Max(
+                record =>
+                    record.DiskUsage)
+    };
 
             AddTemperatureStatistics(
-                analysis,
-                currentRecords);
+     analysis,
+     validCurrentRecords);
 
             AddComparison(
                 analysis,
-                previousRecords);
+                validPreviousRecords);
 
             analysis.OverallTrend =
                 CalculateOverallTrend(

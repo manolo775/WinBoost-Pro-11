@@ -48,13 +48,13 @@
 			<!-- SYSTEM HEALTH -->
 
 			<controls:HealthCard
-		            Grid.Row="2"
-		            Margin="50,25,50,5"
-		            PerformanceRequested="HealthCard_PerformanceRequested"
-		            ServicesRequested="HealthCard_ServicesRequested"
-		            StartupRequested="HealthCard_StartupRequested"
-		            PrivacyRequested="HealthCard_PrivacyRequested"
-		            WindowsUpdateRequested="HealthCard_WindowsUpdateRequested"/>
+    Grid.Row="2"
+    Margin="50,15,50,10"
+    PerformanceRequested="HealthCard_PerformanceRequested"
+    ServicesRequested="HealthCard_ServicesRequested"
+    StartupRequested="HealthCard_StartupRequested"
+    PrivacyRequested="HealthCard_PrivacyRequested"
+    WindowsUpdateRequested="HealthCard_WindowsUpdateRequested"/>
 
 			<!-- SYSTEM SUMMARY -->
 
@@ -64,10 +64,10 @@
 			<!-- CARDURI SISTEM -->
 
 			<UniformGrid
-                Grid.Row="4"
-                Rows="2"
-                Columns="2"
-                Margin="40,10,40,10">
+                     Grid.Row="4"
+                     Rows="2"
+                     Columns="2"
+                     Margin="40,5,40,0">
 
 				<controls:MetricCard
                     IconKind="Cpu64Bit"
@@ -104,14 +104,15 @@
                     Margin="10"/>
 
 				<controls:MetricCard
-                    IconKind="ClockOutline"
-                    Title="{DynamicResource DashboardMetricUptimeTitle}"
-                    Value="{Binding Uptime}"
-                    Subtitle=""
-                    Status=""
-                    ProgressValue="0"
-                    ShowProgressBar="False"
-                    Margin="10"/>
+    IconKind="ClockOutline"
+    Title="{DynamicResource DashboardMetricUptimeTitle}"
+    Value="{Binding Uptime}"
+    ValueFontSize="32"
+    Subtitle=""
+    Status=""
+    ProgressValue="0"
+    ShowProgressBar="False"
+    Margin="10"/>
 
 			</UniformGrid>
 
@@ -129,8 +130,8 @@
 			<!-- QUICK ACTIONS -->
 
 			<controls:QuickActionsControl
-                Grid.Row="7"
-                Margin="50,15,50,15"/>
+		            Grid.Row="7"
+		            Margin="50,15,50,10"/>
 
 		</Grid>
 

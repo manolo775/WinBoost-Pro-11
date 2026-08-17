@@ -4,9 +4,8 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes">
 
 	<Border
-        Padding="22"
-        CornerRadius="12"
-        Background="{StaticResource CardBrush}">
+		Padding="22"
+		Style="{StaticResource DashboardCardBorderStyle}">
 
 		<StackPanel>
 

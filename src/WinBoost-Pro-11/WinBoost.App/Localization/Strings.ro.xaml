@@ -467,11 +467,27 @@
 	</sys:String>
 
 	<sys:String x:Key="QuickActionsTempCleaning">Se curăță...</sys:String>
-	
+
 	<!-- UPTIME -->
+
+	<sys:String x:Key="UptimeDayHour">
+		{0} zi {1} oră
+	</sys:String>
+
+	<sys:String x:Key="UptimeDayHours">
+		{0} zi {1} ore
+	</sys:String>
+
+	<sys:String x:Key="UptimeDaysHour">
+		{0} zile {1} oră
+	</sys:String>
 
 	<sys:String x:Key="UptimeDaysHours">
 		{0} zile {1} ore
+	</sys:String>
+
+	<sys:String x:Key="UptimeHourMinutes">
+		{0} oră {1} min
 	</sys:String>
 
 	<sys:String x:Key="UptimeHoursMinutes">
@@ -2706,6 +2722,10 @@
 
 	<sys:String x:Key="OptimizationHistoryOperationsFormat">
 		{0} reușite, {1} eșuate, {2} omise
+	</sys:String>
+
+	<sys:String x:Key="PerformanceScoreNotAnalyzed">
+		Neanalizat
 	</sys:String>
 	
 </ResourceDictionary>

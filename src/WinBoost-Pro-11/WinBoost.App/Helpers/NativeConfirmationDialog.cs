@@ -61,10 +61,11 @@ namespace WinBoost.App.Helpers
         }
 
         public static void ShowAcknowledgement(
-            Window? owner,
-            string title,
-            string message,
-            string buttonText)
+           Window? owner,
+           string title,
+           string message,
+           string buttonText,
+           MessageBoxImage image = MessageBoxImage.Warning)
         {
             _okText = buttonText;
             _yesText = null;
@@ -79,7 +80,7 @@ namespace WinBoost.App.Helpers
                     message,
                     title,
                     MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
+                    image);
             }
             finally
             {

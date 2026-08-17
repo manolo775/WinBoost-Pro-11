@@ -55,6 +55,9 @@ namespace WinBoost.App.ViewModels
                 "PerformanceAnalyzePrompt");
 
         private int _performanceAnalyzerScore = 100;
+
+        private bool _hasPerformanceAnalysisResult;
+
         private int _optimizationProgress;
 
         private string _currentOptimizationOperation =
@@ -164,21 +167,33 @@ namespace WinBoost.App.ViewModels
                         0,
                         100);
 
-                if (_performanceAnalyzerScore ==
-                    normalizedValue)
-                {
-                    return;
-                }
+                bool scoreChanged =
+                    _performanceAnalyzerScore !=
+                    normalizedValue;
 
                 _performanceAnalyzerScore =
                     normalizedValue;
+
+                _hasPerformanceAnalysisResult =
+                    true;
 
                 WinBoostHealthScoreService
                     .Instance
                     .PerformanceScore =
                     normalizedValue;
 
-                OnPropertyChanged();
+                if (scoreChanged)
+                {
+                    OnPropertyChanged();
+                }
+
+                OnPropertyChanged(
+                    nameof(
+                        PerformanceAnalyzerScoreText));
+
+                OnPropertyChanged(
+                  nameof(
+                        PerformanceAnalyzerProgressValue));
 
                 OnPropertyChanged(
                     nameof(
@@ -187,24 +202,37 @@ namespace WinBoost.App.ViewModels
         }
 
         public string PerformanceAnalyzerStatus =>
-            PerformanceAnalyzerScore switch
-            {
-                >= 90 =>
-                    LocalizationHelper.Get(
-                        "PerformanceScoreExcellent"),
+    !_hasPerformanceAnalysisResult
+        ? LocalizationHelper.Get(
+            "PerformanceScoreNotAnalyzed")
+        : PerformanceAnalyzerScore switch
+        {
+            >= 90 =>
+                LocalizationHelper.Get(
+                    "PerformanceScoreExcellent"),
 
-                >= 75 =>
-                    LocalizationHelper.Get(
-                        "PerformanceScoreGood"),
+            >= 75 =>
+                LocalizationHelper.Get(
+                    "PerformanceScoreGood"),
 
-                >= 50 =>
-                    LocalizationHelper.Get(
-                        "PerformanceScoreAttention"),
+            >= 50 =>
+                LocalizationHelper.Get(
+                    "PerformanceScoreAttention"),
 
-                _ =>
-                    LocalizationHelper.Get(
-                        "PerformanceScoreCritical")
-            };
+            _ =>
+                LocalizationHelper.Get(
+                    "PerformanceScoreCritical")
+        };
+
+        public string PerformanceAnalyzerScoreText =>
+    _hasPerformanceAnalysisResult
+        ? PerformanceAnalyzerScore.ToString()
+        : "--";
+
+        public int PerformanceAnalyzerProgressValue =>
+    _hasPerformanceAnalysisResult
+        ? PerformanceAnalyzerScore
+        : 0;
 
         public ObservableCollection<ProcessInfo>
             TopProcesses

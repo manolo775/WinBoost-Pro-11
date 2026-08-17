@@ -12,6 +12,7 @@ using System.Windows.Input;
 using WinBoost.App.Commands;
 using WinBoost.App.Localization;
 using WinBoost.App.Services.WindowsUpdate;
+using WinBoost.App.Services.Health;
 using WinBoost.App.Helpers;
 
 namespace WinBoost.App.ViewModels
@@ -694,6 +695,28 @@ namespace WinBoost.App.ViewModels
 
                 _lastAvailableUpdateCount =
                     availableResult.UpdateCount;
+
+                bool requiresRestart =
+    false;
+
+                foreach (
+                    WindowsUpdateAvailableInfo update
+                    in _lastAvailableUpdates)
+                {
+                    if (update.RebootRequired)
+                    {
+                        requiresRestart =
+                            true;
+
+                        break;
+                    }
+                }
+
+                SystemHealthStateService
+                    .Instance
+                    .UpdateWindowsUpdateData(
+                        availableResult.UpdateCount,
+                        requiresRestart);
 
                 OnPropertyChanged(
                     nameof(HasAvailableUpdates));

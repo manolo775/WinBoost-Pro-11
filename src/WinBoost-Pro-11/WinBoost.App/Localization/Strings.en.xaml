@@ -463,11 +463,27 @@
 	</sys:String>
 
 	<sys:String x:Key="QuickActionsTempCleaning">Cleaning...</sys:String>
-	
+
 	<!-- UPTIME -->
+
+	<sys:String x:Key="UptimeDayHour">
+		{0} day {1} hour
+	</sys:String>
+
+	<sys:String x:Key="UptimeDayHours">
+		{0} day {1} hours
+	</sys:String>
+
+	<sys:String x:Key="UptimeDaysHour">
+		{0} days {1} hour
+	</sys:String>
 
 	<sys:String x:Key="UptimeDaysHours">
 		{0} days {1} hours
+	</sys:String>
+
+	<sys:String x:Key="UptimeHourMinutes">
+		{0} hour {1} min
 	</sys:String>
 
 	<sys:String x:Key="UptimeHoursMinutes">
@@ -2702,6 +2718,10 @@
 
 	<sys:String x:Key="OptimizationHistoryOperationsFormat">
 		{0} successful, {1} failed, {2} skipped
+	</sys:String>
+
+	<sys:String x:Key="PerformanceScoreNotAnalyzed">
+		Not analyzed
 	</sys:String>
 	
 </ResourceDictionary>

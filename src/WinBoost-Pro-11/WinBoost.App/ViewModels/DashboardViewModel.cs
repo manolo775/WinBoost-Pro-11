@@ -1782,8 +1782,8 @@ namespace WinBoost.App.ViewModels
         }
 
         private void LanguageManager_LanguageChanged(
-            object? sender,
-            EventArgs e)
+    object? sender,
+    EventArgs e)
         {
             CpuStatus =
                 GetUsageStatus(
@@ -1796,8 +1796,24 @@ namespace WinBoost.App.ViewModels
                         "DashboardCpuTemperatureUnavailable");
             }
 
+            // Actualizează imediat textul pentru timpul
+            // de funcționare după schimbarea limbii.
+            Uptime =
+                new UptimeService()
+                    .GetWindowsUptime();
+
+            // Actualizează textele localizate
+            // din sumarul sistemului.
             UpdateSystemSummary();
 
+            // Actualizează textele localizate
+            // din analiza performanței.
+            NotifyPerformanceAnalysisProperties();
+
+            OnPropertyChanged(
+                nameof(PerformanceRecommendationText));
+
+            // Actualizează textele alertei active.
             OnPropertyChanged(
                 nameof(PerformanceAlertTitle));
 

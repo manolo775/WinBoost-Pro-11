@@ -46,6 +46,25 @@ namespace WinBoost.App.Controls
         }
 
         public static readonly DependencyProperty
+    ValueFontSizeProperty =
+    DependencyProperty.Register(
+        nameof(ValueFontSize),
+        typeof(double),
+        typeof(MetricCard),
+        new PropertyMetadata(44.0));
+
+        public double ValueFontSize
+        {
+            get =>
+                (double)GetValue(
+                    ValueFontSizeProperty);
+
+            set =>
+                SetValue(
+                    ValueFontSizeProperty,
+                    value);
+        }
+        public static readonly DependencyProperty
             StatusProperty =
             DependencyProperty.Register(
                 nameof(Status),

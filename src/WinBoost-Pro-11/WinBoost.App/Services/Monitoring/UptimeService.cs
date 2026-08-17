@@ -13,14 +13,40 @@ namespace WinBoost.App.Services.Monitoring
 
             if (uptime.Days > 0)
             {
+                string resourceKey;
+
+                if (uptime.Days == 1 &&
+                    uptime.Hours == 1)
+                {
+                    resourceKey =
+                        "UptimeDayHour";
+                }
+                else if (uptime.Days == 1)
+                {
+                    resourceKey =
+                        "UptimeDayHours";
+                }
+                else if (uptime.Hours == 1)
+                {
+                    resourceKey =
+                        "UptimeDaysHour";
+                }
+                else
+                {
+                    resourceKey =
+                        "UptimeDaysHours";
+                }
+
                 return LocalizationHelper.Format(
-                    "UptimeDaysHours",
+                    resourceKey,
                     uptime.Days,
                     uptime.Hours);
             }
 
             return LocalizationHelper.Format(
-                "UptimeHoursMinutes",
+                uptime.Hours == 1
+                    ? "UptimeHourMinutes"
+                    : "UptimeHoursMinutes",
                 uptime.Hours,
                 uptime.Minutes);
         }

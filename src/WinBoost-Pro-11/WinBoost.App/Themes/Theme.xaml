@@ -16,7 +16,10 @@
 	<!-- WinBoost Design System    -->
 	<!-- ========================= -->
 
-	<!-- Card -->
+
+	<!-- ========================= -->
+	<!-- Card                      -->
+	<!-- ========================= -->
 
 	<CornerRadius x:Key="CardCornerRadius">
 		16
@@ -30,7 +33,10 @@
 		12
 	</Thickness>
 
-	<!-- Typography -->
+
+	<!-- ========================= -->
+	<!-- Typography                -->
+	<!-- ========================= -->
 
 	<sys:Double x:Key="MetricTitleFontSize">
 		22
@@ -44,46 +50,100 @@
 		14
 	</sys:Double>
 
-	<!-- Icon -->
+
+	<!-- ========================= -->
+	<!-- Icon                      -->
+	<!-- ========================= -->
 
 	<sys:Double x:Key="MetricIconSize">
 		40
 	</sys:Double>
 
-	<!-- Progress bar -->
+
+	<!-- ========================= -->
+	<!-- Progress bar              -->
+	<!-- ========================= -->
 
 	<sys:Double x:Key="MetricProgressHeight">
 		14
 	</sys:Double>
 
+
 	<!-- ========================= -->
 	<!-- Stil general interactiv   -->
 	<!-- ========================= -->
 
-	<Style x:Key="InteractiveCardStyle" TargetType="Border">
-		<Setter Property="Background" Value="{StaticResource CardBrush}"/>
-		<Setter Property="BorderBrush" Value="Transparent"/>
-		<Setter Property="BorderThickness" Value="1"/>
-		<Setter Property="CornerRadius" Value="10"/>
-		<Setter Property="Cursor" Value="Hand"/>
+	<Style
+        x:Key="InteractiveCardStyle"
+        TargetType="Border">
+
+		<Setter
+            Property="Background"
+            Value="{StaticResource CardBrush}"/>
+
+		<Setter
+            Property="BorderBrush"
+            Value="Transparent"/>
+
+		<Setter
+            Property="BorderThickness"
+            Value="1"/>
+
+		<Setter
+            Property="CornerRadius"
+            Value="10"/>
+
+		<Setter
+            Property="Cursor"
+            Value="Hand"/>
+
 		<Setter Property="Effect">
 			<Setter.Value>
-				<DropShadowEffect BlurRadius="12" ShadowDepth="0" Opacity="0"/>
+
+				<DropShadowEffect
+                    BlurRadius="12"
+                    ShadowDepth="0"
+                    Opacity="0"/>
+
 			</Setter.Value>
 		</Setter>
+
 		<Style.Triggers>
-			<Trigger Property="IsMouseOver" Value="True">
-				<Setter Property="Background" Value="#31353B"/>
-				<Setter Property="BorderBrush" Value="#4CAF50"/>
+
+			<Trigger
+                Property="IsMouseOver"
+                Value="True">
+
+				<Setter
+                    Property="Background"
+                    Value="#31353B"/>
+
+				<Setter
+                    Property="BorderBrush"
+                    Value="#4CAF50"/>
+
 				<Setter Property="Effect">
 					<Setter.Value>
-						<DropShadowEffect Color="#4CAF50" BlurRadius="18" ShadowDepth="0" Opacity="0.22"/>
+
+						<DropShadowEffect
+                            Color="#4CAF50"
+                            BlurRadius="18"
+                            ShadowDepth="0"
+                            Opacity="0.22"/>
+
 					</Setter.Value>
 				</Setter>
+
 			</Trigger>
+
 		</Style.Triggers>
+
 	</Style>
-	<!-- Compatibilitate cu MetricCard existent -->
+
+
+	<!-- ========================= -->
+	<!-- MetricCard                -->
+	<!-- ========================= -->
 
 	<Style
         x:Key="MetricCardBorderStyle"
@@ -97,6 +157,31 @@
 		<Setter
             Property="CornerRadius"
             Value="{StaticResource CardCornerRadius}"/>
+
+	</Style>
+
+
+	<!-- ========================= -->
+	<!-- Carduri mari Dashboard    -->
+	<!-- ========================= -->
+
+	<Style
+        x:Key="DashboardCardBorderStyle"
+        TargetType="Border"
+        BasedOn="{StaticResource InteractiveCardStyle}">
+
+		<Setter
+            Property="Background"
+            Value="#2F3136"/>
+
+		<Setter
+            Property="CornerRadius"
+            Value="{StaticResource CardCornerRadius}"/>
+
+		<!-- Cardurile mari nu sunt toate clickabile -->
+		<Setter
+            Property="Cursor"
+            Value="Arrow"/>
 
 	</Style>
 
