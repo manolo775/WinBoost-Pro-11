@@ -76,18 +76,54 @@ Background="#1E1E1E">
 						VerticalAlignment="Center"/>
 
 					<ComboBox
-    x:Name="LanguageComboBox"
-    Width="145"
-    Height="34"
-    SelectedIndex="0"
-    SelectionChanged="LanguageComboBox_SelectionChanged"
-    Foreground="Black"
-    Background="White"
-    VerticalContentAlignment="Center">
+						x:Name="LanguageComboBox"
+						Width="145"
+						Height="34"
+						SelectedIndex="0"
+						SelectionChanged="LanguageComboBox_SelectionChanged"
+						Foreground="Black"
+						Background="White"
+						VerticalContentAlignment="Center">
 
-						<ComboBoxItem Content="🇷🇴 Română"/>
+						<!-- ROMÂNĂ -->
+						<ComboBoxItem>
+							<StackPanel
+								Orientation="Horizontal"
+								VerticalAlignment="Center">
 
-						<ComboBoxItem Content="🇬🇧 English"/>
+								<Image
+									Source="/Assets/Flags/ro.png"
+									Width="22"
+									Height="15"
+									Stretch="Uniform"
+									Margin="0,0,8,0"/>
+
+								<TextBlock
+									Text="Română"
+									VerticalAlignment="Center"/>
+
+							</StackPanel>
+						</ComboBoxItem>
+
+						<!-- ENGLISH -->
+						<ComboBoxItem>
+							<StackPanel
+								Orientation="Horizontal"
+								VerticalAlignment="Center">
+
+								<Image
+									Source="/Assets/Flags/gb.png"
+									Width="22"
+									Height="15"
+									Stretch="Uniform"
+									Margin="0,0,8,0"/>
+
+								<TextBlock
+									Text="English"
+									VerticalAlignment="Center"/>
+
+							</StackPanel>
+						</ComboBoxItem>
 
 					</ComboBox>
 

@@ -18,6 +18,10 @@ using WinBoost.App.Services.Monitoring;
 using System.Windows;
 using WinBoost.App.Commands;
 using WinBoost.App.Helpers;
+using WinBoost.App.Services.Startup;
+using WinBoost.App.Services.ServicesManager;
+using WinBoost.App.Services.Privacy;
+using WinBoost.App.Services.WindowsUpdate;
 
 namespace WinBoost.App.ViewModels
 {
@@ -48,11 +52,38 @@ namespace WinBoost.App.ViewModels
         private readonly SystemHealthStateService
             _healthStateService;
 
+        private readonly StartupAppsScanner
+            _startupAppsScanner;
+
+        private readonly WindowsServiceManager
+             _windowsServiceManager;
+
+        private readonly PrivacyScanService
+              _privacyScanService;
+
         private readonly DispatcherTimer
             _refreshTimer;
 
+        private readonly WindowsUpdateScanner
+               _windowsUpdateScanner;
+
+        private readonly WindowsUpdateAvailableScanner
+            _windowsUpdateAvailableScanner;
+
         private bool _isRefreshingSystemInfo;
         private bool _isLoadingHistory;
+
+        private bool _isRefreshingStartupHealth;
+        private bool _hasLoadedStartupHealth;
+
+        private bool _isRefreshingServicesHealth;
+        private bool _hasLoadedServicesHealth;
+
+        private bool _isRefreshingPrivacyHealth;
+        private bool _hasLoadedPrivacyHealth;
+
+        private bool _isRefreshingWindowsUpdateHealth;
+        private bool _hasLoadedWindowsUpdateHealth;
 
         private int _selectedHistoryRangeIndex;
 
@@ -142,6 +173,21 @@ namespace WinBoost.App.ViewModels
 
             _healthStateService =
                 SystemHealthStateService.Instance;
+
+            _startupAppsScanner =
+                new StartupAppsScanner();
+
+            _windowsServiceManager =
+                new WindowsServiceManager();
+
+            _privacyScanService =
+                 new PrivacyScanService();
+
+            _windowsUpdateScanner =
+                 new WindowsUpdateScanner();
+
+            _windowsUpdateAvailableScanner =
+                new WindowsUpdateAvailableScanner();
 
             HealthSummary =
                 _healthStateService.Summary;
@@ -967,6 +1013,14 @@ namespace WinBoost.App.ViewModels
 
             _ = UpdateSystemInfoAsync();
 
+            _ = UpdateStartupHealthAsync();
+
+            _ = UpdateServicesHealthAsync();
+
+            _ = UpdatePrivacyHealthAsync();
+
+            _ = UpdateWindowsUpdateHealthAsync();
+
             if (loadHistory)
             {
                 _ = LoadSelectedHistoryAsync();
@@ -976,6 +1030,232 @@ namespace WinBoost.App.ViewModels
         public void StopMonitoring()
         {
             _refreshTimer.Stop();
+        }
+
+        private async Task UpdateStartupHealthAsync()
+        {
+            if (_isRefreshingStartupHealth ||
+                _hasLoadedStartupHealth)
+            {
+                return;
+            }
+
+            try
+            {
+                _isRefreshingStartupHealth =
+                    true;
+
+                List<StartupAppInfo> startupApps =
+                    await _startupAppsScanner
+                        .ScanAsync();
+
+                int enabledStartupApps =
+                    startupApps.Count(
+                        application =>
+                            application.IsEnabled);
+
+                _healthStateService
+                    .UpdateStartupData(
+                        startupApps.Count,
+                        enabledStartupApps);
+
+                _hasLoadedStartupHealth =
+                    true;
+            }
+            catch
+            {
+                // O eroare la scanarea Startup nu trebuie
+                // să blocheze Dashboard-ul.
+            }
+            finally
+            {
+                _isRefreshingStartupHealth =
+                    false;
+            }
+        }
+
+        private async Task UpdateServicesHealthAsync()
+        {
+            if (_isRefreshingServicesHealth ||
+                _hasLoadedServicesHealth)
+            {
+                return;
+            }
+
+            try
+            {
+                _isRefreshingServicesHealth =
+                    true;
+
+                List<WindowsServiceInfo> services =
+                    await _windowsServiceManager
+                        .GetServicesAsync();
+
+                int criticalServices =
+                    services.Count(
+                        service =>
+                            service.RiskLevel.Equals(
+                                "Critical",
+                                StringComparison.OrdinalIgnoreCase));
+
+                int recommendedServices =
+                    services.Count(
+                        service =>
+                            service.RiskLevel.Equals(
+                                "Medium",
+                                StringComparison.OrdinalIgnoreCase));
+
+                int safeToOptimizeServices =
+                    services.Count(
+                        service =>
+                            service.RiskLevel.Equals(
+                                "Low",
+                                StringComparison.OrdinalIgnoreCase));
+
+                _healthStateService
+                    .UpdateServicesData(
+                        services.Count,
+                        criticalServices,
+                        recommendedServices,
+                        safeToOptimizeServices);
+
+                _hasLoadedServicesHealth =
+                    true;
+            }
+            catch
+            {
+                // O eroare la verificarea serviciilor
+                // nu trebuie să blocheze Dashboard-ul.
+            }
+            finally
+            {
+                _isRefreshingServicesHealth =
+                    false;
+            }
+        }
+
+        private async Task UpdatePrivacyHealthAsync()
+        {
+            if (_isRefreshingPrivacyHealth ||
+                _hasLoadedPrivacyHealth)
+            {
+                return;
+            }
+
+            try
+            {
+                _isRefreshingPrivacyHealth =
+                    true;
+
+                IReadOnlyList<PrivacyCheckItem> privacyItems =
+                    await Task.Run(
+                        () =>
+                            _privacyScanService.Scan());
+
+                if (privacyItems.Count == 0)
+                {
+                    return;
+                }
+
+                double totalPoints =
+                    privacyItems.Sum(
+                        item =>
+                            item.StatusLevel switch
+                            {
+                                "Good" =>
+                                    100,
+
+                                "Neutral" =>
+                                    70,
+
+                                "Attention" =>
+                                    40,
+
+                                "Critical" =>
+                                    0,
+
+                                _ =>
+                                    70
+                            });
+
+                int privacyScore =
+                    (int)Math.Round(
+                        totalPoints /
+                        privacyItems.Count);
+
+                _healthStateService
+                    .UpdatePrivacyData(
+                        100,
+                        privacyScore);
+
+                _hasLoadedPrivacyHealth =
+                    true;
+            }
+            catch
+            {
+                // O eroare la verificarea confidențialității
+                // nu trebuie să blocheze Dashboard-ul.
+            }
+            finally
+            {
+                _isRefreshingPrivacyHealth =
+                    false;
+            }
+        }
+
+        private async Task UpdateWindowsUpdateHealthAsync()
+        {
+            if (_isRefreshingWindowsUpdateHealth ||
+                _hasLoadedWindowsUpdateHealth)
+            {
+                return;
+            }
+
+            try
+            {
+                _isRefreshingWindowsUpdateHealth =
+                    true;
+
+                Task<WindowsUpdateScanResult>
+                    servicesScanTask =
+                        _windowsUpdateScanner
+                            .ScanAsync();
+
+                Task<WindowsUpdateAvailableResult>
+                    updatesScanTask =
+                        _windowsUpdateAvailableScanner
+                            .ScanAsync();
+
+                await Task.WhenAll(
+                    servicesScanTask,
+                    updatesScanTask);
+
+                WindowsUpdateAvailableResult availableResult =
+                    await updatesScanTask;
+
+                bool requiresRestart =
+                    availableResult.Updates.Any(
+                        update =>
+                            update.RebootRequired);
+
+                _healthStateService
+                    .UpdateWindowsUpdateData(
+                        availableResult.UpdateCount,
+                        requiresRestart);
+
+                _hasLoadedWindowsUpdateHealth =
+                    true;
+            }
+            catch
+            {
+                // O eroare la verificarea Windows Update
+                // nu trebuie să blocheze Dashboard-ul.
+            }
+            finally
+            {
+                _isRefreshingWindowsUpdateHealth =
+                    false;
+            }
         }
 
         private async void RefreshTimer_Tick(

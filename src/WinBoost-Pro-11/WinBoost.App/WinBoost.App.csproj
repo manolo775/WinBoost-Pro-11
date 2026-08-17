@@ -10,7 +10,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<Folder Include="Assets\" />
+	  <None Remove="Assets\Flags\gb.png" />
+	  <None Remove="Assets\Flags\ro.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<Folder Include="Resources\" />
 		<Folder Include="Services\Services\" />
 	</ItemGroup>
@@ -25,6 +29,11 @@
 	<ItemGroup>
 		<ProjectReference Include="..\WinBoost.UpdateWorker\WinBoost.UpdateWorker.csproj" />
 		<ProjectReference Include="..\WinBoost.RecoveryWorker\WinBoost.RecoveryWorker.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Resource Include="Assets\Flags\gb.png" />
+	  <Resource Include="Assets\Flags\ro.png" />
 	</ItemGroup>
 
 	<ItemGroup>
