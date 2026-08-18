@@ -2727,5 +2727,44 @@
 	<sys:String x:Key="PerformanceScoreNotAnalyzed">
 		Neanalizat
 	</sys:String>
+
+	<sys:String x:Key="SettingsAboutTitle">Despre WinBoost</sys:String>
+	<sys:String x:Key="SettingsAboutDescription">Informații despre aplicație și versiunea instalată.</sys:String>
+	<sys:String x:Key="SettingsAboutProduct">Produs</sys:String>
+	<sys:String x:Key="SettingsAboutVersion">Versiune</sys:String>
+	<sys:String x:Key="SettingsAboutChannel">Canal versiune</sys:String>
+
+	<sys:String x:Key="LicenseStatusUnlicensed">Fără licență</sys:String>
+	<sys:String x:Key="LicenseStatusTrial">Versiune de încercare</sys:String>
+	<sys:String x:Key="LicenseStatusLicensed">Licențiat</sys:String>
+	<sys:String x:Key="LicenseStatusExpired">Expirată</sys:String>
+	<sys:String x:Key="LicenseStatusInvalid">Invalidă</sys:String>
+
+	<sys:String x:Key="SettingsAboutLicenseStatus">Stare licență</sys:String>
+
+	<sys:String x:Key="SettingsLicenseTitle">Activare licență</sys:String>
+	<sys:String x:Key="SettingsLicenseDescription">Introdu cheia de licență pentru a activa WinBoost Pro 11.</sys:String>
+	<sys:String x:Key="SettingsLicenseKeyLabel">Cheie de licență</sys:String>
+	<sys:String x:Key="SettingsLicenseActivateButton">Activează licența</sys:String>
+
+	<sys:String x:Key="SettingsLicenseInvalidFormatTitle">Cheie invalidă</sys:String>
+	<sys:String x:Key="SettingsLicenseInvalidFormatMessage">Formatul cheii de licență nu este valid.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseValidFormatTitle">Cheie validă</sys:String>
+	<sys:String x:Key="SettingsLicenseValidFormatMessage">Formatul cheii de licență este valid. Licența nu a fost încă activată.</sys:String>
+
+	<sys:String x:Key="SettingsLicensePurchaseTitle">Licență WinBoost Pro 11</sys:String>
+
+	<sys:String x:Key="SettingsLicensePurchaseDescription">Cumpără și activează WinBoost Pro 11 folosind adresa de e-mail asociată achiziției.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseEmailLabel">Adresă de e-mail</sys:String>
+
+	<sys:String x:Key="SettingsLicenseEmailHint">Folosește aceeași adresă de e-mail pe care o vei utiliza la plată.</sys:String>
+
+	<sys:String x:Key="SettingsLicensePurchaseButton">Cumpără licență</sys:String>
+
+	<sys:String x:Key="SettingsLicenseCheckButton">Verifică activarea</sys:String>
+
+	<sys:String x:Key="SettingsLicensePaymentNote">Plata se va efectua securizat în pagina procesatorului de plăți. WinBoost nu colectează datele cardului.</sys:String>
 	
 </ResourceDictionary>

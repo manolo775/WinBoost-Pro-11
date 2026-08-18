@@ -2723,5 +2723,44 @@
 	<sys:String x:Key="PerformanceScoreNotAnalyzed">
 		Not analyzed
 	</sys:String>
+
+	<sys:String x:Key="SettingsAboutTitle">About WinBoost</sys:String>
+	<sys:String x:Key="SettingsAboutDescription">Information about the application and installed version.</sys:String>
+	<sys:String x:Key="SettingsAboutProduct">Product</sys:String>
+	<sys:String x:Key="SettingsAboutVersion">Version</sys:String>
+	<sys:String x:Key="SettingsAboutChannel">Release channel</sys:String>
+
+	<sys:String x:Key="LicenseStatusUnlicensed">Unlicensed</sys:String>
+	<sys:String x:Key="LicenseStatusTrial">Trial</sys:String>
+	<sys:String x:Key="LicenseStatusLicensed">Licensed</sys:String>
+	<sys:String x:Key="LicenseStatusExpired">Expired</sys:String>
+	<sys:String x:Key="LicenseStatusInvalid">Invalid</sys:String>
+
+	<sys:String x:Key="SettingsAboutLicenseStatus">License status</sys:String>
+
+	<sys:String x:Key="SettingsLicenseTitle">License activation</sys:String>
+	<sys:String x:Key="SettingsLicenseDescription">Enter your license key to activate WinBoost Pro 11.</sys:String>
+	<sys:String x:Key="SettingsLicenseKeyLabel">License key</sys:String>
+	<sys:String x:Key="SettingsLicenseActivateButton">Activate license</sys:String>
+
+	<sys:String x:Key="SettingsLicenseInvalidFormatTitle">Invalid key</sys:String>
+	<sys:String x:Key="SettingsLicenseInvalidFormatMessage">The license key format is not valid.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseValidFormatTitle">Valid key</sys:String>
+	<sys:String x:Key="SettingsLicenseValidFormatMessage">The license key format is valid. The license has not been activated yet.</sys:String>
+
+	<sys:String x:Key="SettingsLicensePurchaseTitle">WinBoost Pro 11 License</sys:String>
+
+	<sys:String x:Key="SettingsLicensePurchaseDescription">Purchase and activate WinBoost Pro 11 using the email address associated with your purchase.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseEmailLabel">Email address</sys:String>
+
+	<sys:String x:Key="SettingsLicenseEmailHint">Use the same email address that you will use during payment.</sys:String>
+
+	<sys:String x:Key="SettingsLicensePurchaseButton">Purchase license</sys:String>
+
+	<sys:String x:Key="SettingsLicenseCheckButton">Check activation</sys:String>
+
+	<sys:String x:Key="SettingsLicensePaymentNote">Payment will be completed securely on the payment provider's page. WinBoost does not collect your card details.</sys:String>
 	
 </ResourceDictionary>

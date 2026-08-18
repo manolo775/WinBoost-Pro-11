@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:views="clr-namespace:WinBoost.App.Views"
-
+        xmlns:helpers="clr-namespace:WinBoost.App.Helpers"
+		
 Title="{Binding Title}"
 Height="700"
 Width="1180"
@@ -139,7 +140,7 @@ Background="#1E1E1E">
 					VerticalAlignment="Center">
 
 					<TextBlock
-						Text="v1.0 Preview"
+						Text="{x:Static helpers:AppVersionInfo.DisplayVersion}"
 						Foreground="White"
 						FontSize="12"
 						FontWeight="SemiBold"/>

@@ -10,6 +10,8 @@ using WinBoost.App.Helpers;
 using WinBoost.App.Localization;
 using WinBoost.App.Services.Alerts;
 using WinBoost.App.Services.History;
+using WinBoost.App.Services.Licensing;
+using System.Text.RegularExpressions;
 
 namespace WinBoost.App.ViewModels
 {
@@ -31,6 +33,21 @@ namespace WinBoost.App.ViewModels
         private readonly PerformanceHistoryRecorder
              _historyRecorder;
 
+        private readonly LicenseService
+             _licenseService;
+
+        private string _licenseKeyInput =
+             string.Empty;
+
+        private string _customerEmailInput =
+                string.Empty;
+
+        public bool CanActivateLicense =>
+            !string.IsNullOrWhiteSpace(
+        LicenseKeyInput);
+
+  
+
         public SettingsViewModel()
         {
             _settingsService =
@@ -48,6 +65,18 @@ namespace WinBoost.App.ViewModels
             _historyRecorder =
                    new PerformanceHistoryRecorder();
 
+            _licenseService =
+                   LicenseService.Instance;
+
+            _licenseService.LicenseChanged +=
+                OnLicenseChanged;
+
+            WeakEventManager<LanguageManager, EventArgs>
+                  .AddHandler(
+                     LanguageManager.Instance,
+                     nameof(LanguageManager.LanguageChanged),
+                      OnLanguageChanged);
+
             ClearHistoryCommand =
                 new RelayCommand(
                     async _ => await ClearHistoryAsync());
@@ -55,6 +84,10 @@ namespace WinBoost.App.ViewModels
             ResetSettingsCommand =
                    new RelayCommand(
                       _ => ResetSettings());
+
+            ActivateLicenseCommand =
+                     new RelayCommand(
+                     _ => ActivateLicense());
 
             RestartWithDifferentPrivilegesCommand =
                    new RelayCommand(
@@ -84,11 +117,62 @@ namespace WinBoost.App.ViewModels
                     "SettingsRestartNormally")
                 : LocalizationHelper.Get(
                     "SettingsRestartAsAdministrator");
+
+        public string LicenseStatusText =>
+          LicenseDisplayHelper.GetStatusText(
+        _licenseService.Status);
+
+        public string LicenseKeyInput
+        {
+            get => _licenseKeyInput;
+
+            set
+            {
+                if (_licenseKeyInput == value)
+                {
+                    return;
+                }
+
+                _licenseKeyInput =
+                    value;
+
+                OnPropertyChanged();
+
+                OnPropertyChanged(
+                nameof(CanActivateLicense));
+            }
+        }
+
+        public string CustomerEmailInput
+        {
+            get => _customerEmailInput;
+
+            set
+            {
+                if (_customerEmailInput == value)
+                {
+                    return;
+                }
+
+                _customerEmailInput =
+                    value;
+
+                OnPropertyChanged();
+
+                OnPropertyChanged(
+                    nameof(CanStartLicensePurchase));
+            }
+        }
+
+        public bool CanStartLicensePurchase =>
+            !string.IsNullOrWhiteSpace(
+                CustomerEmailInput);
+
         public ICommand ClearHistoryCommand
         {
             get;
         }
-
+            
         public bool AlertsEnabled
         {
             get => _settings.AlertsEnabled;
@@ -109,6 +193,11 @@ namespace WinBoost.App.ViewModels
         }
 
         public ICommand ResetSettingsCommand
+        {
+            get;
+        }
+
+        public ICommand ActivateLicenseCommand
         {
             get;
         }
@@ -652,6 +741,59 @@ namespace WinBoost.App.ViewModels
             ApplicationElevationHelper
                 .RestartAsAdministrator();
         }
+
+        private void ActivateLicense()
+        {
+            string licenseKey =
+                LicenseKeyInput
+                    .Trim()
+                    .ToUpperInvariant();
+
+            bool isValidFormat =
+                Regex.IsMatch(
+                    licenseKey,
+                    @"^WB11-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$");
+
+            if (!isValidFormat)
+            {
+                MessageBox.Show(
+                    Application.Current.MainWindow,
+                    LocalizationHelper.Get(
+                        "SettingsLicenseInvalidFormatMessage"),
+                    LocalizationHelper.Get(
+                        "SettingsLicenseInvalidFormatTitle"),
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+
+                return;
+            }
+
+            MessageBox.Show(
+                Application.Current.MainWindow,
+                LocalizationHelper.Get(
+                    "SettingsLicenseValidFormatMessage"),
+                LocalizationHelper.Get(
+                    "SettingsLicenseValidFormatTitle"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
+        }
+
+        private void OnLicenseChanged(
+                object? sender,
+                 EventArgs e)
+        {
+            OnPropertyChanged(
+                nameof(LicenseStatusText));
+        }
+
+        private void OnLanguageChanged(
+           object? sender,
+            EventArgs e)
+        {
+            OnPropertyChanged(
+                nameof(LicenseStatusText));
+        }
+
         private void OnPropertyChanged(
             [CallerMemberName]
             string? propertyName = null)

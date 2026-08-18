@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+	xmlns:helpers="clr-namespace:WinBoost.App.Helpers"
     mc:Ignorable="d"
     d:DesignHeight="800"
     d:DesignWidth="900">
@@ -943,7 +944,343 @@
 
 				</Border>
 
-		
+				<!-- ====================================== -->
+				<!-- LICENȚĂ WINBOOST -->
+				<!-- ====================================== -->
+
+				<Border
+					Margin="0,0,0,20"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}">
+
+					<Border.Resources>
+
+						<!-- BUTOANE LICENȚĂ -->
+
+						<Style
+							x:Key="LicenseActionButtonStyle"
+							TargetType="Button">
+
+							<Setter
+								Property="Height"
+								Value="44"/>
+
+							<Setter
+								Property="Padding"
+								Value="14,6"/>
+
+							<Setter
+								Property="Background"
+								Value="#25272B"/>
+
+							<Setter
+								Property="Foreground"
+								Value="White"/>
+
+							<Setter
+								Property="BorderBrush"
+								Value="#FFD740"/>
+
+							<Setter
+								Property="BorderThickness"
+								Value="1"/>
+
+							<Setter
+								Property="FontSize"
+								Value="15"/>
+
+							<Setter
+								Property="FontWeight"
+								Value="SemiBold"/>
+
+							<Setter
+								Property="HorizontalContentAlignment"
+								Value="Center"/>
+
+							<Setter
+								Property="VerticalContentAlignment"
+								Value="Center"/>
+
+							<Setter
+								Property="Opacity"
+								Value="1"/>
+
+							<Setter Property="Template">
+
+								<Setter.Value>
+
+									<ControlTemplate TargetType="Button">
+
+										<Border
+											x:Name="ButtonBorder"
+											Background="{TemplateBinding Background}"
+											BorderBrush="{TemplateBinding BorderBrush}"
+											BorderThickness="{TemplateBinding BorderThickness}"
+											CornerRadius="6"
+											Padding="{TemplateBinding Padding}">
+
+											<ContentPresenter
+												HorizontalAlignment="Center"
+												VerticalAlignment="Center"/>
+
+										</Border>
+
+										<ControlTemplate.Triggers>
+
+											<Trigger
+												Property="IsMouseOver"
+												Value="True">
+
+												<Setter
+													TargetName="ButtonBorder"
+													Property="Background"
+													Value="#34373C"/>
+
+											</Trigger>
+
+											<Trigger
+												Property="IsEnabled"
+												Value="False">
+
+												<Setter
+													Property="Foreground"
+													Value="#D0D0D0"/>
+
+												<Setter
+													Property="BorderBrush"
+													Value="#666A70"/>
+
+												<Setter
+													TargetName="ButtonBorder"
+													Property="Background"
+													Value="#3A3D42"/>
+
+											</Trigger>
+
+										</ControlTemplate.Triggers>
+
+									</ControlTemplate>
+
+								</Setter.Value>
+
+							</Setter>
+
+						</Style>
+
+					</Border.Resources>
+
+					<StackPanel>
+
+						<!-- TITLU -->
+
+						<TextBlock
+							Text="{DynamicResource SettingsLicensePurchaseTitle}"
+							FontSize="22"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<!-- DESCRIERE -->
+
+						<TextBlock
+						Margin="0,6,0,20"
+						Text="{DynamicResource SettingsLicensePurchaseDescription}"
+						TextWrapping="Wrap"
+						Foreground="#BDBDBD"/>
+
+						<!-- EMAIL -->
+
+						<TextBlock
+							Margin="0,0,0,7"
+							Text="{DynamicResource SettingsLicenseEmailLabel}"
+							FontSize="15"
+							FontWeight="SemiBold"
+							Foreground="#D0D0D0"/>
+
+						<TextBox
+							Height="44"
+							Padding="12,0"
+							VerticalContentAlignment="Center"
+							FontSize="15"
+							Background="White"
+							Foreground="#202020"
+							BorderBrush="#80858C"
+							BorderThickness="1"
+							Text="{Binding CustomerEmailInput,
+                UpdateSourceTrigger=PropertyChanged}"
+							MaxLength="254"/>
+
+						<!-- EXPLICAȚIE EMAIL -->
+
+						<TextBlock
+							Margin="0,8,0,20"
+							Text="{DynamicResource SettingsLicenseEmailHint}"
+							TextWrapping="Wrap"
+							FontSize="13"
+							Foreground="#AEB2B7"/>
+
+						<!-- BUTOANE -->
+
+						<Grid>
+
+							<Grid.ColumnDefinitions>
+
+								<ColumnDefinition Width="*"/>
+
+								<ColumnDefinition Width="16"/>
+
+								<ColumnDefinition Width="*"/>
+
+							</Grid.ColumnDefinitions>
+
+							<!-- CUMPĂRĂ LICENȚĂ -->
+
+							<Button
+								Grid.Column="0"
+								MinWidth="180"
+								Style="{StaticResource LicenseActionButtonStyle}"
+								IsEnabled="{Binding CanStartLicensePurchase}">
+
+								<TextBlock
+									Text="{DynamicResource SettingsLicensePurchaseButton}"
+									TextAlignment="Center"
+									TextWrapping="Wrap"/>
+
+							</Button>
+
+							<!-- VERIFICĂ ACTIVAREA -->
+
+							<Button
+								Grid.Column="2"
+								MinWidth="180"
+								Style="{StaticResource LicenseActionButtonStyle}"
+								IsEnabled="False">
+
+								<TextBlock
+									Text="{DynamicResource SettingsLicenseCheckButton}"
+									TextAlignment="Center"
+									TextWrapping="Wrap"/>
+
+							</Button>
+
+						</Grid>
+
+						<!-- NOTĂ PLATĂ -->
+
+						<TextBlock
+							Margin="0,16,0,0"
+							Text="{DynamicResource SettingsLicensePaymentNote}"
+							TextWrapping="Wrap"
+							FontSize="13"
+							LineHeight="19"
+							Foreground="#AEB2B7"/>
+
+					</StackPanel>
+
+				</Border>
+				
+				
+				<!-- DESPRE WINBOOST -->
+
+				<Border
+					Margin="0,0,0,20"
+					Padding="22"
+					Background="#2D3035"
+					CornerRadius="12"
+					Style="{StaticResource MetricCardBorderStyle}">
+
+					<StackPanel>
+
+						<TextBlock
+							Text="{DynamicResource SettingsAboutTitle}"
+							FontSize="20"
+							FontWeight="SemiBold"
+							Foreground="White"/>
+
+						<TextBlock
+							Margin="0,6,0,18"
+							Text="{DynamicResource SettingsAboutDescription}"
+							TextWrapping="Wrap"
+							Foreground="#BDBDBD"/>
+
+						<Grid>
+
+							<Grid.ColumnDefinitions>
+								<ColumnDefinition Width="180"/>
+								<ColumnDefinition Width="*"/>
+							</Grid.ColumnDefinitions>
+
+							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+								<RowDefinition Height="Auto"/>
+							</Grid.RowDefinitions>
+
+							<TextBlock
+								Grid.Row="0"
+								Grid.Column="0"
+								Margin="0,0,0,10"
+								Text="{DynamicResource SettingsAboutProduct}"
+								Foreground="#BDBDBD"/>
+
+							<TextBlock
+								Grid.Row="0"
+								Grid.Column="1"
+								Margin="0,0,0,10"
+								Text="{x:Static helpers:AppBrandInfo.ProductName}"
+								FontWeight="SemiBold"
+								Foreground="White"/>
+
+							<TextBlock
+								Grid.Row="1"
+								Grid.Column="0"
+								Margin="0,0,0,10"
+								Text="{DynamicResource SettingsAboutVersion}"
+								Foreground="#BDBDBD"/>
+
+							<TextBlock
+								Grid.Row="1"
+								Grid.Column="1"
+								Margin="0,0,0,10"
+								Text="{x:Static helpers:AppVersionInfo.InformationalVersion}"
+								FontWeight="SemiBold"
+								Foreground="White"/>
+
+							<TextBlock
+								Grid.Row="2"
+								Grid.Column="0"
+								Text="{DynamicResource SettingsAboutChannel}"
+								Foreground="#BDBDBD"/>
+
+							<TextBlock
+								Grid.Row="2"
+								Grid.Column="1"
+								Text="{x:Static helpers:AppVersionInfo.DisplayVersion}"
+								FontWeight="SemiBold"
+								Foreground="#FFD740"/>
+
+							<TextBlock
+	                                 Grid.Row="3"
+                                    	Grid.Column="0"
+                                	Margin="0,10,0,0"
+                                	Text="{DynamicResource SettingsAboutLicenseStatus}"
+	                                Foreground="#BDBDBD"/>
+
+							<TextBlock
+								Grid.Row="3"
+								Grid.Column="1"
+								Margin="0,10,0,0"
+								Text="{Binding LicenseStatusText}"
+								FontWeight="SemiBold"
+								Foreground="#FFD740"/>
+							
+						</Grid>
+
+					</StackPanel>
+
+				</Border>
 				
 			</StackPanel>
 
