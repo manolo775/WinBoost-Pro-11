@@ -1,0 +1,45 @@
+﻿{
+  "manifest_version": 3,
+  "name": "WinBoost Safe Click",
+  "version": "0.1.0",
+  "description": "Protects user clicks from unwanted overlays, popups and redirects.",
+  "permissions": [
+    "storage",
+    "declarativeNetRequest",
+    "alarms",
+    "webNavigation"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "page-guard.js"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_title": "WinBoost Safe Click",
+    "default_popup": "popup.html"
+  }
+}

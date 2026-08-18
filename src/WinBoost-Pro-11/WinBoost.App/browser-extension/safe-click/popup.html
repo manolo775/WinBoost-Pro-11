@@ -1,0 +1,176 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>WinBoost Safe Click</title>
+
+    <style>
+        body {
+            width: 280px;
+            margin: 0;
+            padding: 18px;
+            box-sizing: border-box;
+            background: #1f2023;
+            color: #ffffff;
+            font-family: "Segoe UI", Arial, sans-serif;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .shield {
+            font-size: 26px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .subtitle {
+            margin-top: 3px;
+            color: #aeb2b8;
+            font-size: 12px;
+        }
+
+        .status-card {
+            padding: 14px;
+            border-radius: 8px;
+            background: #2d3035;
+        }
+
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .status-text {
+            font-weight: 600;
+        }
+
+        .switch {
+            position: relative;
+            width: 46px;
+            height: 24px;
+        }
+
+            .switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+        .slider {
+            position: absolute;
+            inset: 0;
+            cursor: pointer;
+            background: #666b72;
+            border-radius: 24px;
+            transition: 0.2s;
+        }
+
+            .slider::before {
+                content: "";
+                position: absolute;
+                width: 18px;
+                height: 18px;
+                left: 3px;
+                top: 3px;
+                background: white;
+                border-radius: 50%;
+                transition: 0.2s;
+            }
+
+        input:checked + .slider {
+            background: #22c55e;
+        }
+
+            input:checked + .slider::before {
+                transform: translateX(22px);
+            }
+
+        .blocked {
+            margin-top: 14px;
+            color: #c6c9ce;
+            font-size: 13px;
+        }
+
+            .blocked strong {
+                color: #ffffff;
+            }
+
+        .footer {
+            margin-top: 16px;
+            padding-top: 12px;
+            border-top: 1px solid #3d4147;
+            color: #8f949b;
+            font-size: 11px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+
+        <div class="shield">
+            🛡️
+        </div>
+
+        <div>
+            <h1>WinBoost Safe Click</h1>
+
+            <div class="subtitle">
+                Browser click protection
+            </div>
+        </div>
+
+    </div>
+
+    <div class="status-card">
+
+        <div class="status-row">
+
+            <span id="statusText"
+                  class="status-text">
+                Protection enabled
+            </span>
+
+            <label class="switch">
+
+                <input id="protectionToggle"
+                       type="checkbox"
+                       checked>
+
+                <span class="slider"></span>
+
+            </label>
+
+        </div>
+
+        <div class="blocked">
+            Blocked actions:
+            <strong id="blockedCount">0</strong>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        WinBoost Pro 11
+    </div>
+
+    <script src="popup.js"></script>
+
+</body>
+</html>

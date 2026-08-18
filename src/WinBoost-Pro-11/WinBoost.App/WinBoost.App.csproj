@@ -15,6 +15,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Folder Include="browser-extension\safe-click\icons\" />
 		<Folder Include="Resources\" />
 		<Folder Include="Services\Services\" />
 	</ItemGroup>
