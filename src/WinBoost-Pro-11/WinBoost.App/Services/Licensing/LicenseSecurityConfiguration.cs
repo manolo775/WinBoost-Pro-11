@@ -8,6 +8,15 @@
         public static string ActivationEndpoint =>
     string.Empty;
 
+        public static string PurchaseSessionEndpoint =>
+    string.Empty;
+
+        public static string LicenseOffersEndpoint =>
+    string.Empty;
+
+        public static string PurchasePageUrl =>
+    string.Empty;
+
         /*
          * IMPORTANT:
          *

@@ -2766,5 +2766,31 @@
 	<sys:String x:Key="SettingsLicenseCheckButton">Verifică activarea</sys:String>
 
 	<sys:String x:Key="SettingsLicensePaymentNote">Plata se va efectua securizat în pagina procesatorului de plăți. WinBoost nu colectează datele cardului.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseInvalidEmailTitle">Adresă de e-mail invalidă</sys:String>
+	<sys:String x:Key="SettingsLicenseInvalidEmailMessage">Introdu o adresă de e-mail validă pentru cumpărarea licenței.</sys:String>
+
+	<sys:String x:Key="SettingsLicensePurchaseErrorTitle">Cumpărare licență</sys:String>
+	<sys:String x:Key="SettingsLicenseServerNotConfigured">Serverul de cumpărare WinBoost nu este configurat încă.</sys:String>
+	<sys:String x:Key="SettingsLicenseNetworkError">Serverul de cumpărare nu poate fi contactat. Verifică conexiunea la internet.</sys:String>
+	<sys:String x:Key="SettingsLicenseTimeoutError">Conexiunea cu serverul de cumpărare a expirat. Încearcă din nou.</sys:String>
+	<sys:String x:Key="SettingsLicenseCheckoutError">Pagina securizată de plată nu a putut fi deschisă.</sys:String>
+	<sys:String x:Key="SettingsLicensePurchaseError">A apărut o eroare la inițierea cumpărării licenței.</sys:String>
+
+	<sys:String x:Key="CommonClose">Închide</sys:String>
+
+	<sys:String x:Key="LicensePlanPromotionalLifetime">Permanentă promoțională</sys:String>
+	<sys:String x:Key="LicensePlanOneMonth">1 lună</sys:String>
+	<sys:String x:Key="LicensePlanThreeMonths">3 luni</sys:String>
+	<sys:String x:Key="LicensePlanSixMonths">6 luni</sys:String>
+	<sys:String x:Key="LicensePlanOneYear">1 an</sys:String>
+	<sys:String x:Key="LicensePlanUnknown">Plan indisponibil</sys:String>
+
+	
+	
+
+	<sys:String x:Key="SettingsLicensePlanLabel">Plan de licență</sys:String>
+	<sys:String x:Key="SettingsLicenseOffersLoading">Se încarcă ofertele disponibile...</sys:String>
+	<sys:String x:Key="SettingsLicenseOffersUnavailable">Ofertele de licență nu sunt disponibile momentan.</sys:String>
 	
 </ResourceDictionary>

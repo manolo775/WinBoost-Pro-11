@@ -5,7 +5,6 @@ namespace WinBoost.App.Services.Licensing
 {
     public sealed class LicenseResponseValidator
     {
-
         private readonly LicenseSignatureVerifier
             _signatureVerifier;
 
@@ -46,9 +45,10 @@ namespace WinBoost.App.Services.Licensing
             }
 
             if (!string.Equals(
-        response.ProductName,
-        LicenseSecurityConfiguration.ProductName,
-        StringComparison.Ordinal))
+                    response.ProductName,
+                    LicenseSecurityConfiguration
+                        .ProductName,
+                    StringComparison.Ordinal))
             {
                 return new LicenseActivationResult
                 {
@@ -76,6 +76,19 @@ namespace WinBoost.App.Services.Licensing
 
                     Message =
                         "The license belongs to another device."
+                };
+            }
+
+            if (!IsPlanConfigurationValid(
+                    response))
+            {
+                return new LicenseActivationResult
+                {
+                    Status =
+                        LicenseActivationStatus.InvalidKey,
+
+                    Message =
+                        "The license plan configuration is invalid."
                 };
             }
 
@@ -117,6 +130,9 @@ namespace WinBoost.App.Services.Licensing
                     LicenseType =
                         response.LicenseType,
 
+                    Plan =
+                        response.Plan,
+
                     ActivatedAt =
                         response.ActivatedAt,
 
@@ -141,6 +157,32 @@ namespace WinBoost.App.Services.Licensing
                 Message =
                     "The license is valid."
             };
+        }
+
+        private static bool IsPlanConfigurationValid(
+            SignedLicenseResponse response)
+        {
+            switch (response.Plan)
+            {
+                case LicensePlan.PromotionalLifetime:
+
+                    return !response.ExpiresAt.HasValue;
+
+                case LicensePlan.OneMonth:
+                case LicensePlan.ThreeMonths:
+                case LicensePlan.SixMonths:
+                case LicensePlan.OneYear:
+
+                    return response.ExpiresAt.HasValue &&
+                           response.ExpiresAt.Value
+                               .ToUniversalTime() >
+                           response.ActivatedAt
+                               .ToUniversalTime();
+
+                default:
+
+                    return false;
+            }
         }
     }
 }

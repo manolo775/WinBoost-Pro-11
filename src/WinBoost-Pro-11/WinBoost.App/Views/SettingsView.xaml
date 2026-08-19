@@ -101,7 +101,7 @@
 					</Grid>
 
 				</Border>
-				
+
 				<!-- ALERTE -->
 
 				<Border
@@ -939,7 +939,7 @@
 							</Grid>
 
 						</Border>
-						
+
 					</StackPanel>
 
 				</Border>
@@ -1120,6 +1120,70 @@
 							FontSize="13"
 							Foreground="#AEB2B7"/>
 
+						<!-- PLAN LICENȚĂ -->
+
+						<TextBlock
+							Margin="0,0,0,7"
+							Text="{DynamicResource SettingsLicensePlanLabel}"
+							FontSize="15"
+							FontWeight="SemiBold"
+							Foreground="#D0D0D0"/>
+
+						<ComboBox
+							Height="44"
+							Padding="10,0"
+							ItemsSource="{Binding AvailableLicenseOffers}"
+							SelectedItem="{Binding SelectedLicenseOffer,
+								Mode=TwoWay,
+								UpdateSourceTrigger=PropertyChanged}"
+							IsEnabled="{Binding HasAvailableLicenseOffers}"
+							Background="White"
+							Foreground="#202020"
+							BorderBrush="#80858C"
+							BorderThickness="1"
+							VerticalContentAlignment="Center">
+
+							<ComboBox.ItemTemplate>
+
+								<DataTemplate>
+
+									<Grid>
+
+										<Grid.ColumnDefinitions>
+											<ColumnDefinition Width="*"/>
+											<ColumnDefinition Width="Auto"/>
+										</Grid.ColumnDefinitions>
+
+										<TextBlock
+											Grid.Column="0"
+											Text="{Binding DisplayName}"
+											FontSize="15"
+											FontWeight="SemiBold"
+											Foreground="#202020"/>
+
+										<TextBlock
+											Grid.Column="1"
+											Margin="20,0,0,0"
+											Text="{Binding PriceText}"
+											FontSize="15"
+											FontWeight="SemiBold"
+											Foreground="#202020"/>
+
+									</Grid>
+
+								</DataTemplate>
+
+							</ComboBox.ItemTemplate>
+
+						</ComboBox>
+
+						<TextBlock
+							Margin="0,8,0,20"
+							Text="{Binding LicenseOffersStatusText}"
+							TextWrapping="Wrap"
+							FontSize="13"
+							Foreground="#AEB2B7"/>
+
 						<!-- BUTOANE -->
 
 						<Grid>
@@ -1140,7 +1204,8 @@
 								Grid.Column="0"
 								MinWidth="180"
 								Style="{StaticResource LicenseActionButtonStyle}"
-								IsEnabled="{Binding CanStartLicensePurchase}">
+								IsEnabled="{Binding CanStartLicensePurchase}"
+			            		Command="{Binding PurchaseLicenseCommand}">
 
 								<TextBlock
 									Text="{DynamicResource SettingsLicensePurchaseButton}"
@@ -1179,8 +1244,8 @@
 					</StackPanel>
 
 				</Border>
-				
-				
+
+
 				<!-- DESPRE WINBOOST -->
 
 				<Border
@@ -1275,13 +1340,13 @@
 								Text="{Binding LicenseStatusText}"
 								FontWeight="SemiBold"
 								Foreground="#FFD740"/>
-							
+
 						</Grid>
 
 					</StackPanel>
 
 				</Border>
-				
+
 			</StackPanel>
 
 		</Grid>

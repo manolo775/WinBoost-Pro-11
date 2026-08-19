@@ -34,6 +34,12 @@ namespace WinBoost.App.Models
             set;
         } = string.Empty;
 
+        public LicensePlan Plan
+        {
+            get;
+            set;
+        } = LicensePlan.Unknown;
+
         public DateTime? ActivatedAt
         {
             get;

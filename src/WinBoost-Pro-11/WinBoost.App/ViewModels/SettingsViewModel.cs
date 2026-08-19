@@ -12,6 +12,11 @@ using WinBoost.App.Services.Alerts;
 using WinBoost.App.Services.History;
 using WinBoost.App.Services.Licensing;
 using System.Text.RegularExpressions;
+using System.Net.Mail;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System.Linq;
+
 
 namespace WinBoost.App.ViewModels
 {
@@ -36,17 +41,29 @@ namespace WinBoost.App.ViewModels
         private readonly LicenseService
              _licenseService;
 
+        private readonly LicensePurchaseService
+             _licensePurchaseService;
+
+        private readonly LicenseOffersService
+              _licenseOffersService;
+
         private string _licenseKeyInput =
              string.Empty;
 
         private string _customerEmailInput =
                 string.Empty;
 
+        private LicenseOfferDisplayItem?
+            _selectedLicenseOffer;
+
+        private bool
+            _isLoadingLicenseOffers;
+
         public bool CanActivateLicense =>
             !string.IsNullOrWhiteSpace(
         LicenseKeyInput);
 
-  
+
 
         public SettingsViewModel()
         {
@@ -67,6 +84,16 @@ namespace WinBoost.App.ViewModels
 
             _licenseService =
                    LicenseService.Instance;
+
+            _licensePurchaseService =
+                new LicensePurchaseService();
+
+            _licenseOffersService =
+                new LicenseOffersService();
+
+            AvailableLicenseOffers =
+                new ObservableCollection<
+                    LicenseOfferDisplayItem>();
 
             _licenseService.LicenseChanged +=
                 OnLicenseChanged;
@@ -89,10 +116,16 @@ namespace WinBoost.App.ViewModels
                      new RelayCommand(
                      _ => ActivateLicense());
 
-            RestartWithDifferentPrivilegesCommand =
+            PurchaseLicenseCommand =
                    new RelayCommand(
-                     _ => RestartWithDifferentPrivileges());
+                        async _ =>
+                         await PurchaseLicenseAsync());
 
+            RestartWithDifferentPrivilegesCommand =
+                new RelayCommand(
+                    _ => RestartWithDifferentPrivileges());
+
+            _ = LoadLicenseOffersAsync();
         }
 
         public ICommand RestartWithDifferentPrivilegesCommand
@@ -121,6 +154,7 @@ namespace WinBoost.App.ViewModels
         public string LicenseStatusText =>
           LicenseDisplayHelper.GetStatusText(
         _licenseService.Status);
+
 
         public string LicenseKeyInput
         {
@@ -164,15 +198,111 @@ namespace WinBoost.App.ViewModels
             }
         }
 
-        public bool CanStartLicensePurchase =>
-            !string.IsNullOrWhiteSpace(
-                CustomerEmailInput);
+        public ObservableCollection<
+            LicenseOfferDisplayItem>
+            AvailableLicenseOffers
+        {
+            get;
+        }
+
+        public LicenseOfferDisplayItem?
+            SelectedLicenseOffer
+        {
+            get => _selectedLicenseOffer;
+
+            set
+            {
+                if (_selectedLicenseOffer == value)
+                {
+                    return;
+                }
+
+                _selectedLicenseOffer =
+                    value;
+
+                OnPropertyChanged();
+
+                OnPropertyChanged(
+                    nameof(CanStartLicensePurchase));
+            }
+        }
+
+        public bool IsLoadingLicenseOffers
+        {
+            get => _isLoadingLicenseOffers;
+
+            private set
+            {
+                if (_isLoadingLicenseOffers == value)
+                {
+                    return;
+                }
+
+                _isLoadingLicenseOffers =
+                    value;
+
+                OnPropertyChanged();
+
+                OnPropertyChanged(
+                    nameof(LicenseOffersStatusText));
+            }
+        }
+
+        public bool HasAvailableLicenseOffers =>
+            AvailableLicenseOffers.Count > 0;
+
+        public string LicenseOffersStatusText
+        {
+            get
+            {
+                if (IsLoadingLicenseOffers)
+                {
+                    return LocalizationHelper.Get(
+                        "SettingsLicenseOffersLoading");
+                }
+
+                if (HasAvailableLicenseOffers)
+                {
+                    return string.Empty;
+                }
+
+                return LocalizationHelper.Get(
+                    "SettingsLicenseOffersUnavailable");
+            }
+        }
+
+        public bool CanStartLicensePurchase
+        {
+            get
+            {
+                string email =
+                    CustomerEmailInput
+                        .Trim();
+
+                bool validEmail =
+                    MailAddress.TryCreate(
+                        email,
+                        out MailAddress? address) &&
+                    string.Equals(
+                        address.Address,
+                        email,
+                        StringComparison.OrdinalIgnoreCase);
+
+                return validEmail &&
+                       SelectedLicenseOffer != null;
+            }
+        }
 
         public ICommand ClearHistoryCommand
         {
             get;
         }
-            
+
+        public ICommand PurchaseLicenseCommand
+        {
+            get;
+        }
+
         public bool AlertsEnabled
         {
             get => _settings.AlertsEnabled;
@@ -778,6 +908,105 @@ namespace WinBoost.App.ViewModels
                 MessageBoxImage.Information);
         }
 
+        private async Task LoadLicenseOffersAsync()
+        {
+            IsLoadingLicenseOffers =
+                true;
+
+            try
+            {
+                IReadOnlyList<LicenseOfferDisplayItem> offers =
+                    await _licenseOffersService
+                        .GetDisplayOffersAsync();
+
+                AvailableLicenseOffers.Clear();
+
+                foreach (LicenseOfferDisplayItem offer in offers)
+                {
+                    AvailableLicenseOffers.Add(
+                        offer);
+                }
+
+                SelectedLicenseOffer =
+                    AvailableLicenseOffers
+                        .FirstOrDefault();
+
+                OnPropertyChanged(
+                    nameof(HasAvailableLicenseOffers));
+
+                OnPropertyChanged(
+                    nameof(CanStartLicensePurchase));
+            }
+            finally
+            {
+                IsLoadingLicenseOffers =
+                    false;
+
+                OnPropertyChanged(
+                    nameof(LicenseOffersStatusText));
+            }
+        }
+
+        private async Task PurchaseLicenseAsync()
+        {
+            string email =
+                CustomerEmailInput
+                    .Trim();
+
+            if (!CanStartLicensePurchase)
+            {
+                NativeMessageDialog.Show(
+                    Application.Current.MainWindow,
+                    LocalizationHelper.Get(
+                        "SettingsLicenseInvalidEmailTitle"),
+                    LocalizationHelper.Get(
+                        "SettingsLicenseInvalidEmailMessage"),
+                    LocalizationHelper.Get(
+                        "CommonClose"));
+
+                return;
+            }
+
+            PurchaseSessionResponse response =
+                await _licensePurchaseService
+                    .StartPurchaseAsync(
+                        email,
+                        SelectedLicenseOffer!.Plan);
+
+            if (response.Success)
+            {
+                return;
+            }
+
+            string messageKey =
+                response.ErrorCode switch
+                {
+                    "SERVER_NOT_CONFIGURED" =>
+                        "SettingsLicenseServerNotConfigured",
+
+                    "NETWORK_ERROR" =>
+                        "SettingsLicenseNetworkError",
+
+                    "REQUEST_TIMEOUT" =>
+                        "SettingsLicenseTimeoutError",
+
+                    "INVALID_CHECKOUT_URL" =>
+                        "SettingsLicenseCheckoutError",
+
+                    _ =>
+                        "SettingsLicensePurchaseError"
+                };
+
+            NativeMessageDialog.Show(
+                Application.Current.MainWindow,
+                LocalizationHelper.Get(
+                    "SettingsLicensePurchaseErrorTitle"),
+                LocalizationHelper.Get(
+                    messageKey),
+                LocalizationHelper.Get(
+                    "CommonClose"));
+        }
+
         private void OnLicenseChanged(
                 object? sender,
                  EventArgs e)
@@ -787,11 +1016,16 @@ namespace WinBoost.App.ViewModels
         }
 
         private void OnLanguageChanged(
-           object? sender,
+            object? sender,
             EventArgs e)
         {
             OnPropertyChanged(
                 nameof(LicenseStatusText));
+
+            OnPropertyChanged(
+                nameof(LicenseOffersStatusText));
+
+            _ = LoadLicenseOffersAsync();
         }
 
         private void OnPropertyChanged(

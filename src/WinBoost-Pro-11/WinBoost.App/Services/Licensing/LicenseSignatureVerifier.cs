@@ -83,14 +83,15 @@ namespace WinBoost.App.Services.Licensing
                     : string.Empty;
 
             return string.Join(
-                "\n",
-                license.LicenseId,
-                license.CustomerEmail,
-                license.ProductName,
-                license.LicenseType,
-                activatedAt,
-                expiresAt,
-                license.DeviceId);
+      "\n",
+      license.LicenseId,
+      license.CustomerEmail,
+      license.ProductName,
+      license.LicenseType,
+      license.Plan.ToString(),
+      activatedAt,
+      expiresAt,
+      license.DeviceId);
         }
     }
 }

@@ -2762,5 +2762,29 @@
 	<sys:String x:Key="SettingsLicenseCheckButton">Check activation</sys:String>
 
 	<sys:String x:Key="SettingsLicensePaymentNote">Payment will be completed securely on the payment provider's page. WinBoost does not collect your card details.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseInvalidEmailTitle">Invalid email address</sys:String>
+	<sys:String x:Key="SettingsLicenseInvalidEmailMessage">Enter a valid email address to purchase the license.</sys:String>
+
+	<sys:String x:Key="SettingsLicensePurchaseErrorTitle">License purchase</sys:String>
+	<sys:String x:Key="SettingsLicenseServerNotConfigured">The WinBoost purchase server is not configured yet.</sys:String>
+	<sys:String x:Key="SettingsLicenseNetworkError">The purchase server could not be reached. Check your internet connection.</sys:String>
+	<sys:String x:Key="SettingsLicenseTimeoutError">The connection to the purchase server timed out. Please try again.</sys:String>
+	<sys:String x:Key="SettingsLicenseCheckoutError">The secure payment page could not be opened.</sys:String>
+	<sys:String x:Key="SettingsLicensePurchaseError">An error occurred while starting the license purchase.</sys:String>
+
+	<sys:String x:Key="CommonClose">Close</sys:String>
+
+	<sys:String x:Key="SettingsLicensePlanLabel">License plan</sys:String>
+	<sys:String x:Key="SettingsLicenseOffersLoading">Loading available offers...</sys:String>
+	<sys:String x:Key="SettingsLicenseOffersUnavailable">License offers are not available right now.</sys:String>
+
+
+	<sys:String x:Key="LicensePlanPromotionalLifetime">Promotional lifetime</sys:String>
+	<sys:String x:Key="LicensePlanOneMonth">1 month</sys:String>
+	<sys:String x:Key="LicensePlanThreeMonths">3 months</sys:String>
+	<sys:String x:Key="LicensePlanSixMonths">6 months</sys:String>
+	<sys:String x:Key="LicensePlanOneYear">1 year</sys:String>
+	<sys:String x:Key="LicensePlanUnknown">Unavailable plan</sys:String>
 	
 </ResourceDictionary>
