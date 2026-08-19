@@ -22,6 +22,9 @@ namespace WinBoost.App.Services.Licensing
         private readonly LicenseService
             _licenseService;
 
+        private readonly SignedLicenseStorageService
+            _signedLicenseStorageService;
+
         public LicenseActivationCheckService()
         {
             _pendingPurchaseService =
@@ -40,6 +43,9 @@ namespace WinBoost.App.Services.Licensing
 
             _licenseService =
                 LicenseService.Instance;
+
+            _signedLicenseStorageService =
+                new SignedLicenseStorageService();
         }
 
         public async Task<LicenseActivationResult>
@@ -183,11 +189,29 @@ namespace WinBoost.App.Services.Licensing
                 return validationResult;
             }
 
-            _licenseService.SetLicense(
-                validationResult.License);
+            try
+            {
+                _signedLicenseStorageService
+                    .Save(
+                        response.License);
 
-            _pendingPurchaseService
-                .ClearPendingPurchase();
+                _licenseService.SetLicense(
+                    validationResult.License);
+
+                _pendingPurchaseService
+                    .ClearPendingPurchase();
+            }
+            catch
+            {
+                return new LicenseActivationResult
+                {
+                    Status =
+                        LicenseActivationStatus.Error,
+
+                    Message =
+                        "The activated license could not be saved locally."
+                };
+            }
 
             return validationResult;
         }
