@@ -2747,12 +2747,6 @@
 	<sys:String x:Key="SettingsLicenseKeyLabel">Cheie de licență</sys:String>
 	<sys:String x:Key="SettingsLicenseActivateButton">Activează licența</sys:String>
 
-	<sys:String x:Key="SettingsLicenseInvalidFormatTitle">Cheie invalidă</sys:String>
-	<sys:String x:Key="SettingsLicenseInvalidFormatMessage">Formatul cheii de licență nu este valid.</sys:String>
-
-	<sys:String x:Key="SettingsLicenseValidFormatTitle">Cheie validă</sys:String>
-	<sys:String x:Key="SettingsLicenseValidFormatMessage">Formatul cheii de licență este valid. Licența nu a fost încă activată.</sys:String>
-
 	<sys:String x:Key="SettingsLicensePurchaseTitle">Licență WinBoost Pro 11</sys:String>
 
 	<sys:String x:Key="SettingsLicensePurchaseDescription">Cumpără și activează WinBoost Pro 11 folosind adresa de e-mail asociată achiziției.</sys:String>

@@ -11,7 +11,6 @@ using WinBoost.App.Localization;
 using WinBoost.App.Services.Alerts;
 using WinBoost.App.Services.History;
 using WinBoost.App.Services.Licensing;
-using System.Text.RegularExpressions;
 using System.Net.Mail;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
@@ -53,9 +52,6 @@ namespace WinBoost.App.ViewModels
         private readonly LicenseActivationCheckService
             _licenseActivationCheckService;
 
-        private string _licenseKeyInput =
-             string.Empty;
-
         private string _customerEmailInput =
                 string.Empty;
 
@@ -64,12 +60,6 @@ namespace WinBoost.App.ViewModels
 
         private bool
             _isLoadingLicenseOffers;
-
-        public bool CanActivateLicense =>
-            !string.IsNullOrWhiteSpace(
-        LicenseKeyInput);
-
-
 
         public SettingsViewModel()
         {
@@ -127,10 +117,6 @@ namespace WinBoost.App.ViewModels
                    new RelayCommand(
                       _ => ResetSettings());
 
-            ActivateLicenseCommand =
-                     new RelayCommand(
-                     _ => ActivateLicense());
-
             PurchaseLicenseCommand =
                 new RelayCommand(
                     async _ =>
@@ -175,27 +161,6 @@ namespace WinBoost.App.ViewModels
           LicenseDisplayHelper.GetStatusText(
         _licenseService.Status);
 
-
-        public string LicenseKeyInput
-        {
-            get => _licenseKeyInput;
-
-            set
-            {
-                if (_licenseKeyInput == value)
-                {
-                    return;
-                }
-
-                _licenseKeyInput =
-                    value;
-
-                OnPropertyChanged();
-
-                OnPropertyChanged(
-                nameof(CanActivateLicense));
-            }
-        }
 
         public string CustomerEmailInput
         {
@@ -352,11 +317,6 @@ namespace WinBoost.App.ViewModels
         }
 
         public ICommand ResetSettingsCommand
-        {
-            get;
-        }
-
-        public ICommand ActivateLicenseCommand
         {
             get;
         }
@@ -899,42 +859,6 @@ namespace WinBoost.App.ViewModels
 
             ApplicationElevationHelper
                 .RestartAsAdministrator();
-        }
-
-        private void ActivateLicense()
-        {
-            string licenseKey =
-                LicenseKeyInput
-                    .Trim()
-                    .ToUpperInvariant();
-
-            bool isValidFormat =
-                Regex.IsMatch(
-                    licenseKey,
-                    @"^WB11-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$");
-
-            if (!isValidFormat)
-            {
-                MessageBox.Show(
-                    Application.Current.MainWindow,
-                    LocalizationHelper.Get(
-                        "SettingsLicenseInvalidFormatMessage"),
-                    LocalizationHelper.Get(
-                        "SettingsLicenseInvalidFormatTitle"),
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-
-                return;
-            }
-
-            MessageBox.Show(
-                Application.Current.MainWindow,
-                LocalizationHelper.Get(
-                    "SettingsLicenseValidFormatMessage"),
-                LocalizationHelper.Get(
-                    "SettingsLicenseValidFormatTitle"),
-                MessageBoxButton.OK,
-                MessageBoxImage.Information);
         }
 
         private async Task LoadLicenseOffersAsync()

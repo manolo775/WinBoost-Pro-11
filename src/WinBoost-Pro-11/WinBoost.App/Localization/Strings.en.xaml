@@ -2743,12 +2743,6 @@
 	<sys:String x:Key="SettingsLicenseKeyLabel">License key</sys:String>
 	<sys:String x:Key="SettingsLicenseActivateButton">Activate license</sys:String>
 
-	<sys:String x:Key="SettingsLicenseInvalidFormatTitle">Invalid key</sys:String>
-	<sys:String x:Key="SettingsLicenseInvalidFormatMessage">The license key format is not valid.</sys:String>
-
-	<sys:String x:Key="SettingsLicenseValidFormatTitle">Valid key</sys:String>
-	<sys:String x:Key="SettingsLicenseValidFormatMessage">The license key format is valid. The license has not been activated yet.</sys:String>
-
 	<sys:String x:Key="SettingsLicensePurchaseTitle">WinBoost Pro 11 License</sys:String>
 
 	<sys:String x:Key="SettingsLicensePurchaseDescription">Purchase and activate WinBoost Pro 11 using the email address associated with your purchase.</sys:String>
