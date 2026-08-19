@@ -2792,5 +2792,21 @@
 	<sys:String x:Key="SettingsLicensePlanLabel">Plan de licență</sys:String>
 	<sys:String x:Key="SettingsLicenseOffersLoading">Se încarcă ofertele disponibile...</sys:String>
 	<sys:String x:Key="SettingsLicenseOffersUnavailable">Ofertele de licență nu sunt disponibile momentan.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationSuccessTitle">Activare reușită</sys:String>
+	<sys:String x:Key="SettingsLicenseActivationSuccessMessage">Licența WinBoost Pro 11 a fost activată cu succes.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationCheckTitle">Verificare activare</sys:String>
+	<sys:String x:Key="SettingsLicensePaymentPendingMessage">Plata nu a fost confirmată încă. Așteaptă confirmarea plății și încearcă din nou.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationExpiredMessage">Licența asociată acestei achiziții este expirată.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationInvalidMessage">Licența primită de la server nu a putut fi validată.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationCheckErrorMessage">Activarea nu a putut fi verificată. Încearcă din nou mai târziu.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationServerNotConfigured">
+		Serverul de activare WinBoost nu este configurat încă.
+	</sys:String>
 	
 </ResourceDictionary>

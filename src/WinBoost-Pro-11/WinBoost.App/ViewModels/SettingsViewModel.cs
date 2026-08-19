@@ -47,6 +47,12 @@ namespace WinBoost.App.ViewModels
         private readonly LicenseOffersService
               _licenseOffersService;
 
+        private readonly PendingPurchaseService
+            _pendingPurchaseService;
+
+        private readonly LicenseActivationCheckService
+            _licenseActivationCheckService;
+
         private string _licenseKeyInput =
              string.Empty;
 
@@ -91,12 +97,21 @@ namespace WinBoost.App.ViewModels
             _licenseOffersService =
                 new LicenseOffersService();
 
+            _pendingPurchaseService =
+                PendingPurchaseService.Instance;
+
+            _licenseActivationCheckService =
+                new LicenseActivationCheckService();
+
             AvailableLicenseOffers =
                 new ObservableCollection<
                     LicenseOfferDisplayItem>();
 
             _licenseService.LicenseChanged +=
                 OnLicenseChanged;
+
+            _pendingPurchaseService.PendingPurchaseChanged +=
+                OnPendingPurchaseChanged;
 
             WeakEventManager<LanguageManager, EventArgs>
                   .AddHandler(
@@ -117,9 +132,14 @@ namespace WinBoost.App.ViewModels
                      _ => ActivateLicense());
 
             PurchaseLicenseCommand =
-                   new RelayCommand(
-                        async _ =>
-                         await PurchaseLicenseAsync());
+                new RelayCommand(
+                    async _ =>
+                        await PurchaseLicenseAsync());
+
+            CheckLicenseActivationCommand =
+                new RelayCommand(
+                    async _ =>
+                        await CheckLicenseActivationAsync());
 
             RestartWithDifferentPrivilegesCommand =
                 new RelayCommand(
@@ -271,6 +291,10 @@ namespace WinBoost.App.ViewModels
             }
         }
 
+        public bool CanCheckLicenseActivation =>
+            _pendingPurchaseService
+                .HasPendingPurchase;
+
         public bool CanStartLicensePurchase
         {
             get
@@ -299,6 +323,11 @@ namespace WinBoost.App.ViewModels
         }
 
         public ICommand PurchaseLicenseCommand
+        {
+            get;
+        }
+
+        public ICommand CheckLicenseActivationCommand
         {
             get;
         }
@@ -1005,6 +1034,65 @@ namespace WinBoost.App.ViewModels
                     messageKey),
                 LocalizationHelper.Get(
                     "CommonClose"));
+        }
+
+        private async Task CheckLicenseActivationAsync()
+        {
+            if (!CanCheckLicenseActivation)
+            {
+                return;
+            }
+
+            LicenseActivationResult result =
+                await _licenseActivationCheckService
+                    .CheckActivationAsync();
+
+            string titleKey =
+                result.IsSuccessful
+                    ? "SettingsLicenseActivationSuccessTitle"
+                    : "SettingsLicenseActivationCheckTitle";
+
+            string messageKey =
+                result.Status switch
+                {
+                    LicenseActivationStatus.Success =>
+                        "SettingsLicenseActivationSuccessMessage",
+
+                    LicenseActivationStatus.PaymentPending =>
+                        "SettingsLicensePaymentPendingMessage",
+
+                    LicenseActivationStatus.ServerUnavailable =>
+                        "SettingsLicenseActivationServerNotConfigured",
+
+                    LicenseActivationStatus.NetworkError =>
+                        "SettingsLicenseNetworkError",
+
+                    LicenseActivationStatus.Expired =>
+                        "SettingsLicenseActivationExpiredMessage",
+
+                    LicenseActivationStatus.InvalidKey =>
+                        "SettingsLicenseActivationInvalidMessage",
+
+                    _ =>
+                        "SettingsLicenseActivationCheckErrorMessage"
+                };
+
+            NativeMessageDialog.Show(
+                Application.Current.MainWindow,
+                LocalizationHelper.Get(
+                    titleKey),
+                LocalizationHelper.Get(
+                    messageKey),
+                LocalizationHelper.Get(
+                    "CommonClose"));
+        }
+
+        private void OnPendingPurchaseChanged(
+            object? sender,
+            EventArgs e)
+        {
+            OnPropertyChanged(
+                nameof(CanCheckLicenseActivation));
         }
 
         private void OnLicenseChanged(

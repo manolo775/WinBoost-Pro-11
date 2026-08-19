@@ -2786,5 +2786,21 @@
 	<sys:String x:Key="LicensePlanSixMonths">6 months</sys:String>
 	<sys:String x:Key="LicensePlanOneYear">1 year</sys:String>
 	<sys:String x:Key="LicensePlanUnknown">Unavailable plan</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationSuccessTitle">Activation successful</sys:String>
+	<sys:String x:Key="SettingsLicenseActivationSuccessMessage">Your WinBoost Pro 11 license has been activated successfully.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationCheckTitle">Activation check</sys:String>
+	<sys:String x:Key="SettingsLicensePaymentPendingMessage">The payment has not been confirmed yet. Wait for the payment confirmation and try again.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationExpiredMessage">The license associated with this purchase has expired.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationInvalidMessage">The license returned by the server could not be validated.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationCheckErrorMessage">The activation could not be verified. Please try again later.</sys:String>
+
+	<sys:String x:Key="SettingsLicenseActivationServerNotConfigured">
+		The WinBoost activation server is not configured yet.
+	</sys:String>
 	
 </ResourceDictionary>

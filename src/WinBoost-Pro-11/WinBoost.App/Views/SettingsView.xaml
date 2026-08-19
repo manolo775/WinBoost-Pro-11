@@ -1220,7 +1220,8 @@
 								Grid.Column="2"
 								MinWidth="180"
 								Style="{StaticResource LicenseActionButtonStyle}"
-								IsEnabled="False">
+								IsEnabled="{Binding CanCheckLicenseActivation}"
+								Command="{Binding CheckLicenseActivationCommand}">
 
 								<TextBlock
 									Text="{DynamicResource SettingsLicenseCheckButton}"

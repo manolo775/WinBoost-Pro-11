@@ -14,6 +14,9 @@ namespace WinBoost.App.Services.Licensing
         private readonly PurchaseApiClient
             _apiClient;
 
+        private readonly PendingPurchaseService
+            _pendingPurchaseService;
+
         public LicensePurchaseService()
         {
             _deviceIdentityService =
@@ -23,6 +26,9 @@ namespace WinBoost.App.Services.Licensing
                 new PurchaseApiClient(
                     LicenseSecurityConfiguration
                         .PurchaseSessionEndpoint);
+
+            _pendingPurchaseService =
+                PendingPurchaseService.Instance;
         }
 
         public async Task<PurchaseSessionResponse>
@@ -94,8 +100,27 @@ namespace WinBoost.App.Services.Licensing
                 return response;
             }
 
-            if (!TryOpenCheckoutPage(
-                    response.CheckoutUrl))
+            if (string.IsNullOrWhiteSpace(
+                    response.SessionId))
+            {
+                return new PurchaseSessionResponse
+                {
+                    Success = false,
+
+                    CheckoutUrl =
+                        response.CheckoutUrl,
+
+                    ErrorCode =
+                        "INVALID_SERVER_RESPONSE",
+
+                    Message =
+                        "The licensing server did not return a purchase session identifier."
+                };
+            }
+
+            if (!TryCreateCheckoutUri(
+                    response.CheckoutUrl,
+                    out Uri? checkoutUri))
             {
                 return new PurchaseSessionResponse
                 {
@@ -115,22 +140,104 @@ namespace WinBoost.App.Services.Licensing
                 };
             }
 
+            try
+            {
+                _pendingPurchaseService
+                    .SetPendingPurchase(
+                        new PendingPurchaseInfo
+                        {
+                            CustomerEmail =
+                                normalizedEmail,
+
+                            PurchaseSessionId =
+                                response.SessionId,
+
+                            Plan =
+                                plan,
+
+                            CreatedAt =
+                                DateTime.UtcNow
+                        });
+            }
+            catch
+            {
+                return new PurchaseSessionResponse
+                {
+                    Success = false,
+
+                    CheckoutUrl =
+                        response.CheckoutUrl,
+
+                    SessionId =
+                        response.SessionId,
+
+                    ErrorCode =
+                        "LOCAL_STORAGE_ERROR",
+
+                    Message =
+                        "The pending purchase could not be saved locally."
+                };
+            }
+
+            if (!TryOpenCheckoutPage(
+                    checkoutUri!))
+            {
+                try
+                {
+                    _pendingPurchaseService
+                        .ClearPendingPurchase();
+                }
+                catch
+                {
+                }
+
+                return new PurchaseSessionResponse
+                {
+                    Success = false,
+
+                    CheckoutUrl =
+                        response.CheckoutUrl,
+
+                    SessionId =
+                        response.SessionId,
+
+                    ErrorCode =
+                        "INVALID_CHECKOUT_URL",
+
+                    Message =
+                        "The secure checkout page could not be opened."
+                };
+            }
+
             return response;
         }
 
-        private static bool TryOpenCheckoutPage(
-            string checkoutUrl)
+        private static bool TryCreateCheckoutUri(
+            string checkoutUrl,
+            out Uri? checkoutUri)
         {
+            checkoutUri =
+                null;
+
             if (!Uri.TryCreate(
                     checkoutUrl,
                     UriKind.Absolute,
-                    out Uri? checkoutUri) ||
-                checkoutUri.Scheme !=
+                    out Uri? uri) ||
+                uri.Scheme !=
                     Uri.UriSchemeHttps)
             {
                 return false;
             }
 
+            checkoutUri =
+                uri;
+
+            return true;
+        }
+
+        private static bool TryOpenCheckoutPage(
+            Uri checkoutUri)
+        {
             try
             {
                 Process.Start(

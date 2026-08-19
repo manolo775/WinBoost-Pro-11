@@ -6,30 +6,20 @@
             "WinBoost Pro 11";
 
         public static string ActivationEndpoint =>
-    string.Empty;
+            string.Empty;
 
         public static string PurchaseSessionEndpoint =>
-    string.Empty;
+            string.Empty;
 
         public static string LicenseOffersEndpoint =>
-    string.Empty;
+            string.Empty;
+
+        public static string ActivationCheckEndpoint =>
+            string.Empty;
 
         public static string PurchasePageUrl =>
-    string.Empty;
+            string.Empty;
 
-        /*
-         * IMPORTANT:
-         *
-         * Only the PUBLIC licensing key
-         * will be stored in the application.
-         *
-         * The PRIVATE key must exist only
-         * on the WinBoost licensing server.
-         *
-         * This value remains empty until
-         * the server-side licensing system
-         * is created.
-         */
         public static string PublicKeyPem =>
             string.Empty;
 

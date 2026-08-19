@@ -8,6 +8,7 @@
         Expired = 3,
         ServerUnavailable = 4,
         NetworkError = 5,
-        Error = 6
+        Error = 6,
+        PaymentPending = 7
     }
 }
