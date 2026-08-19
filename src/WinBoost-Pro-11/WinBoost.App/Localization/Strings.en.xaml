@@ -2796,5 +2796,9 @@
 	<sys:String x:Key="SettingsLicenseActivationServerNotConfigured">
 		The WinBoost activation server is not configured yet.
 	</sys:String>
+
+	<sys:String x:Key="SettingsLicensePaymentProviderNotConfigured">
+		The WinBoost payment provider is not configured yet.
+	</sys:String>
 	
 </ResourceDictionary>

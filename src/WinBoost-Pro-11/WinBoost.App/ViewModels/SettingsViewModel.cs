@@ -937,6 +937,9 @@ namespace WinBoost.App.ViewModels
                     "SERVER_NOT_CONFIGURED" =>
                         "SettingsLicenseServerNotConfigured",
 
+                    "PAYMENT_PROVIDER_NOT_CONFIGURED" =>
+                        "SettingsLicensePaymentProviderNotConfigured",
+
                     "NETWORK_ERROR" =>
                         "SettingsLicenseNetworkError",
 

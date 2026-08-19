@@ -1,5 +1,6 @@
 using WinBoost.Licensing.Server.Configuration;
 using WinBoost.Licensing.Server.Services;
+using WinBoost.Licensing.Server.Models;
 
 namespace WinBoost.Licensing.Server
 {
@@ -14,6 +15,8 @@ namespace WinBoost.Licensing.Server
                  LicenseOffersOptions.SectionName));
 
             builder.Services.AddSingleton<LicenseOffersService>();
+
+            builder.Services.AddSingleton<PurchaseSessionService>();
 
             // Add services to the container.
 
@@ -45,6 +48,24 @@ namespace WinBoost.Licensing.Server
 
                         return Results.Ok(response);
                  });
+
+            app.MapPost(
+    "/api/licensing/purchase-session",
+    (
+        PurchaseSessionRequest request,
+        PurchaseSessionService purchaseSessionService) =>
+    {
+        PurchaseSessionResponse response =
+            purchaseSessionService
+                .CreatePurchaseSession(request);
+
+        if (response.Success)
+        {
+            return Results.Ok(response);
+        }
+
+        return Results.BadRequest(response);
+    });
 
             app.Run();
 

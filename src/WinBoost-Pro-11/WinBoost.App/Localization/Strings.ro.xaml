@@ -2802,5 +2802,9 @@
 	<sys:String x:Key="SettingsLicenseActivationServerNotConfigured">
 		Serverul de activare WinBoost nu este configurat încă.
 	</sys:String>
+
+	<sys:String x:Key="SettingsLicensePaymentProviderNotConfigured">
+		Procesatorul de plăți WinBoost nu este configurat încă.
+	</sys:String>
 	
 </ResourceDictionary>

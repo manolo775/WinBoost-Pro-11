@@ -9,11 +9,10 @@
             string.Empty;
 
         public static string PurchaseSessionEndpoint =>
-            string.Empty;
+     "https://localhost:7160/api/licensing/purchase-session";
 
         public static string LicenseOffersEndpoint =>
-            string.Empty;
-
+     "https://localhost:7160/api/licensing/offers";
         public static string ActivationCheckEndpoint =>
             string.Empty;
 
