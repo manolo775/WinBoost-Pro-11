@@ -1,0 +1,6 @@
+@WinBoost.Licensing.Server_HostAddress = http://localhost:5132
+
+GET {{WinBoost.Licensing.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
