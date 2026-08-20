@@ -808,12 +808,24 @@ namespace WinBoost.Licensing.Server.Services
         }
 
         private string GetPriceId(
-            LicensePlan plan)
+    LicensePlan plan)
         {
             return plan switch
             {
+                LicensePlan.PromotionalLifetime =>
+                    _options.PromotionalLifetimePriceId,
+
                 LicensePlan.OneMonth =>
                     _options.OneMonthPriceId,
+
+                LicensePlan.ThreeMonths =>
+                    _options.ThreeMonthsPriceId,
+
+                LicensePlan.SixMonths =>
+                    _options.SixMonthsPriceId,
+
+                LicensePlan.OneYear =>
+                    _options.OneYearPriceId,
 
                 _ =>
                     string.Empty

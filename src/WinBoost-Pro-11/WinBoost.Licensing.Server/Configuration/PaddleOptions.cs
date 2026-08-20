@@ -24,7 +24,31 @@
         } =
             "https://sandbox-api.paddle.com";
 
+        public string PromotionalLifetimePriceId
+        {
+            get;
+            set;
+        } = string.Empty;
+
         public string OneMonthPriceId
+        {
+            get;
+            set;
+        } = string.Empty;
+
+        public string ThreeMonthsPriceId
+        {
+            get;
+            set;
+        } = string.Empty;
+
+        public string SixMonthsPriceId
+        {
+            get;
+            set;
+        } = string.Empty;
+
+        public string OneYearPriceId
         {
             get;
             set;

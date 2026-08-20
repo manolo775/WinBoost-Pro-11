@@ -249,12 +249,24 @@ namespace WinBoost.Licensing.Server.Services
         }
 
         private string GetExpectedPriceId(
-            LicensePlan plan)
+    LicensePlan plan)
         {
             return plan switch
             {
+                LicensePlan.PromotionalLifetime =>
+                    _paddleOptions.PromotionalLifetimePriceId,
+
                 LicensePlan.OneMonth =>
                     _paddleOptions.OneMonthPriceId,
+
+                LicensePlan.ThreeMonths =>
+                    _paddleOptions.ThreeMonthsPriceId,
+
+                LicensePlan.SixMonths =>
+                    _paddleOptions.SixMonthsPriceId,
+
+                LicensePlan.OneYear =>
+                    _paddleOptions.OneYearPriceId,
 
                 _ =>
                     string.Empty
