@@ -65,6 +65,18 @@ namespace WinBoost.Licensing.Server.Services
                     "The Paddle API URL is invalid.");
             }
 
+            PaymentCustomerResult customer =
+                await GetOrCreateCustomerAsync(
+                    request.CustomerEmail,
+                    cancellationToken);
+
+            if (!customer.Success)
+            {
+                return CheckoutError(
+                    customer.ErrorCode,
+                    customer.Message);
+            }
+
             string endpoint =
                 $"{_options.BaseUrl.TrimEnd('/')}/transactions";
 
@@ -84,6 +96,9 @@ namespace WinBoost.Licensing.Server.Services
                             }
                         },
 
+                    customer_id =
+                        customer.CustomerId,
+
                     collection_mode =
                         "automatic",
 
@@ -91,7 +106,7 @@ namespace WinBoost.Licensing.Server.Services
                         new Dictionary<string, string>
                         {
                             ["winboost_email"] =
-                                request.CustomerEmail,
+                                customer.Email,
 
                             ["winboost_device_id"] =
                                 request.DeviceId,
@@ -109,10 +124,8 @@ namespace WinBoost.Licensing.Server.Services
                     HttpMethod.Post,
                     endpoint);
 
-            httpRequest.Headers.Authorization =
-                new AuthenticationHeaderValue(
-                    "Bearer",
-                    _options.ApiKey);
+            AddAuthorization(
+                httpRequest);
 
             httpRequest.Content =
                 JsonContent.Create(
@@ -248,10 +261,8 @@ namespace WinBoost.Licensing.Server.Services
                     HttpMethod.Get,
                     endpoint);
 
-            httpRequest.Headers.Authorization =
-                new AuthenticationHeaderValue(
-                    "Bearer",
-                    _options.ApiKey);
+            AddAuthorization(
+                httpRequest);
 
             try
             {
@@ -287,10 +298,40 @@ namespace WinBoost.Licensing.Server.Services
                         "Paddle did not return transaction data.");
                 }
 
-                string email =
+                if (string.IsNullOrWhiteSpace(
+                        data.CustomerId))
+                {
+                    return StatusError(
+                        "PADDLE_CUSTOMER_NOT_FOUND",
+                        "The Paddle transaction is not associated with a customer.");
+                }
+
+                PaymentCustomerResult customer =
+                    await GetCustomerByIdAsync(
+                        data.CustomerId,
+                        cancellationToken);
+
+                if (!customer.Success)
+                {
+                    return StatusError(
+                        customer.ErrorCode,
+                        customer.Message);
+                }
+
+                string metadataEmail =
                     GetCustomDataValue(
                         data.CustomData,
                         "winboost_email");
+
+                if (!string.Equals(
+                        metadataEmail,
+                        customer.Email,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return StatusError(
+                        "PADDLE_CUSTOMER_EMAIL_MISMATCH",
+                        "The Paddle customer email does not match the WinBoost purchase email.");
+                }
 
                 string deviceId =
                     GetCustomDataValue(
@@ -352,7 +393,7 @@ namespace WinBoost.Licensing.Server.Services
                         priceId,
 
                     CustomerEmail =
-                        email,
+                        customer.Email,
 
                     DeviceId =
                         deviceId,
@@ -390,6 +431,370 @@ namespace WinBoost.Licensing.Server.Services
                     "PADDLE_ERROR",
                     "An unexpected Paddle error occurred.");
             }
+        }
+
+        private async Task<PaymentCustomerResult>
+            GetOrCreateCustomerAsync(
+                string customerEmail,
+                CancellationToken cancellationToken)
+        {
+            string email =
+                customerEmail?.Trim()
+                ?? string.Empty;
+
+            if (string.IsNullOrWhiteSpace(
+                    email))
+            {
+                return CustomerError(
+                    "INVALID_EMAIL",
+                    "The Paddle customer email is invalid.");
+            }
+
+            string encodedEmail =
+                Uri.EscapeDataString(
+                    email);
+
+            string listEndpoint =
+                $"{_options.BaseUrl.TrimEnd('/')}/customers?email={encodedEmail}&per_page=1";
+
+            using var listRequest =
+                new HttpRequestMessage(
+                    HttpMethod.Get,
+                    listEndpoint);
+
+            AddAuthorization(
+                listRequest);
+
+            try
+            {
+                using HttpResponseMessage listResponse =
+                    await _httpClient
+                        .SendAsync(
+                            listRequest,
+                            cancellationToken);
+
+                if (!listResponse.IsSuccessStatusCode)
+                {
+                    return CustomerError(
+                        "PADDLE_CUSTOMER_API_ERROR",
+                        $"Paddle returned HTTP {(int)listResponse.StatusCode} while searching for the customer.");
+                }
+
+                PaddleCustomerListResponse? customers =
+                    await listResponse.Content
+                        .ReadFromJsonAsync<
+                            PaddleCustomerListResponse>(
+                                cancellationToken:
+                                    cancellationToken);
+
+                if (customers?.Data != null &&
+                    customers.Data.Count > 0)
+                {
+                    PaddleCustomerData existing =
+                        customers.Data[0];
+
+                    if (string.IsNullOrWhiteSpace(
+                            existing.Id) ||
+                        string.IsNullOrWhiteSpace(
+                            existing.Email))
+                    {
+                        return CustomerError(
+                            "PADDLE_INVALID_CUSTOMER",
+                            "Paddle returned invalid customer data.");
+                    }
+
+                    if (!string.Equals(
+                            existing.Email,
+                            email,
+                            StringComparison.OrdinalIgnoreCase))
+                    {
+                        return CustomerError(
+                            "PADDLE_CUSTOMER_EMAIL_MISMATCH",
+                            "The Paddle customer email does not match the requested email.");
+                    }
+
+                    return new PaymentCustomerResult
+                    {
+                        Success =
+                            true,
+
+                        CustomerId =
+                            existing.Id,
+
+                        Email =
+                            existing.Email,
+
+                        ErrorCode =
+                            string.Empty,
+
+                        Message =
+                            string.Empty
+                    };
+                }
+
+                return await CreateCustomerAsync(
+                    email,
+                    cancellationToken);
+            }
+            catch (OperationCanceledException)
+                when (!cancellationToken
+                    .IsCancellationRequested)
+            {
+                return CustomerError(
+                    "PADDLE_TIMEOUT",
+                    "The Paddle customer request timed out.");
+            }
+            catch (HttpRequestException)
+            {
+                return CustomerError(
+                    "PADDLE_NETWORK_ERROR",
+                    "The Paddle API could not be reached.");
+            }
+            catch
+            {
+                return CustomerError(
+                    "PADDLE_CUSTOMER_ERROR",
+                    "An unexpected Paddle customer error occurred.");
+            }
+        }
+
+        private async Task<PaymentCustomerResult>
+            CreateCustomerAsync(
+                string email,
+                CancellationToken cancellationToken)
+        {
+            string endpoint =
+                $"{_options.BaseUrl.TrimEnd('/')}/customers";
+
+            var payload =
+                new
+                {
+                    email =
+                        email
+                };
+
+            using var httpRequest =
+                new HttpRequestMessage(
+                    HttpMethod.Post,
+                    endpoint);
+
+            AddAuthorization(
+                httpRequest);
+
+            httpRequest.Content =
+                JsonContent.Create(
+                    payload);
+
+            try
+            {
+                using HttpResponseMessage response =
+                    await _httpClient
+                        .SendAsync(
+                            httpRequest,
+                            cancellationToken);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return CustomerError(
+                        "PADDLE_CUSTOMER_API_ERROR",
+                        $"Paddle returned HTTP {(int)response.StatusCode} while creating the customer.");
+                }
+
+                PaddleCustomerResponse? result =
+                    await response.Content
+                        .ReadFromJsonAsync<
+                            PaddleCustomerResponse>(
+                                cancellationToken:
+                                    cancellationToken);
+
+                PaddleCustomerData? customer =
+                    result?.Data;
+
+                if (customer == null ||
+                    string.IsNullOrWhiteSpace(
+                        customer.Id) ||
+                    string.IsNullOrWhiteSpace(
+                        customer.Email))
+                {
+                    return CustomerError(
+                        "PADDLE_INVALID_CUSTOMER",
+                        "Paddle did not return valid customer data.");
+                }
+
+                if (!string.Equals(
+                        customer.Email,
+                        email,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    return CustomerError(
+                        "PADDLE_CUSTOMER_EMAIL_MISMATCH",
+                        "The created Paddle customer email does not match the requested email.");
+                }
+
+                return new PaymentCustomerResult
+                {
+                    Success =
+                        true,
+
+                    CustomerId =
+                        customer.Id,
+
+                    Email =
+                        customer.Email,
+
+                    ErrorCode =
+                        string.Empty,
+
+                    Message =
+                        string.Empty
+                };
+            }
+            catch (OperationCanceledException)
+                when (!cancellationToken
+                    .IsCancellationRequested)
+            {
+                return CustomerError(
+                    "PADDLE_TIMEOUT",
+                    "The Paddle customer request timed out.");
+            }
+            catch (HttpRequestException)
+            {
+                return CustomerError(
+                    "PADDLE_NETWORK_ERROR",
+                    "The Paddle API could not be reached.");
+            }
+            catch
+            {
+                return CustomerError(
+                    "PADDLE_CUSTOMER_ERROR",
+                    "An unexpected Paddle customer error occurred.");
+            }
+        }
+
+        private async Task<PaymentCustomerResult>
+            GetCustomerByIdAsync(
+                string customerId,
+                CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(
+                    customerId) ||
+                !customerId.StartsWith(
+                    "ctm_",
+                    StringComparison.Ordinal))
+            {
+                return CustomerError(
+                    "INVALID_CUSTOMER_ID",
+                    "The Paddle customer identifier is invalid.");
+            }
+
+            string encodedCustomerId =
+                Uri.EscapeDataString(
+                    customerId);
+
+            string endpoint =
+                $"{_options.BaseUrl.TrimEnd('/')}/customers/{encodedCustomerId}";
+
+            using var httpRequest =
+                new HttpRequestMessage(
+                    HttpMethod.Get,
+                    endpoint);
+
+            AddAuthorization(
+                httpRequest);
+
+            try
+            {
+                using HttpResponseMessage response =
+                    await _httpClient
+                        .SendAsync(
+                            httpRequest,
+                            cancellationToken);
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    return CustomerError(
+                        "PADDLE_CUSTOMER_API_ERROR",
+                        $"Paddle returned HTTP {(int)response.StatusCode} while reading the customer.");
+                }
+
+                PaddleCustomerResponse? result =
+                    await response.Content
+                        .ReadFromJsonAsync<
+                            PaddleCustomerResponse>(
+                                cancellationToken:
+                                    cancellationToken);
+
+                PaddleCustomerData? customer =
+                    result?.Data;
+
+                if (customer == null ||
+                    string.IsNullOrWhiteSpace(
+                        customer.Id) ||
+                    string.IsNullOrWhiteSpace(
+                        customer.Email))
+                {
+                    return CustomerError(
+                        "PADDLE_INVALID_CUSTOMER",
+                        "Paddle did not return valid customer data.");
+                }
+
+                if (!string.Equals(
+                        customer.Id,
+                        customerId,
+                        StringComparison.Ordinal))
+                {
+                    return CustomerError(
+                        "PADDLE_CUSTOMER_MISMATCH",
+                        "The Paddle customer does not match the transaction.");
+                }
+
+                return new PaymentCustomerResult
+                {
+                    Success =
+                        true,
+
+                    CustomerId =
+                        customer.Id,
+
+                    Email =
+                        customer.Email,
+
+                    ErrorCode =
+                        string.Empty,
+
+                    Message =
+                        string.Empty
+                };
+            }
+            catch (OperationCanceledException)
+                when (!cancellationToken
+                    .IsCancellationRequested)
+            {
+                return CustomerError(
+                    "PADDLE_TIMEOUT",
+                    "The Paddle customer request timed out.");
+            }
+            catch (HttpRequestException)
+            {
+                return CustomerError(
+                    "PADDLE_NETWORK_ERROR",
+                    "The Paddle API could not be reached.");
+            }
+            catch
+            {
+                return CustomerError(
+                    "PADDLE_CUSTOMER_ERROR",
+                    "An unexpected Paddle customer error occurred.");
+            }
+        }
+
+        private void AddAuthorization(
+            HttpRequestMessage request)
+        {
+            request.Headers.Authorization =
+                new AuthenticationHeaderValue(
+                    "Bearer",
+                    _options.ApiKey);
         }
 
         private bool IsValidBaseUrl()
@@ -474,6 +879,30 @@ namespace WinBoost.Licensing.Server.Services
             };
         }
 
+        private static PaymentCustomerResult
+            CustomerError(
+                string errorCode,
+                string message)
+        {
+            return new PaymentCustomerResult
+            {
+                Success =
+                    false,
+
+                CustomerId =
+                    string.Empty,
+
+                Email =
+                    string.Empty,
+
+                ErrorCode =
+                    errorCode,
+
+                Message =
+                    message
+            };
+        }
+
         private sealed class
             PaddleTransactionResponse
         {
@@ -545,6 +974,13 @@ namespace WinBoost.Licensing.Server.Services
                 init;
             } = string.Empty;
 
+            [JsonPropertyName("customer_id")]
+            public string CustomerId
+            {
+                get;
+                init;
+            } = string.Empty;
+
             [JsonPropertyName("custom_data")]
             public Dictionary<string, string>?
                 CustomData
@@ -579,6 +1015,48 @@ namespace WinBoost.Licensing.Server.Services
         {
             [JsonPropertyName("id")]
             public string Id
+            {
+                get;
+                init;
+            } = string.Empty;
+        }
+
+        private sealed class
+            PaddleCustomerListResponse
+        {
+            [JsonPropertyName("data")]
+            public List<PaddleCustomerData>?
+                Data
+            {
+                get;
+                init;
+            }
+        }
+
+        private sealed class
+            PaddleCustomerResponse
+        {
+            [JsonPropertyName("data")]
+            public PaddleCustomerData?
+                Data
+            {
+                get;
+                init;
+            }
+        }
+
+        private sealed class
+            PaddleCustomerData
+        {
+            [JsonPropertyName("id")]
+            public string Id
+            {
+                get;
+                init;
+            } = string.Empty;
+
+            [JsonPropertyName("email")]
+            public string Email
             {
                 get;
                 init;
