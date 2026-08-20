@@ -3,6 +3,7 @@ using WinBoost.Licensing.Server.Services;
 using WinBoost.Licensing.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using WinBoost.Licensing.Server.Data;
+using Microsoft.Extensions.Options;
 
 namespace WinBoost.Licensing.Server
 {
@@ -28,15 +29,31 @@ namespace WinBoost.Licensing.Server
               builder.Configuration.GetSection(
                  LicenseOffersOptions.SectionName));
 
+            builder.Services.Configure<PaddleOptions>(
+                     builder.Configuration.GetSection(
+                     PaddleOptions.SectionName));
+
+            builder.Services.Configure<LicenseSigningOptions>(
+                    builder.Configuration.GetSection(
+                    LicenseSigningOptions.SectionName));
+
             builder.Services.AddSingleton<LicenseOffersService>();
 
             builder.Services.AddScoped<PurchaseRepository>();
 
-            builder.Services.AddScoped<
-               IPaymentProvider,
-              UnconfiguredPaymentProvider>();
+            builder.Services.AddScoped<LicenseRepository>();
+
+            builder.Services.AddHttpClient<
+                   IPaymentProvider,
+                   PaddlePaymentProvider>();
 
             builder.Services.AddScoped<PurchaseSessionService>();
+
+            builder.Services.AddScoped<LicenseActivationCheckService>();
+
+            builder.Services.AddScoped<LicenseSigningService>();
+
+            builder.Services.AddScoped<LicenseIssuerService>();
 
             // Add services to the container.
 
@@ -89,6 +106,78 @@ namespace WinBoost.Licensing.Server
 
          return Results.BadRequest(response);
      });
+
+            app.MapGet(
+    "/checkout",
+    (IOptions<PaddleOptions> paddleOptions) =>
+    {
+        string clientSideToken =
+            paddleOptions.Value
+                .ClientSideToken;
+
+        if (string.IsNullOrWhiteSpace(
+                clientSideToken))
+        {
+            return Results.Problem(
+                "Paddle client-side token is not configured.");
+        }
+
+        string encodedToken =
+            System.Text.Encodings.Web
+                .JavaScriptEncoder
+                .Default
+                .Encode(
+                    clientSideToken);
+
+        string html =
+            $$"""
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="utf-8" />
+                <meta name="viewport"
+                      content="width=device-width, initial-scale=1" />
+
+                <title>WinBoost Pro 11 Checkout</title>
+
+                <script src="https://cdn.paddle.com/paddle/v2/paddle.js"></script>
+            </head>
+
+            <body>
+                <h2>WinBoost Pro 11</h2>
+                <p>Secure checkout is loading...</p>
+
+                <script>
+                    Paddle.Environment.set("sandbox");
+
+                    Paddle.Initialize({
+                        token: "{{encodedToken}}"
+                    });
+                </script>
+            </body>
+            </html>
+            """;
+
+        return Results.Content(
+            html,
+            "text/html; charset=utf-8");
+    });
+
+            app.MapPost(
+    "/api/licensing/check-activation",
+    async (
+        LicenseActivationCheckRequest request,
+        LicenseActivationCheckService activationCheckService,
+        CancellationToken cancellationToken) =>
+    {
+        LicenseActivationCheckResponse response =
+            await activationCheckService
+                .VerifyPaymentAsync(
+                    request,
+                    cancellationToken);
+
+        return Results.Ok(response);
+    });
 
             app.Run();
 

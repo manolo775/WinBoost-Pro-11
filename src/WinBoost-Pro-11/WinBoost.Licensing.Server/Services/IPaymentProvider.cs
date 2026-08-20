@@ -11,5 +11,11 @@ namespace WinBoost.Licensing.Server.Services
                 PurchaseSessionRequest request,
                 CancellationToken cancellationToken =
                     default);
+
+        Task<PaymentTransactionStatusResult>
+            GetTransactionStatusAsync(
+                string providerSessionId,
+                CancellationToken cancellationToken =
+                    default);
     }
 }
