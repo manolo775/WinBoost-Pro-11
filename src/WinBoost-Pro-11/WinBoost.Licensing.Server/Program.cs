@@ -4,6 +4,7 @@ using WinBoost.Licensing.Server.Models;
 using Microsoft.EntityFrameworkCore;
 using WinBoost.Licensing.Server.Data;
 using Microsoft.Extensions.Options;
+using System.Text;
 
 namespace WinBoost.Licensing.Server
 {
@@ -37,6 +38,10 @@ namespace WinBoost.Licensing.Server
                     builder.Configuration.GetSection(
                     LicenseSigningOptions.SectionName));
 
+            builder.Services.Configure<PaddleWebhookOptions>(
+                builder.Configuration.GetSection(
+                PaddleWebhookOptions.SectionName));
+
             builder.Services.AddSingleton<LicenseOffersService>();
 
             builder.Services.AddScoped<PurchaseRepository>();
@@ -54,6 +59,8 @@ namespace WinBoost.Licensing.Server
             builder.Services.AddScoped<LicenseSigningService>();
 
             builder.Services.AddScoped<LicenseIssuerService>();
+
+            builder.Services.AddSingleton<PaddleWebhookSignatureVerifier>();
 
             // Add services to the container.
 
@@ -177,6 +184,57 @@ namespace WinBoost.Licensing.Server
                     cancellationToken);
 
         return Results.Ok(response);
+    });
+
+            app.MapPost(
+    "/api/paddle/webhook",
+    async (
+        HttpRequest request,
+        PaddleWebhookSignatureVerifier signatureVerifier) =>
+    {
+        if (!request.Headers.TryGetValue(
+                "Paddle-Signature",
+                out var signatureValues))
+        {
+            return Results.Unauthorized();
+        }
+
+        using var reader =
+            new StreamReader(
+                request.Body,
+                Encoding.UTF8);
+
+        string rawBody =
+            await reader.ReadToEndAsync();
+
+        string signatureHeader =
+            signatureValues.ToString();
+
+        bool isValid =
+       signatureVerifier.Verify(
+           rawBody,
+           signatureHeader,
+           out string failureReason);
+
+        if (!isValid)
+        {
+            return Results.Json(
+                new
+                {
+                    received = true,
+                    signatureValid = false,
+                    reason = failureReason
+                },
+                statusCode:
+                    StatusCodes.Status401Unauthorized);
+        }
+
+        return Results.Ok(
+     new
+     {
+         received = true,
+         signatureValid = true
+     });
     });
 
             app.Run();
