@@ -1,6 +1,8 @@
 using WinBoost.Licensing.Server.Configuration;
 using WinBoost.Licensing.Server.Services;
 using WinBoost.Licensing.Server.Models;
+using Microsoft.EntityFrameworkCore;
+using WinBoost.Licensing.Server.Data;
 
 namespace WinBoost.Licensing.Server
 {
@@ -10,13 +12,31 @@ namespace WinBoost.Licensing.Server
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            string licensingConnectionString =
+                 builder.Configuration
+                .GetConnectionString(
+                "LicensingDatabase")
+                ?? throw new InvalidOperationException(
+                "Licensing database connection string is missing.");
+
+            builder.Services.AddDbContext<LicensingDbContext>(
+                options =>
+                    options.UseSqlite(
+                        licensingConnectionString));
+
             builder.Services.Configure<LicenseOffersOptions>(
               builder.Configuration.GetSection(
                  LicenseOffersOptions.SectionName));
 
             builder.Services.AddSingleton<LicenseOffersService>();
 
-            builder.Services.AddSingleton<PurchaseSessionService>();
+            builder.Services.AddScoped<PurchaseRepository>();
+
+            builder.Services.AddScoped<
+               IPaymentProvider,
+              UnconfiguredPaymentProvider>();
+
+            builder.Services.AddScoped<PurchaseSessionService>();
 
             // Add services to the container.
 
@@ -50,22 +70,25 @@ namespace WinBoost.Licensing.Server
                  });
 
             app.MapPost(
-    "/api/licensing/purchase-session",
-    (
-        PurchaseSessionRequest request,
-        PurchaseSessionService purchaseSessionService) =>
-    {
-        PurchaseSessionResponse response =
-            purchaseSessionService
-                .CreatePurchaseSession(request);
+     "/api/licensing/purchase-session",
+     async (
+         PurchaseSessionRequest request,
+         PurchaseSessionService purchaseSessionService,
+         CancellationToken cancellationToken) =>
+     {
+         PurchaseSessionResponse response =
+             await purchaseSessionService
+                 .CreatePurchaseSessionAsync(
+                     request,
+                     cancellationToken);
 
-        if (response.Success)
-        {
-            return Results.Ok(response);
-        }
+         if (response.Success)
+         {
+             return Results.Ok(response);
+         }
 
-        return Results.BadRequest(response);
-    });
+         return Results.BadRequest(response);
+     });
 
             app.Run();
 

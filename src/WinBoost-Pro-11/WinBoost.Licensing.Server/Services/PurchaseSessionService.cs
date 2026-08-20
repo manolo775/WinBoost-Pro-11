@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Net.Mail;
+using System.Threading;
+using System.Threading.Tasks;
+using WinBoost.Licensing.Server.Data;
 using WinBoost.Licensing.Server.Models;
 
 namespace WinBoost.Licensing.Server.Services
@@ -13,16 +16,32 @@ namespace WinBoost.Licensing.Server.Services
         private readonly LicenseOffersService
             _licenseOffersService;
 
+        private readonly IPaymentProvider
+            _paymentProvider;
+
+        private readonly PurchaseRepository
+            _purchaseRepository;
+
         public PurchaseSessionService(
-            LicenseOffersService licenseOffersService)
+            LicenseOffersService licenseOffersService,
+            IPaymentProvider paymentProvider,
+            PurchaseRepository purchaseRepository)
         {
             _licenseOffersService =
                 licenseOffersService;
+
+            _paymentProvider =
+                paymentProvider;
+
+            _purchaseRepository =
+                purchaseRepository;
         }
 
-        public PurchaseSessionResponse
-            CreatePurchaseSession(
-                PurchaseSessionRequest request)
+        public async Task<PurchaseSessionResponse>
+            CreatePurchaseSessionAsync(
+                PurchaseSessionRequest request,
+                CancellationToken cancellationToken =
+                    default)
         {
             if (request == null)
             {
@@ -43,7 +62,7 @@ namespace WinBoost.Licensing.Server.Services
             }
 
             if (string.IsNullOrWhiteSpace(
-                request.DeviceId))
+                    request.DeviceId))
             {
                 return Error(
                     "INVALID_DEVICE",
@@ -51,9 +70,9 @@ namespace WinBoost.Licensing.Server.Services
             }
 
             if (!string.Equals(
-                request.ProductName,
-                ProductName,
-                StringComparison.Ordinal))
+                    request.ProductName,
+                    ProductName,
+                    StringComparison.Ordinal))
             {
                 return Error(
                     "INVALID_PRODUCT",
@@ -68,10 +87,9 @@ namespace WinBoost.Licensing.Server.Services
                     "License plan is invalid.");
             }
 
-            LicenseOffersResponse
-                offersResponse =
-                    _licenseOffersService
-                        .GetCurrentOffers();
+            LicenseOffersResponse offersResponse =
+                _licenseOffersService
+                    .GetCurrentOffers();
 
             bool planAvailable =
                 offersResponse.Offers.Any(
@@ -87,9 +105,73 @@ namespace WinBoost.Licensing.Server.Services
                     "The selected license plan is not available.");
             }
 
-            return Error(
-                "PAYMENT_PROVIDER_NOT_CONFIGURED",
-                "The payment provider is not configured yet.");
+            PaymentCheckoutResult checkout =
+                await _paymentProvider
+                    .CreateCheckoutAsync(
+                        request,
+                        cancellationToken);
+
+            if (!checkout.Success)
+            {
+                return Error(
+                    checkout.ErrorCode,
+                    checkout.Message);
+            }
+
+            if (string.IsNullOrWhiteSpace(
+                    checkout.ProviderSessionId))
+            {
+                return Error(
+                    "INVALID_PROVIDER_RESPONSE",
+                    "The payment provider did not return a session identifier.");
+            }
+
+            if (!IsValidCheckoutUrl(
+                    checkout.CheckoutUrl))
+            {
+                return Error(
+                    "INVALID_CHECKOUT_URL",
+                    "The payment provider returned an invalid checkout URL.");
+            }
+
+            try
+            {
+                await _purchaseRepository
+                    .CreatePendingAsync(
+                        checkout.ProviderSessionId,
+                        email,
+                        request.DeviceId,
+                        ProductName,
+                        request.Plan,
+                        _paymentProvider
+                            .GetType()
+                            .Name,
+                        cancellationToken);
+            }
+            catch
+            {
+                return Error(
+                    "DATABASE_ERROR",
+                    "The purchase session could not be saved.");
+            }
+
+            return new PurchaseSessionResponse
+            {
+                Success =
+                    true,
+
+                CheckoutUrl =
+                    checkout.CheckoutUrl,
+
+                SessionId =
+                    checkout.ProviderSessionId,
+
+                ErrorCode =
+                    string.Empty,
+
+                Message =
+                    string.Empty
+            };
         }
 
         private static bool IsValidEmail(
@@ -102,6 +184,17 @@ namespace WinBoost.Licensing.Server.Services
                     address.Address,
                     email,
                     StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsValidCheckoutUrl(
+            string checkoutUrl)
+        {
+            return Uri.TryCreate(
+                checkoutUrl,
+                UriKind.Absolute,
+                out Uri? uri) &&
+                uri.Scheme ==
+                    Uri.UriSchemeHttps;
         }
 
         private static PurchaseSessionResponse
@@ -121,10 +214,10 @@ namespace WinBoost.Licensing.Server.Services
                     string.Empty,
 
                 ErrorCode =
-                    errorCode,
+                    errorCode ?? string.Empty,
 
                 Message =
-                    message
+                    message ?? string.Empty
             };
         }
     }

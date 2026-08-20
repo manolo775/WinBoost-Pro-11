@@ -11,3 +11,7 @@ obj/
 
 # Rider
 .idea/
+# WinBoost Licensing Server - local SQLite database
+winboost-licensing.db
+winboost-licensing.db-shm
+winboost-licensing.db-wal
