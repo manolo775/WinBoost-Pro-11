@@ -2780,8 +2780,6 @@
 	<sys:String x:Key="LicensePlanOneYear">1 an</sys:String>
 	<sys:String x:Key="LicensePlanUnknown">Plan indisponibil</sys:String>
 
-	
-	
 
 	<sys:String x:Key="SettingsLicensePlanLabel">Plan de licență</sys:String>
 	<sys:String x:Key="SettingsLicenseOffersLoading">Se încarcă ofertele disponibile...</sys:String>
@@ -2805,6 +2803,10 @@
 
 	<sys:String x:Key="SettingsLicensePaymentProviderNotConfigured">
 		Procesatorul de plăți WinBoost nu este configurat încă.
+	</sys:String>
+
+	<sys:String x:Key="SettingsLicenseAlreadyActiveMessage">
+		Acest dispozitiv are deja o licență WinBoost Pro 11 activă. Nu este necesară achiziționarea unei alte licențe.
 	</sys:String>
 	
 </ResourceDictionary>

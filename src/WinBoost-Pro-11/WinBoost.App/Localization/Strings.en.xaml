@@ -2800,5 +2800,9 @@
 	<sys:String x:Key="SettingsLicensePaymentProviderNotConfigured">
 		The WinBoost payment provider is not configured yet.
 	</sys:String>
+
+	<sys:String x:Key="SettingsLicenseAlreadyActiveMessage">
+		This device already has an active WinBoost Pro 11 license. There is no need to purchase another license.
+	</sys:String>
 	
 </ResourceDictionary>

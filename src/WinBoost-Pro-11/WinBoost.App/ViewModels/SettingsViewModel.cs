@@ -933,30 +933,35 @@ namespace WinBoost.App.ViewModels
 
             if (response.Success)
             {
+                _ = WaitForAutomaticLicenseActivationAsync();
+
                 return;
             }
 
             string messageKey =
-                response.ErrorCode switch
-                {
-                    "SERVER_NOT_CONFIGURED" =>
-                        "SettingsLicenseServerNotConfigured",
+    response.ErrorCode switch
+    {
+        "ACTIVE_LICENSE_EXISTS" =>
+            "SettingsLicenseAlreadyActiveMessage",
 
-                    "PAYMENT_PROVIDER_NOT_CONFIGURED" =>
-                        "SettingsLicensePaymentProviderNotConfigured",
+        "SERVER_NOT_CONFIGURED" =>
+            "SettingsLicenseServerNotConfigured",
 
-                    "NETWORK_ERROR" =>
-                        "SettingsLicenseNetworkError",
+        "PAYMENT_PROVIDER_NOT_CONFIGURED" =>
+            "SettingsLicensePaymentProviderNotConfigured",
 
-                    "REQUEST_TIMEOUT" =>
-                        "SettingsLicenseTimeoutError",
+        "NETWORK_ERROR" =>
+            "SettingsLicenseNetworkError",
 
-                    "INVALID_CHECKOUT_URL" =>
-                        "SettingsLicenseCheckoutError",
+        "REQUEST_TIMEOUT" =>
+            "SettingsLicenseTimeoutError",
 
-                    _ =>
-                        "SettingsLicensePurchaseError"
-                };
+        "INVALID_CHECKOUT_URL" =>
+            "SettingsLicenseCheckoutError",
+
+        _ =>
+            "SettingsLicensePurchaseError"
+    };
 
             NativeMessageDialog.Show(
                 Application.Current.MainWindow,
@@ -966,6 +971,67 @@ namespace WinBoost.App.ViewModels
                     messageKey),
                 LocalizationHelper.Get(
                     "CommonClose"));
+        }
+
+        private async Task WaitForAutomaticLicenseActivationAsync()
+        {
+            const int maximumAttempts =
+                120;
+
+            TimeSpan delay =
+                TimeSpan.FromSeconds(5);
+
+            for (int attempt = 0;
+                 attempt < maximumAttempts;
+                 attempt++)
+            {
+                if (!_pendingPurchaseService
+                        .HasPendingPurchase)
+                {
+                    return;
+                }
+
+                await Task.Delay(
+                    delay);
+
+                LicenseActivationResult result =
+                    await _licenseActivationCheckService
+                        .CheckActivationAsync();
+
+                if (result.Status ==
+                    LicenseActivationStatus.Success)
+                {
+                    NativeMessageDialog.Show(
+                        Application.Current.MainWindow,
+                        LocalizationHelper.Get(
+                            "SettingsLicenseActivationSuccessTitle"),
+                        LocalizationHelper.Get(
+                            "SettingsLicenseActivationSuccessMessage"),
+                        LocalizationHelper.Get(
+                            "CommonClose"));
+
+                    return;
+                }
+
+                if (result.Status ==
+                    LicenseActivationStatus.PaymentPending)
+                {
+                    continue;
+                }
+
+                if (result.Status ==
+                        LicenseActivationStatus.NetworkError ||
+                    result.Status ==
+                        LicenseActivationStatus.ServerUnavailable)
+                {
+                    continue;
+                }
+
+                // Pentru orice altă eroare păstrăm
+                // achiziția pending și butonul manual
+                // "Verifică activarea" rămâne disponibil.
+                return;
+            }
         }
 
         private async Task CheckLicenseActivationAsync()
