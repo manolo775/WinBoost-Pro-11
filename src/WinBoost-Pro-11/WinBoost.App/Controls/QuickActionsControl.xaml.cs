@@ -46,6 +46,15 @@ namespace WinBoost.App.Controls
                 arguments);
         }
 
+        private bool EnsureLicensedAccess()
+        {
+            Window? window =
+                Window.GetWindow(this);
+
+            return window is MainWindow mainWindow &&
+                   mainWindow.EnsureLicensedAccess();
+        }
+
         private void OpenStartupButton_Click(
             object sender,
             RoutedEventArgs e)
@@ -78,6 +87,11 @@ namespace WinBoost.App.Controls
         {
             if (_isCleaningTempFiles ||
                 _isOptimizingSystem)
+            {
+                return;
+            }
+
+            if (!EnsureLicensedAccess())
             {
                 return;
             }
@@ -146,6 +160,11 @@ namespace WinBoost.App.Controls
         {
             if (_isOptimizingSystem ||
                 _isCleaningTempFiles)
+            {
+                return;
+            }
+
+            if (!EnsureLicensedAccess())
             {
                 return;
             }

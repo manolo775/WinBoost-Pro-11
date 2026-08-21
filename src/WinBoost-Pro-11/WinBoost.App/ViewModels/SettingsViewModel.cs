@@ -100,6 +100,9 @@ namespace WinBoost.App.ViewModels
             _licenseService.LicenseChanged +=
                 OnLicenseChanged;
 
+            _licenseService.PropertyChanged +=
+                OnLicenseServicePropertyChanged;
+
             _pendingPurchaseService.PendingPurchaseChanged +=
                 OnPendingPurchaseChanged;
 
@@ -161,6 +164,36 @@ namespace WinBoost.App.ViewModels
           LicenseDisplayHelper.GetStatusText(
         _licenseService.Status);
 
+        public bool IsTrialCountdownVisible =>
+     _licenseService.Status ==
+         LicenseStatus.Trial &&
+     _licenseService.RemainingTime.HasValue;
+
+        public string TrialRemainingTimeText
+        {
+            get
+            {
+                TimeSpan? remaining =
+                    _licenseService.RemainingTime;
+
+                if (!remaining.HasValue)
+                {
+                    return string.Empty;
+                }
+
+                int hours =
+                    Math.Max(
+                        0,
+                        (int)Math.Floor(
+                            remaining.Value.TotalHours));
+
+                return string.Format(
+                    "{0:00}:{1:00}:{2:00}",
+                    hours,
+                    remaining.Value.Minutes,
+                    remaining.Value.Seconds);
+            }
+        }
 
         public string CustomerEmailInput
         {
@@ -1099,12 +1132,35 @@ namespace WinBoost.App.ViewModels
                 nameof(CanCheckLicenseActivation));
         }
 
+        private void OnLicenseServicePropertyChanged(
+    object? sender,
+    PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName ==
+                    nameof(LicenseService.RemainingTime) ||
+                e.PropertyName ==
+                    nameof(LicenseService.IsActive))
+            {
+                OnPropertyChanged(
+                    nameof(TrialRemainingTimeText));
+
+                OnPropertyChanged(
+                    nameof(IsTrialCountdownVisible));
+            }
+        }
+
         private void OnLicenseChanged(
-           object? sender,
-           EventArgs e)
+            object? sender,
+            EventArgs e)
         {
             OnPropertyChanged(
                 nameof(LicenseStatusText));
+
+            OnPropertyChanged(
+                nameof(TrialRemainingTimeText));
+
+            OnPropertyChanged(
+                nameof(IsTrialCountdownVisible));
 
             OnPropertyChanged(
                 nameof(CanStartLicensePurchase));

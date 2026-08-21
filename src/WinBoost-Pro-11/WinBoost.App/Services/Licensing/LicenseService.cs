@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Threading;
 using WinBoost.App.Models;
 
 namespace WinBoost.App.Services.Licensing
@@ -20,6 +21,9 @@ namespace WinBoost.App.Services.Licensing
         private readonly LicenseResponseValidator
             _licenseResponseValidator;
 
+        private readonly DispatcherTimer
+            _expirationTimer;
+
         private LicenseInfo
             _currentLicense;
 
@@ -36,6 +40,18 @@ namespace WinBoost.App.Services.Licensing
 
             _currentLicense =
                 LoadVerifiedLicense();
+
+            _expirationTimer =
+                new DispatcherTimer
+                {
+                    Interval =
+                        TimeSpan.FromSeconds(1)
+                };
+
+            _expirationTimer.Tick +=
+                ExpirationTimer_Tick;
+
+            _expirationTimer.Start();
         }
 
         public static LicenseService Instance =>
@@ -52,6 +68,9 @@ namespace WinBoost.App.Services.Licensing
 
         public int? RemainingDays =>
             _currentLicense.RemainingDays;
+
+        public TimeSpan? RemainingTime =>
+            _currentLicense.RemainingTime;
 
         public event EventHandler?
             LicenseChanged;
@@ -96,6 +115,71 @@ namespace WinBoost.App.Services.Licensing
                 LoadVerifiedLicense();
 
             OnLicenseChanged();
+        }
+
+        public bool RefreshExpirationStatus()
+        {
+            if (_currentLicense.Status !=
+                    LicenseStatus.Trial &&
+                _currentLicense.Status !=
+                    LicenseStatus.Licensed)
+            {
+                return false;
+            }
+
+            if (!_currentLicense.ExpiresAt.HasValue)
+            {
+                return false;
+            }
+
+            if (_currentLicense.ExpiresAt.Value
+                    .ToUniversalTime() >
+                DateTime.UtcNow)
+            {
+                return false;
+            }
+
+            _currentLicense.Status =
+                LicenseStatus.Expired;
+
+            TryUpdateLocalCache(
+                _currentLicense);
+
+            OnLicenseChanged();
+
+            return true;
+        }
+
+        private void ExpirationTimer_Tick(
+            object? sender,
+            EventArgs e)
+        {
+            if (_currentLicense.Status !=
+                    LicenseStatus.Trial &&
+                _currentLicense.Status !=
+                    LicenseStatus.Licensed)
+            {
+                return;
+            }
+
+            if (!_currentLicense.ExpiresAt.HasValue)
+            {
+                return;
+            }
+
+            if (RefreshExpirationStatus())
+            {
+                return;
+            }
+
+            OnPropertyChanged(
+                nameof(RemainingTime));
+
+            OnPropertyChanged(
+                nameof(RemainingDays));
+
+            OnPropertyChanged(
+                nameof(IsActive));
         }
 
         private LicenseInfo LoadVerifiedLicense()
@@ -255,6 +339,9 @@ namespace WinBoost.App.Services.Licensing
 
             OnPropertyChanged(
                 nameof(RemainingDays));
+
+            OnPropertyChanged(
+                nameof(RemainingTime));
 
             LicenseChanged?.Invoke(
                 this,

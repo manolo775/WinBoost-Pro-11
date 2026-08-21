@@ -2816,5 +2816,9 @@
 	<sys:String x:Key="LicenseRequiredMessage">
 		Această funcție necesită o licență WinBoost Pro 11 activă. Activează sau achiziționează o licență din Setări.
 	</sys:String>
+
+	<sys:String x:Key="SettingsTrialRemainingTime">
+		Timp rămas perioadă probă
+	</sys:String>
 	
 </ResourceDictionary>

@@ -113,7 +113,7 @@ namespace WinBoost.App
         // LICENSE ACCESS
         // ======================================
 
-        private bool EnsureLicensedAccess()
+        public bool EnsureLicensedAccess()
         {
             if (_licenseService.IsActive)
             {

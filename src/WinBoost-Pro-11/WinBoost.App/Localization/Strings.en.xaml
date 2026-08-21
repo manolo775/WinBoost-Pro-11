@@ -2812,5 +2812,9 @@
 	<sys:String x:Key="LicenseRequiredMessage">
 		This feature requires an active WinBoost Pro 11 license. Activate or purchase a license from Settings.
 	</sys:String>
+
+	<sys:String x:Key="SettingsTrialRemainingTime">
+		Trial time remaining
+	</sys:String>
 	
 </ResourceDictionary>

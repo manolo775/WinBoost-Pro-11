@@ -65,20 +65,24 @@ namespace WinBoost.App.Models
                 if (Status == LicenseStatus.Licensed)
                 {
                     return !ExpiresAt.HasValue ||
-                           ExpiresAt.Value > DateTime.Now;
+                           ExpiresAt.Value
+                               .ToUniversalTime() >
+                           DateTime.UtcNow;
                 }
 
                 if (Status == LicenseStatus.Trial)
                 {
                     return ExpiresAt.HasValue &&
-                           ExpiresAt.Value > DateTime.Now;
+                           ExpiresAt.Value
+                               .ToUniversalTime() >
+                           DateTime.UtcNow;
                 }
 
                 return false;
             }
         }
 
-        public int? RemainingDays
+        public TimeSpan? RemainingTime
         {
             get
             {
@@ -88,12 +92,35 @@ namespace WinBoost.App.Models
                 }
 
                 TimeSpan remaining =
-                    ExpiresAt.Value.Date -
-                    DateTime.Now.Date;
+                    ExpiresAt.Value
+                        .ToUniversalTime() -
+                    DateTime.UtcNow;
+
+                if (remaining <= TimeSpan.Zero)
+                {
+                    return TimeSpan.Zero;
+                }
+
+                return remaining;
+            }
+        }
+
+        public int? RemainingDays
+        {
+            get
+            {
+                TimeSpan? remaining =
+                    RemainingTime;
+
+                if (!remaining.HasValue)
+                {
+                    return null;
+                }
 
                 return Math.Max(
                     0,
-                    remaining.Days);
+                    (int)Math.Ceiling(
+                        remaining.Value.TotalDays));
             }
         }
     }

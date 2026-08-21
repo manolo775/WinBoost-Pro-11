@@ -1273,11 +1273,12 @@
 						<Grid>
 
 							<Grid.ColumnDefinitions>
-								<ColumnDefinition Width="180"/>
+								<ColumnDefinition Width="250"/>
 								<ColumnDefinition Width="*"/>
 							</Grid.ColumnDefinitions>
 
 							<Grid.RowDefinitions>
+								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
 								<RowDefinition Height="Auto"/>
@@ -1342,6 +1343,79 @@
 								FontWeight="SemiBold"
 								Foreground="#FFD740"/>
 
+							<!-- TIMP RĂMAS TRIAL -->
+
+							<TextBlock
+								Grid.Row="4"
+								Grid.Column="0"
+								Margin="0,10,0,0"
+								Text="{DynamicResource SettingsTrialRemainingTime}"
+								Foreground="#BDBDBD">
+
+								<TextBlock.Style>
+
+									<Style TargetType="TextBlock">
+
+										<Setter
+											Property="Visibility"
+											Value="Collapsed"/>
+
+										<Style.Triggers>
+
+											<DataTrigger
+												Binding="{Binding IsTrialCountdownVisible}"
+												Value="True">
+
+												<Setter
+													Property="Visibility"
+													Value="Visible"/>
+
+											</DataTrigger>
+
+										</Style.Triggers>
+
+									</Style>
+
+								</TextBlock.Style>
+
+							</TextBlock>
+
+							<TextBlock
+								Grid.Row="4"
+								Grid.Column="1"
+								Margin="0,10,0,0"
+								Text="{Binding TrialRemainingTimeText}"
+								FontSize="16"
+								FontWeight="SemiBold"
+								Foreground="#FFD740">
+
+								<TextBlock.Style>
+
+									<Style TargetType="TextBlock">
+
+										<Setter
+											Property="Visibility"
+											Value="Collapsed"/>
+
+										<Style.Triggers>
+
+											<DataTrigger
+												Binding="{Binding IsTrialCountdownVisible}"
+												Value="True">
+
+												<Setter
+													Property="Visibility"
+													Value="Visible"/>
+
+											</DataTrigger>
+
+										</Style.Triggers>
+
+									</Style>
+
+								</TextBlock.Style>
+
+							</TextBlock>
 						</Grid>
 
 					</StackPanel>
