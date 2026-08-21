@@ -9,10 +9,10 @@
 		<ApplicationManifest></ApplicationManifest>
 
 		<!-- VERSIONING -->
-		<Version>1.0.0-preview.1</Version>
+		<Version>1.0.0-preview.2</Version>
 		<AssemblyVersion>1.0.0.0</AssemblyVersion>
 		<FileVersion>1.0.0.0</FileVersion>
-		<InformationalVersion>1.0.0-preview.1</InformationalVersion>
+		<InformationalVersion>1.0.0-preview.2</InformationalVersion>
 		<IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
 
 		<!-- BRANDING -->
@@ -45,8 +45,9 @@
 	<ItemGroup>
 		<ProjectReference Include="..\WinBoost.UpdateWorker\WinBoost.UpdateWorker.csproj" />
 		<ProjectReference Include="..\WinBoost.RecoveryWorker\WinBoost.RecoveryWorker.csproj" />
+		<ProjectReference Include="..\WinBoost.SelfUpdateWorker\WinBoost.SelfUpdateWorker.csproj" />
 	</ItemGroup>
-
+	
 	<ItemGroup>
 		<Resource Include="Assets\Flags\gb.png" />
 		<Resource Include="Assets\Flags\ro.png" />

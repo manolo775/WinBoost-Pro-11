@@ -2729,6 +2729,23 @@
 	</sys:String>
 
 	<sys:String x:Key="SettingsAboutTitle">Despre WinBoost</sys:String>
+	<sys:String x:Key="SettingsUpdateTitle">Actualizări WinBoost</sys:String>
+	<sys:String x:Key="SettingsUpdateCheckButton">Verifică actualizări</sys:String>
+	<sys:String x:Key="SettingsUpdateChecking">Se verifică actualizările...</sys:String>
+	<sys:String x:Key="SettingsUpdateUpToDate">WinBoost este actualizat.</sys:String>
+	<sys:String x:Key="SettingsUpdateAvailable">Este disponibilă versiunea {0}.</sys:String>
+	<sys:String x:Key="SettingsUpdateUnavailable">Serverul de actualizare nu este disponibil.</sys:String>
+	<sys:String x:Key="SettingsUpdateFailed">Verificarea actualizării a eșuat.</sys:String>
+	<sys:String x:Key="SettingsUpdateAvailableVersion">Versiune disponibilă</sys:String>
+	<sys:String x:Key="SettingsUpdateDownloadButton">Descarcă actualizarea</sys:String>
+	<sys:String x:Key="SettingsUpdateDownloading">Se descarcă actualizarea...</sys:String>
+	<sys:String x:Key="SettingsUpdateDownloadVerified">Actualizarea a fost descărcată și verificată.</sys:String>
+	<sys:String x:Key="SettingsUpdateHashMismatch">Actualizarea descărcată nu a trecut verificarea de integritate.</sys:String>
+	<sys:String x:Key="SettingsUpdateDownloadFailed">Descărcarea actualizării a eșuat.</sys:String>
+	<sys:String x:Key="SettingsUpdateInstallButton">Instalează actualizarea</sys:String>
+	<sys:String x:Key="SettingsUpdateInstalling">Se instalează actualizarea...</sys:String>
+	<sys:String x:Key="SettingsUpdateReadyToInstall">Actualizarea este pregătită pentru instalare.</sys:String>
+	
 	<sys:String x:Key="SettingsAboutDescription">Informații despre aplicație și versiunea instalată.</sys:String>
 	<sys:String x:Key="SettingsAboutProduct">Produs</sys:String>
 	<sys:String x:Key="SettingsAboutVersion">Versiune</sys:String>

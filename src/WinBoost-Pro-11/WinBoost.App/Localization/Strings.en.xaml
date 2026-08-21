@@ -2725,6 +2725,23 @@
 	</sys:String>
 
 	<sys:String x:Key="SettingsAboutTitle">About WinBoost</sys:String>
+	<sys:String x:Key="SettingsUpdateTitle">WinBoost Updates</sys:String>
+	<sys:String x:Key="SettingsUpdateCheckButton">Check for updates</sys:String>
+	<sys:String x:Key="SettingsUpdateChecking">Checking for updates...</sys:String>
+	<sys:String x:Key="SettingsUpdateUpToDate">WinBoost is up to date.</sys:String>
+	<sys:String x:Key="SettingsUpdateAvailable">Version {0} is available.</sys:String>
+	<sys:String x:Key="SettingsUpdateUnavailable">The update server is unavailable.</sys:String>
+	<sys:String x:Key="SettingsUpdateFailed">The update check failed.</sys:String>
+	<sys:String x:Key="SettingsUpdateAvailableVersion">Available version</sys:String>
+	<sys:String x:Key="SettingsUpdateDownloadButton">Download update</sys:String>
+	<sys:String x:Key="SettingsUpdateDownloading">Downloading update...</sys:String>
+	<sys:String x:Key="SettingsUpdateDownloadVerified">The update was downloaded and verified.</sys:String>
+	<sys:String x:Key="SettingsUpdateHashMismatch">The downloaded update failed integrity verification.</sys:String>
+	<sys:String x:Key="SettingsUpdateDownloadFailed">The update download failed.</sys:String>
+	<sys:String x:Key="SettingsUpdateInstallButton">Install update</sys:String>
+	<sys:String x:Key="SettingsUpdateInstalling">Installing update...</sys:String>
+	<sys:String x:Key="SettingsUpdateReadyToInstall">The update is ready to install.</sys:String>
+	
 	<sys:String x:Key="SettingsAboutDescription">Information about the application and installed version.</sys:String>
 	<sys:String x:Key="SettingsAboutProduct">Product</sys:String>
 	<sys:String x:Key="SettingsAboutVersion">Version</sys:String>

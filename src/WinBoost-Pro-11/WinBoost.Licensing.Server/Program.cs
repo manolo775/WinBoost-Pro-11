@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using System.Text;
+using System.IO.Compression;
 using WinBoost.Licensing.Server.Configuration;
 using WinBoost.Licensing.Server.Data;
 using WinBoost.Licensing.Server.Models;
@@ -47,6 +48,11 @@ namespace WinBoost.Licensing.Server
                 .Configure<PaddleWebhookOptions>(
                     builder.Configuration.GetSection(
                         PaddleWebhookOptions.SectionName));
+
+            builder.Services
+                 .Configure<UpdateManifestOptions>(
+                  builder.Configuration.GetSection(
+                  UpdateManifestOptions.SectionName));
 
             builder.Services
                 .AddSingleton<LicenseOffersService>();
@@ -465,7 +471,71 @@ namespace WinBoost.Licensing.Server
                  transactionId
              });
      });
-        
+
+            // ======================================
+            // WINBOOST APPLICATION UPDATE MANIFEST
+            // ======================================
+
+            app.MapGet(
+                "/api/update/manifest",
+                (
+                    IOptions<UpdateManifestOptions>
+                        updateManifestOptions) =>
+                {
+                    UpdateManifestOptions manifest =
+                        updateManifestOptions.Value;
+
+                    if (string.IsNullOrWhiteSpace(
+                            manifest.Version))
+                    {
+                        return Results.Problem(
+                            "Update manifest version is not configured.");
+                    }
+
+                    return Results.Ok(
+                        new
+                        {
+                            version =
+                                manifest.Version,
+
+                            channel =
+                                manifest.Channel,
+
+                            downloadUrl =
+                                manifest.DownloadUrl,
+
+                            sha256 =
+                                manifest.Sha256,
+
+                            releaseNotes =
+                                manifest.ReleaseNotes
+                        });
+                });
+            // ======================================
+            // TEMPORARY PREVIEW UPDATE PACKAGE
+            // ======================================
+
+            app.MapGet(
+                "/api/update/package/preview-2",
+                () =>
+                {
+                    string packagePath =
+                        Path.Combine(
+                            Path.GetTempPath(),
+                            "WinBoost",
+                            "WinBoost-1.0.0-preview.2.zip");
+
+                    if (!File.Exists(packagePath))
+                    {
+                        return Results.NotFound(
+                            "WinBoost preview update package was not found.");
+                    }
+
+                    return Results.File(
+                        packagePath,
+                        "application/zip",
+                        "WinBoost-1.0.0-preview.2.zip");
+                });
 
             app.Run();
         }

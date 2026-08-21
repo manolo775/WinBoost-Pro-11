@@ -1,20 +1,22 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.Linq;
+using System.Net.Mail;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using WinBoost.App.Models;
 using WinBoost.App.Commands;
 using WinBoost.App.Helpers;
 using WinBoost.App.Localization;
+using WinBoost.App.Models;
 using WinBoost.App.Services.Alerts;
+using WinBoost.App.Services.AppUpdate;
 using WinBoost.App.Services.History;
 using WinBoost.App.Services.Licensing;
-using System.Net.Mail;
-using System.Collections.ObjectModel;
-using System.Collections.Generic;
-using System.Linq;
 
 
 namespace WinBoost.App.ViewModels
@@ -51,6 +53,29 @@ namespace WinBoost.App.ViewModels
 
         private readonly LicenseActivationCheckService
             _licenseActivationCheckService;
+
+        private readonly WinBoostUpdateService
+             _winBoostUpdateService;
+
+        private readonly WinBoostUpdateDownloadService
+             _winBoostUpdateDownloadService;
+
+        private readonly WinBoostSelfUpdateLauncher
+             _winBoostSelfUpdateLauncher;
+
+        private WinBoostUpdateDownloadResult
+            _winBoostUpdateDownloadResult =
+                new WinBoostUpdateDownloadResult();
+
+        private bool
+            _isDownloadingWinBoostUpdate;
+
+        private WinBoostUpdateCheckResult
+            _winBoostUpdateResult =
+                new WinBoostUpdateCheckResult();
+
+        private bool
+            _isCheckingForWinBoostUpdate;
 
         private string _customerEmailInput =
                 string.Empty;
@@ -93,6 +118,15 @@ namespace WinBoost.App.ViewModels
             _licenseActivationCheckService =
                 new LicenseActivationCheckService();
 
+            _winBoostUpdateService =
+                 new WinBoostUpdateService();
+
+            _winBoostUpdateDownloadService =
+                 new WinBoostUpdateDownloadService();
+
+            _winBoostSelfUpdateLauncher =
+                 new WinBoostSelfUpdateLauncher();
+
             AvailableLicenseOffers =
                 new ObservableCollection<
                     LicenseOfferDisplayItem>();
@@ -129,6 +163,21 @@ namespace WinBoost.App.ViewModels
                 new RelayCommand(
                     async _ =>
                         await CheckLicenseActivationAsync());
+
+            CheckWinBoostUpdateCommand =
+                 new RelayCommand(
+                     async _ =>
+                          await CheckWinBoostUpdateAsync());
+
+            DownloadWinBoostUpdateCommand =
+                new RelayCommand(
+                      async _ =>
+                      await DownloadWinBoostUpdateAsync());
+
+            InstallWinBoostUpdateCommand =
+                 new RelayCommand(
+                      _ =>
+            StartWinBoostUpdateInstallation());
 
             RestartWithDifferentPrivilegesCommand =
                 new RelayCommand(
@@ -210,6 +259,12 @@ namespace WinBoost.App.ViewModels
                     value;
 
                 OnPropertyChanged();
+
+                OnPropertyChanged(
+                    nameof(WinBoostUpdateStatusText));
+
+                OnPropertyChanged(
+                    nameof(CheckWinBoostUpdateButtonText));
 
                 OnPropertyChanged(
                     nameof(CanStartLicensePurchase));
@@ -341,6 +396,191 @@ namespace WinBoost.App.ViewModels
             get;
         }
 
+        public ICommand CheckWinBoostUpdateCommand
+        {
+            get;
+        }
+
+        public ICommand DownloadWinBoostUpdateCommand
+        {
+            get;
+        }
+
+        public ICommand InstallWinBoostUpdateCommand
+        {
+            get;
+        }
+
+        public bool IsDownloadingWinBoostUpdate
+        {
+            get => _isDownloadingWinBoostUpdate;
+
+            private set
+            {
+                if (_isDownloadingWinBoostUpdate == value)
+                {
+                    return;
+                }
+
+                _isDownloadingWinBoostUpdate =
+                    value;
+
+                OnPropertyChanged();
+
+                OnPropertyChanged(
+                    nameof(CanDownloadWinBoostUpdate));
+
+                OnPropertyChanged(
+                    nameof(WinBoostUpdateDownloadStatusText));
+
+                OnPropertyChanged(
+                    nameof(DownloadWinBoostUpdateButtonText));
+
+                OnPropertyChanged(nameof(CanCheckWinBoostUpdate));
+            }
+        }
+
+        public bool CanDownloadWinBoostUpdate =>
+           IsWinBoostUpdateAvailable &&
+           !IsDownloadingWinBoostUpdate &&
+           !_winBoostUpdateDownloadResult.Success &&
+           !string.IsNullOrWhiteSpace(
+               _winBoostUpdateResult.DownloadUrl) &&
+           !string.IsNullOrWhiteSpace(
+               _winBoostUpdateResult.Sha256);
+
+        public bool WinBoostUpdateDownloadSucceeded =>
+            _winBoostUpdateDownloadResult.Success;
+
+        public bool CanInstallWinBoostUpdate =>
+              _winBoostUpdateDownloadResult.Success &&
+              !string.IsNullOrWhiteSpace(
+        _winBoostUpdateDownloadResult.FilePath);
+
+        public bool CanCheckWinBoostUpdate =>
+    !IsCheckingForWinBoostUpdate &&
+    !IsDownloadingWinBoostUpdate &&
+    !CanInstallWinBoostUpdate;
+
+        public string DownloadedWinBoostUpdateFilePath =>
+            _winBoostUpdateDownloadResult.FilePath;
+
+        public string WinBoostUpdateDownloadStatusText
+        {
+            get
+            {
+                if (IsDownloadingWinBoostUpdate)
+                {
+                    return LocalizationHelper.Get(
+                        "SettingsUpdateDownloading");
+                }
+
+                if (_winBoostUpdateDownloadResult.Success)
+                {
+                    return LocalizationHelper.Get(
+                        "SettingsUpdateReadyToInstall");
+                }
+
+                return _winBoostUpdateDownloadResult.ErrorCode switch
+                {
+                    "SHA256_MISMATCH" =>
+                        LocalizationHelper.Get(
+                            "SettingsUpdateHashMismatch"),
+
+                    "DOWNLOAD_FAILED" or
+                    "NETWORK_ERROR" or
+                    "DOWNLOAD_ERROR" or
+                    "INVALID_DOWNLOAD_URL" or
+                    "INVALID_SHA256" =>
+                        LocalizationHelper.Get(
+                            "SettingsUpdateDownloadFailed"),
+
+                    _ =>
+                        string.Empty
+                };
+            }
+        }
+
+        public string DownloadWinBoostUpdateButtonText =>
+            IsDownloadingWinBoostUpdate
+                ? LocalizationHelper.Get(
+                    "SettingsUpdateDownloading")
+                : LocalizationHelper.Get(
+                    "SettingsUpdateDownloadButton");
+
+        public bool IsCheckingForWinBoostUpdate
+        {
+            get => _isCheckingForWinBoostUpdate;
+
+            private set
+            {
+                if (_isCheckingForWinBoostUpdate == value)
+                {
+                    return;
+                }
+
+                _isCheckingForWinBoostUpdate =
+                    value;
+
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(WinBoostUpdateStatusText));
+                OnPropertyChanged(nameof(CheckWinBoostUpdateButtonText));
+                OnPropertyChanged(nameof(CanCheckWinBoostUpdate));
+            }
+        }
+
+        public WinBoostUpdateStatus WinBoostUpdateStatus =>
+            _winBoostUpdateResult.Status;
+
+        public string WinBoostAvailableVersion =>
+            _winBoostUpdateResult.AvailableVersion;
+
+        public bool IsWinBoostUpdateAvailable =>
+            _winBoostUpdateResult.Status ==
+                WinBoostUpdateStatus.UpdateAvailable;
+
+        public string WinBoostUpdateStatusText
+        {
+            get
+            {
+                if (IsCheckingForWinBoostUpdate)
+                {
+                    return LocalizationHelper.Get(
+                        "SettingsUpdateChecking");
+                }
+
+                return _winBoostUpdateResult.Status switch
+                {
+                    WinBoostUpdateStatus.UpToDate =>
+                        LocalizationHelper.Get(
+                            "SettingsUpdateUpToDate"),
+
+                    WinBoostUpdateStatus.UpdateAvailable =>
+                        LocalizationHelper.Format(
+                            "SettingsUpdateAvailable",
+                            _winBoostUpdateResult
+                                .AvailableVersion),
+
+                    WinBoostUpdateStatus.Unavailable =>
+                        LocalizationHelper.Get(
+                            "SettingsUpdateUnavailable"),
+
+                    WinBoostUpdateStatus.Failed =>
+                        LocalizationHelper.Get(
+                            "SettingsUpdateFailed"),
+
+                    _ =>
+                        string.Empty
+                };
+            }
+        }
+
+        public string CheckWinBoostUpdateButtonText =>
+            IsCheckingForWinBoostUpdate
+                ? LocalizationHelper.Get(
+                    "SettingsUpdateChecking")
+                : LocalizationHelper.Get(
+                    "SettingsUpdateCheckButton");
         public bool AlertsEnabled
         {
             get => _settings.AlertsEnabled;
@@ -1124,6 +1364,117 @@ namespace WinBoost.App.ViewModels
                     "CommonClose"));
         }
 
+        private async Task CheckWinBoostUpdateAsync()
+        {
+            if (IsCheckingForWinBoostUpdate)
+            {
+                return;
+            }
+
+            IsCheckingForWinBoostUpdate =
+                true;
+
+            try
+            {
+                _winBoostUpdateResult =
+                    await _winBoostUpdateService
+                        .CheckForUpdatesAsync(
+                            WinBoostUpdateConfiguration
+                                .ManifestEndpoint);
+
+                OnPropertyChanged(
+                    nameof(WinBoostUpdateStatus));
+
+                OnPropertyChanged(
+                    nameof(WinBoostAvailableVersion));
+
+                OnPropertyChanged(
+                    nameof(IsWinBoostUpdateAvailable));
+
+                OnPropertyChanged(
+                   nameof(CanDownloadWinBoostUpdate));
+
+                OnPropertyChanged(
+                   nameof(WinBoostUpdateDownloadStatusText));
+
+                OnPropertyChanged(
+                    nameof(DownloadWinBoostUpdateButtonText));
+
+                OnPropertyChanged(
+                    nameof(WinBoostUpdateStatusText));
+
+            }
+            finally
+            {
+                IsCheckingForWinBoostUpdate =
+                    false;
+            }
+        }
+
+        private async Task DownloadWinBoostUpdateAsync()
+        {
+            if (!CanDownloadWinBoostUpdate)
+            {
+                return;
+            }
+
+            IsDownloadingWinBoostUpdate =
+                true;
+
+            try
+            {
+                _winBoostUpdateDownloadResult =
+                    await _winBoostUpdateDownloadService
+                        .DownloadAndVerifyAsync(
+                            _winBoostUpdateResult.DownloadUrl,
+                            _winBoostUpdateResult.Sha256);
+               
+
+                OnPropertyChanged(
+                    nameof(WinBoostUpdateDownloadSucceeded));
+
+                OnPropertyChanged(
+                    nameof(DownloadedWinBoostUpdateFilePath));
+
+                OnPropertyChanged(
+                   nameof(CanInstallWinBoostUpdate));
+
+                OnPropertyChanged(
+                    nameof(CanDownloadWinBoostUpdate));
+
+                OnPropertyChanged(
+                   nameof(WinBoostUpdateDownloadStatusText));
+            }
+            finally
+            {
+                IsDownloadingWinBoostUpdate =
+                    false;
+            }
+        }
+
+        private void StartWinBoostUpdateInstallation()
+        {
+            if (!CanInstallWinBoostUpdate)
+            {
+                return;
+            }
+
+            bool started =
+                _winBoostSelfUpdateLauncher.TryStart(
+                    _winBoostUpdateDownloadResult.FilePath,
+                    _winBoostUpdateDownloadResult.ExpectedSha256,
+                    out string errorMessage);
+
+            if (!started)
+            {
+                Debug.WriteLine(
+                    $"WinBoost Self Update Worker could not be started: {errorMessage}");
+
+                return;
+            }
+
+            Application.Current.Shutdown();
+        }
         private void OnPendingPurchaseChanged(
             object? sender,
             EventArgs e)
@@ -1179,7 +1530,19 @@ namespace WinBoost.App.ViewModels
             OnPropertyChanged(
                 nameof(LicenseOffersStatusText));
 
+            OnPropertyChanged(
+                nameof(WinBoostUpdateDownloadStatusText));
+
+            OnPropertyChanged(
+                nameof(DownloadWinBoostUpdateButtonText));
+
             _ = LoadLicenseOffersAsync();
+
+            OnPropertyChanged(
+               nameof(WinBoostUpdateStatusText));
+
+            OnPropertyChanged(
+                nameof(CheckWinBoostUpdateButtonText));
         }
 
         private void OnPropertyChanged(
