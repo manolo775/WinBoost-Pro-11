@@ -49,12 +49,12 @@ namespace WinBoost.Licensing.Server.Data
         }
 
         public Task<LicenseRecord?>
-            FindActiveByDeviceAsync(
-                string deviceId,
-                string productName,
-                DateTime nowUtc,
-                CancellationToken cancellationToken =
-                    default)
+     FindActiveByDeviceAsync(
+         string deviceId,
+         string productName,
+         DateTime nowUtc,
+         CancellationToken cancellationToken =
+             default)
         {
             return _dbContext
                 .Licenses
@@ -65,6 +65,8 @@ namespace WinBoost.Licensing.Server.Data
                             deviceId &&
                         license.ProductName ==
                             productName &&
+                        license.LicenseType !=
+                            "Trial" &&
                         !license.IsRevoked &&
                         (
                             license.ExpiresAtUtc == null ||

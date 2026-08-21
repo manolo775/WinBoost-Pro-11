@@ -22,5 +22,36 @@ namespace WinBoost.Licensing.Server.Data
             get;
             set;
         } = null!;
+
+        public DbSet<TrialRecord> Trials
+        {
+            get;
+            set;
+        } = null!;
+
+        protected override void OnModelCreating(
+            ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(
+                modelBuilder);
+
+            modelBuilder
+                .Entity<TrialRecord>()
+                .HasIndex(
+                    trial =>
+                        new
+                        {
+                            trial.TrialDeviceTokenHash,
+                            trial.ProductName
+                        })
+                .IsUnique();
+
+            modelBuilder
+                .Entity<TrialRecord>()
+                .HasIndex(
+                    trial =>
+                        trial.LicenseId)
+                .IsUnique();
+        }
     }
 }

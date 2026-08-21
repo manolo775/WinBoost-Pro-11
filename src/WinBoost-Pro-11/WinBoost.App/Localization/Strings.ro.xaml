@@ -2808,5 +2808,13 @@
 	<sys:String x:Key="SettingsLicenseAlreadyActiveMessage">
 		Acest dispozitiv are deja o licență WinBoost Pro 11 activă. Nu este necesară achiziționarea unei alte licențe.
 	</sys:String>
+
+	<sys:String x:Key="LicenseRequiredTitle">
+		Licență necesară
+	</sys:String>
+
+	<sys:String x:Key="LicenseRequiredMessage">
+		Această funcție necesită o licență WinBoost Pro 11 activă. Activează sau achiziționează o licență din Setări.
+	</sys:String>
 	
 </ResourceDictionary>

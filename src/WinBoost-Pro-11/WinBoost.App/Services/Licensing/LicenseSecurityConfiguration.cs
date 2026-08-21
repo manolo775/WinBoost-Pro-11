@@ -9,15 +9,18 @@
             string.Empty;
 
         public static string PurchaseSessionEndpoint =>
-     "https://localhost:7160/api/licensing/purchase-session";
+          "https://localhost:7160/api/licensing/purchase-session";
 
         public static string LicenseOffersEndpoint =>
-     "https://localhost:7160/api/licensing/offers";
+           "https://localhost:7160/api/licensing/offers";
         public static string ActivationCheckEndpoint =>
-      "https://localhost:7160/api/licensing/check-activation";
+          "https://localhost:7160/api/licensing/check-activation";
 
         public static string RevocationCheckEndpoint =>
-    "https://localhost:7160/api/licensing/check-revocation";
+          "https://localhost:7160/api/licensing/check-revocation";
+
+        public static string TrialActivationEndpoint =>
+            "https://localhost:7160/api/licensing/trial-activation";
 
         public static string PurchasePageUrl =>
             string.Empty;

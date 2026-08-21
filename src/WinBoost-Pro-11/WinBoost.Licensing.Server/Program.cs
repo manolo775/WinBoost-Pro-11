@@ -58,6 +58,12 @@ namespace WinBoost.Licensing.Server
                 .AddScoped<LicenseRepository>();
 
             builder.Services
+                .AddScoped<TrialRepository>();
+
+            builder.Services
+                 .AddScoped<TrialActivationService>();
+
+            builder.Services
                 .AddHttpClient<
                     IPaymentProvider,
                     PaddlePaymentProvider>();
@@ -275,6 +281,35 @@ namespace WinBoost.Licensing.Server
                     LicenseRevocationCheckResponse response =
                         await revocationCheckService
                             .CheckAsync(
+                                request,
+                                cancellationToken);
+
+                    if (!response.Success)
+                    {
+                        return Results.BadRequest(
+                            response);
+                    }
+
+                    return Results.Ok(
+                        response);
+                });
+
+            // ======================================
+            // TRIAL ACTIVATION
+            // ======================================
+
+            app.MapPost(
+                "/api/licensing/trial-activation",
+                async (
+                    TrialActivationRequest request,
+                    TrialActivationService
+                        trialActivationService,
+                    CancellationToken
+                        cancellationToken) =>
+                {
+                    TrialActivationResponse response =
+                        await trialActivationService
+                            .ActivateAsync(
                                 request,
                                 cancellationToken);
 

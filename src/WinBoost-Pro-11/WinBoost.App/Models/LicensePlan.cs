@@ -12,6 +12,8 @@
 
         SixMonths = 4,
 
-        OneYear = 5
+        OneYear = 5,
+
+        Trial = 6
     }
 }

@@ -160,7 +160,7 @@ namespace WinBoost.App.Services.Licensing
         }
 
         private static bool IsPlanConfigurationValid(
-            SignedLicenseResponse response)
+    SignedLicenseResponse response)
         {
             switch (response.Plan)
             {
@@ -172,6 +172,7 @@ namespace WinBoost.App.Services.Licensing
                 case LicensePlan.ThreeMonths:
                 case LicensePlan.SixMonths:
                 case LicensePlan.OneYear:
+                case LicensePlan.Trial:
 
                     return response.ExpiresAt.HasValue &&
                            response.ExpiresAt.Value

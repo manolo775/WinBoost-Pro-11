@@ -2,7 +2,9 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
+using WinBoost.App.Helpers;
 using WinBoost.App.Localization;
+using WinBoost.App.Services.Licensing;
 using WinBoost.App.Services.Navigation;
 using WinBoost.App.Views;
 
@@ -15,6 +17,9 @@ namespace WinBoost.App
     {
         private readonly DashboardView
             _dashboardView;
+
+        private readonly LicenseService
+            _licenseService;
 
         private PerformanceView?
             _performanceView;
@@ -43,6 +48,9 @@ namespace WinBoost.App
         public MainWindow()
         {
             InitializeComponent();
+
+            _licenseService =
+                LicenseService.Instance;
 
             AppNavigationService.NavigationRequested +=
                 AppNavigationService_NavigationRequested;
@@ -92,10 +100,36 @@ namespace WinBoost.App
             Dispatcher.BeginInvoke(
                 new Action(() =>
                 {
-                    _performanceView ??=
-                        new PerformanceView();
+                    if (_licenseService.IsActive)
+                    {
+                        _performanceView ??=
+                            new PerformanceView();
+                    }
                 }),
                 DispatcherPriority.ApplicationIdle);
+        }
+
+        // ======================================
+        // LICENSE ACCESS
+        // ======================================
+
+        private bool EnsureLicensedAccess()
+        {
+            if (_licenseService.IsActive)
+            {
+                return true;
+            }
+
+            NativeMessageDialog.Show(
+                this,
+                LocalizationHelper.Get(
+                    "LicenseRequiredTitle"),
+                LocalizationHelper.Get(
+                    "LicenseRequiredMessage"),
+                LocalizationHelper.Get(
+                    "CommonClose"));
+
+            return false;
         }
 
         // ======================================
@@ -134,6 +168,11 @@ namespace WinBoost.App
 
         public void NavigateToPerformance()
         {
+            if (!EnsureLicensedAccess())
+            {
+                return;
+            }
+
             _performanceView ??=
                 new PerformanceView();
 
@@ -160,6 +199,11 @@ namespace WinBoost.App
 
         public void NavigateToPrivacy()
         {
+            if (!EnsureLicensedAccess())
+            {
+                return;
+            }
+
             _privacyView ??=
                 new PrivacyView();
 
@@ -186,6 +230,11 @@ namespace WinBoost.App
 
         public void NavigateToServices()
         {
+            if (!EnsureLicensedAccess())
+            {
+                return;
+            }
+
             _servicesView ??=
                 new ServicesView();
 
@@ -212,6 +261,11 @@ namespace WinBoost.App
 
         public void NavigateToWindowsUpdate()
         {
+            if (!EnsureLicensedAccess())
+            {
+                return;
+            }
+
             _windowsUpdateView ??=
                 new WindowsUpdateView();
 
@@ -238,6 +292,11 @@ namespace WinBoost.App
 
         public void NavigateToApps()
         {
+            if (!EnsureLicensedAccess())
+            {
+                return;
+            }
+
             _appsView ??=
                 new AppsView();
 
@@ -264,6 +323,11 @@ namespace WinBoost.App
 
         public void NavigateToStartup()
         {
+            if (!EnsureLicensedAccess())
+            {
+                return;
+            }
+
             _startupView ??=
                 new StartupView();
 
@@ -290,6 +354,11 @@ namespace WinBoost.App
 
         public void NavigateToRecovery()
         {
+            if (!EnsureLicensedAccess())
+            {
+                return;
+            }
+
             _recoveryView ??=
                 new RecoveryView();
 
@@ -332,6 +401,7 @@ namespace WinBoost.App
         // ======================================
         // GLOBAL NAVIGATION
         // ======================================
+
         private void RestorePageAfterPrivilegeRestart()
         {
             string[] arguments =
@@ -364,6 +434,7 @@ namespace WinBoost.App
                 return;
             }
         }
+
         private void AppNavigationService_NavigationRequested(
             string page)
         {
