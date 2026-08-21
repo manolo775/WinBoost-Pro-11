@@ -33,6 +33,22 @@ namespace WinBoost.Licensing.Server.Data
         }
 
         public Task<LicenseRecord?>
+            FindByLicenseIdAsync(
+                string licenseId,
+                CancellationToken cancellationToken =
+                    default)
+        {
+            return _dbContext
+                .Licenses
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    license =>
+                        license.LicenseId ==
+                            licenseId,
+                    cancellationToken);
+        }
+
+        public Task<LicenseRecord?>
             FindActiveByDeviceAsync(
                 string deviceId,
                 string productName,

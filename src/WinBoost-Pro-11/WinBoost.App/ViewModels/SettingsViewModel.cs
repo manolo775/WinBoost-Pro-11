@@ -240,6 +240,12 @@ namespace WinBoost.App.ViewModels
         {
             get
             {
+                if (_licenseService.Status ==
+                    LicenseStatus.Licensed)
+                {
+                    return string.Empty;
+                }
+
                 if (IsLoadingLicenseOffers)
                 {
                     return LocalizationHelper.Get(
@@ -1094,14 +1100,17 @@ namespace WinBoost.App.ViewModels
         }
 
         private void OnLicenseChanged(
-    object? sender,
-    EventArgs e)
+           object? sender,
+           EventArgs e)
         {
             OnPropertyChanged(
                 nameof(LicenseStatusText));
 
             OnPropertyChanged(
                 nameof(CanStartLicensePurchase));
+
+            OnPropertyChanged(
+                nameof(LicenseOffersStatusText));
         }
 
         private void OnLanguageChanged(

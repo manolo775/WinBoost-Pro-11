@@ -75,6 +75,9 @@ namespace WinBoost.Licensing.Server
                 .AddScoped<LicenseIssuerService>();
 
             builder.Services
+               .AddScoped<LicenseRevocationCheckService>();
+
+            builder.Services
                 .AddSingleton<
                     PaddleWebhookSignatureVerifier>();
 
@@ -251,6 +254,35 @@ namespace WinBoost.Licensing.Server
                                 .VerifyPaymentAsync(
                                     request,
                                     cancellationToken);
+
+                    return Results.Ok(
+                        response);
+                });
+
+            // ======================================
+            // CHECK LICENSE REVOCATION
+            // ======================================
+
+            app.MapPost(
+                "/api/licensing/check-revocation",
+                async (
+                    LicenseRevocationCheckRequest request,
+                    LicenseRevocationCheckService
+                        revocationCheckService,
+                    CancellationToken
+                        cancellationToken) =>
+                {
+                    LicenseRevocationCheckResponse response =
+                        await revocationCheckService
+                            .CheckAsync(
+                                request,
+                                cancellationToken);
+
+                    if (!response.Success)
+                    {
+                        return Results.BadRequest(
+                            response);
+                    }
 
                     return Results.Ok(
                         response);

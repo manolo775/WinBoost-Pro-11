@@ -16,6 +16,9 @@
         public static string ActivationCheckEndpoint =>
       "https://localhost:7160/api/licensing/check-activation";
 
+        public static string RevocationCheckEndpoint =>
+    "https://localhost:7160/api/licensing/check-revocation";
+
         public static string PurchasePageUrl =>
             string.Empty;
 

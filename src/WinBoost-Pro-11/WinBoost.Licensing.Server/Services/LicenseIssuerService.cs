@@ -164,7 +164,7 @@ namespace WinBoost.Licensing.Server.Services
                     null,
 
                 LicensePlan.OneMonth =>
-                    activatedAtUtc.AddMonths(1),
+              activatedAtUtc.AddMonths(1),
 
                 LicensePlan.ThreeMonths =>
                     activatedAtUtc.AddMonths(3),
