@@ -90,5 +90,57 @@ namespace WinBoost.Licensing.Server.Data
                             sessionId,
                     cancellationToken);
         }
+
+        public Task<PurchaseRecord?>
+            FindByTransactionIdAsync(
+                string transactionId,
+                CancellationToken cancellationToken =
+                    default)
+        {
+            return _dbContext
+                .Purchases
+                .FirstOrDefaultAsync(
+                    purchase =>
+                        purchase.SessionId ==
+                            transactionId ||
+                        purchase.ProviderTransactionId ==
+                            transactionId,
+                    cancellationToken);
+        }
+
+        public async Task
+            MarkCompletedAsync(
+                PurchaseRecord purchase,
+                string providerTransactionId,
+                CancellationToken cancellationToken =
+                    default)
+        {
+            if (purchase == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(purchase));
+            }
+
+            if (string.IsNullOrWhiteSpace(
+                    providerTransactionId))
+            {
+                throw new ArgumentException(
+                    "Provider transaction ID is required.",
+                    nameof(providerTransactionId));
+            }
+
+            purchase.Status =
+                "Completed";
+
+            purchase.ProviderTransactionId =
+                providerTransactionId;
+
+            purchase.UpdatedAtUtc =
+                DateTime.UtcNow;
+
+            await _dbContext
+                .SaveChangesAsync(
+                    cancellationToken);
+        }
     }
 }

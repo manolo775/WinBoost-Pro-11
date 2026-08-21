@@ -22,10 +22,14 @@ namespace WinBoost.Licensing.Server.Services
         private readonly PurchaseRepository
             _purchaseRepository;
 
+        private readonly LicenseRepository
+            _licenseRepository;
+
         public PurchaseSessionService(
             LicenseOffersService licenseOffersService,
             IPaymentProvider paymentProvider,
-            PurchaseRepository purchaseRepository)
+            PurchaseRepository purchaseRepository,
+            LicenseRepository licenseRepository)
         {
             _licenseOffersService =
                 licenseOffersService;
@@ -35,6 +39,9 @@ namespace WinBoost.Licensing.Server.Services
 
             _purchaseRepository =
                 purchaseRepository;
+
+            _licenseRepository =
+                licenseRepository;
         }
 
         public async Task<PurchaseSessionResponse>
@@ -54,7 +61,12 @@ namespace WinBoost.Licensing.Server.Services
                 request.CustomerEmail?.Trim()
                 ?? string.Empty;
 
-            if (!IsValidEmail(email))
+            string deviceId =
+                request.DeviceId?.Trim()
+                ?? string.Empty;
+
+            if (!IsValidEmail(
+                    email))
             {
                 return Error(
                     "INVALID_EMAIL",
@@ -62,7 +74,7 @@ namespace WinBoost.Licensing.Server.Services
             }
 
             if (string.IsNullOrWhiteSpace(
-                    request.DeviceId))
+                    deviceId))
             {
                 return Error(
                     "INVALID_DEVICE",
@@ -87,6 +99,29 @@ namespace WinBoost.Licensing.Server.Services
                     "License plan is invalid.");
             }
 
+            // ======================================
+            // EXISTING ACTIVE LICENSE CHECK
+            // ======================================
+
+            LicenseRecord? activeLicense =
+                await _licenseRepository
+                    .FindActiveByDeviceAsync(
+                        deviceId,
+                        ProductName,
+                        DateTime.UtcNow,
+                        cancellationToken);
+
+            if (activeLicense != null)
+            {
+                return Error(
+                    "ACTIVE_LICENSE_EXISTS",
+                    "An active WinBoost Pro 11 license already exists for this device.");
+            }
+
+            // ======================================
+            // CHECK CURRENT AVAILABLE OFFERS
+            // ======================================
+
             LicenseOffersResponse offersResponse =
                 _licenseOffersService
                     .GetCurrentOffers();
@@ -104,6 +139,10 @@ namespace WinBoost.Licensing.Server.Services
                     "PLAN_NOT_AVAILABLE",
                     "The selected license plan is not available.");
             }
+
+            // ======================================
+            // CREATE PADDLE CHECKOUT
+            // ======================================
 
             PaymentCheckoutResult checkout =
                 await _paymentProvider
@@ -134,13 +173,17 @@ namespace WinBoost.Licensing.Server.Services
                     "The payment provider returned an invalid checkout URL.");
             }
 
+            // ======================================
+            // SAVE PENDING PURCHASE
+            // ======================================
+
             try
             {
                 await _purchaseRepository
                     .CreatePendingAsync(
                         checkout.ProviderSessionId,
                         email,
-                        request.DeviceId,
+                        deviceId,
                         ProductName,
                         request.Plan,
                         _paymentProvider

@@ -82,6 +82,10 @@ namespace WinBoost.Licensing.Server
                 .AddSingleton<
                     PaddleWebhookEventParser>();
 
+            builder.Services
+                  .AddScoped<
+                   PaddleWebhookProcessingService>();
+
             // Add services to the container.
             builder.Services.AddControllers();
 
@@ -257,106 +261,144 @@ namespace WinBoost.Licensing.Server
             // ======================================
 
             app.MapPost(
-                "/api/paddle/webhook",
-                async (
-                    HttpRequest request,
-                    PaddleWebhookSignatureVerifier
-                        signatureVerifier,
-                    PaddleWebhookEventParser
-                        eventParser) =>
-                {
-                    // ----------------------------------
-                    // Paddle signature header
-                    // ----------------------------------
+     "/api/paddle/webhook",
+     async (
+         HttpRequest request,
+         PaddleWebhookSignatureVerifier
+             signatureVerifier,
+         PaddleWebhookEventParser
+             eventParser,
+         PaddleWebhookProcessingService
+             processingService,
+         CancellationToken
+             cancellationToken) =>
+     {
+         // ----------------------------------
+         // Paddle signature header
+         // ----------------------------------
 
-                    if (!request.Headers.TryGetValue(
-                            "Paddle-Signature",
-                            out var signatureValues))
-                    {
-                        return Results.Unauthorized();
-                    }
+         if (!request.Headers.TryGetValue(
+                 "Paddle-Signature",
+                 out var signatureValues))
+         {
+             return Results.Unauthorized();
+         }
 
-                    // ----------------------------------
-                    // Read exact webhook body
-                    // ----------------------------------
+         // ----------------------------------
+         // Read exact webhook body
+         // ----------------------------------
 
-                    using var reader =
-                        new StreamReader(
-                            request.Body,
-                            Encoding.UTF8);
+         using var reader =
+             new StreamReader(
+                 request.Body,
+                 Encoding.UTF8);
 
-                    string rawBody =
-                        await reader.ReadToEndAsync();
+         string rawBody =
+             await reader.ReadToEndAsync();
 
-                    string signatureHeader =
-                        signatureValues.ToString();
+         string signatureHeader =
+             signatureValues.ToString();
 
-                    // ----------------------------------
-                    // Verify Paddle signature
-                    // ----------------------------------
+         // ----------------------------------
+         // Verify Paddle signature
+         // ----------------------------------
 
-                    bool isValid =
-                        signatureVerifier.Verify(
-                            rawBody,
-                            signatureHeader,
-                            out string failureReason);
+         bool isValid =
+             signatureVerifier.Verify(
+                 rawBody,
+                 signatureHeader,
+                 out string failureReason);
 
-                    if (!isValid)
-                    {
-                        return Results.Json(
-                            new
-                            {
-                                received = true,
-                                signatureValid = false,
-                                reason = failureReason
-                            },
-                            statusCode:
-                                StatusCodes
-                                    .Status401Unauthorized);
-                    }
+         if (!isValid)
+         {
+             return Results.Json(
+                 new
+                 {
+                     received = true,
+                     signatureValid = false,
+                     reason = failureReason
+                 },
+                 statusCode:
+                     StatusCodes
+                         .Status401Unauthorized);
+         }
 
-                    // ----------------------------------
-                    // Parse transaction.completed
-                    // ----------------------------------
+         // ----------------------------------
+         // Parse transaction.completed
+         // ----------------------------------
 
-                    bool eventValid =
-                        eventParser
-                            .TryParseTransactionCompleted(
-                                rawBody,
-                                out string transactionId,
-                                out string eventId,
-                                out string eventFailureReason);
+         bool eventValid =
+             eventParser
+                 .TryParseTransactionCompleted(
+                     rawBody,
+                     out string transactionId,
+                     out string eventId,
+                     out string eventFailureReason);
 
-                    if (!eventValid)
-                    {
-                        return Results.Json(
-                            new
-                            {
-                                received = true,
-                                signatureValid = true,
-                                eventValid = false,
-                                reason =
-                                    eventFailureReason
-                            },
-                            statusCode:
-                                StatusCodes
-                                    .Status400BadRequest);
-                    }
+         if (!eventValid)
+         {
+             return Results.Json(
+                 new
+                 {
+                     received = true,
+                     signatureValid = true,
+                     eventValid = false,
+                     reason =
+                         eventFailureReason
+                 },
+                 statusCode:
+                     StatusCodes
+                         .Status400BadRequest);
+         }
 
-                    // ----------------------------------
-                    // Webhook verified and parsed
-                    // ----------------------------------
+         // ----------------------------------
+         // Process completed transaction
+         // ----------------------------------
 
-                    return Results.Ok(
-                        new
-                        {
-                            received = true,
-                            signatureValid = true,
-                            eventValid = true,
-                            eventId,
-                            transactionId
-                        });
-                });
+         PaddleWebhookProcessingResult
+             processingResult =
+                 await processingService
+                     .ProcessTransactionCompletedAsync(
+                         transactionId,
+                         cancellationToken);
+
+         if (!processingResult.Success)
+         {
+             return Results.Json(
+                 new
+                 {
+                     received = true,
+                     signatureValid = true,
+                     eventValid = true,
+                     processed = false,
+                     eventId,
+                     transactionId,
+                     errorCode =
+                         processingResult.ErrorCode,
+                     message =
+                         processingResult.Message
+                 },
+                 statusCode:
+                     StatusCodes
+                         .Status422UnprocessableEntity);
+         }
+
+         // ----------------------------------
+         // Transaction processed successfully
+         // ----------------------------------
+
+         return Results.Ok(
+             new
+             {
+                 received = true,
+                 signatureValid = true,
+                 eventValid = true,
+                 processed = true,
+                 eventId,
+                 transactionId
+             });
+     });
+        
 
             app.Run();
         }

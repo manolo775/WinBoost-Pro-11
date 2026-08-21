@@ -264,6 +264,12 @@ namespace WinBoost.App.ViewModels
         {
             get
             {
+                if (_licenseService.Status ==
+                    LicenseStatus.Licensed)
+                {
+                    return false;
+                }
+
                 string email =
                     CustomerEmailInput
                         .Trim();
@@ -281,7 +287,6 @@ namespace WinBoost.App.ViewModels
                        SelectedLicenseOffer != null;
             }
         }
-
         public ICommand ClearHistoryCommand
         {
             get;
@@ -1023,11 +1028,14 @@ namespace WinBoost.App.ViewModels
         }
 
         private void OnLicenseChanged(
-                object? sender,
-                 EventArgs e)
+    object? sender,
+    EventArgs e)
         {
             OnPropertyChanged(
                 nameof(LicenseStatusText));
+
+            OnPropertyChanged(
+                nameof(CanStartLicensePurchase));
         }
 
         private void OnLanguageChanged(

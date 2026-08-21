@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -31,12 +32,44 @@ namespace WinBoost.Licensing.Server.Data
                     cancellationToken);
         }
 
+        public Task<LicenseRecord?>
+            FindActiveByDeviceAsync(
+                string deviceId,
+                string productName,
+                DateTime nowUtc,
+                CancellationToken cancellationToken =
+                    default)
+        {
+            return _dbContext
+                .Licenses
+                .AsNoTracking()
+                .FirstOrDefaultAsync(
+                    license =>
+                        license.DeviceId ==
+                            deviceId &&
+                        license.ProductName ==
+                            productName &&
+                        !license.IsRevoked &&
+                        (
+                            license.ExpiresAtUtc == null ||
+                            license.ExpiresAtUtc >
+                                nowUtc
+                        ),
+                    cancellationToken);
+        }
+
         public async Task<LicenseRecord>
             CreateAsync(
                 LicenseRecord license,
                 CancellationToken cancellationToken =
                     default)
         {
+            if (license == null)
+            {
+                throw new ArgumentNullException(
+                    nameof(license));
+            }
+
             _dbContext.Licenses.Add(
                 license);
 
