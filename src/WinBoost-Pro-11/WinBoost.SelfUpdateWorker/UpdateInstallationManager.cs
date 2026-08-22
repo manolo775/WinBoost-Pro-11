@@ -83,15 +83,17 @@ namespace WinBoost.SelfUpdateWorker
                         "Rollback failed",
                         rollbackException);
 
-                    throw new InvalidOperationException(
+                    throw new UpdateInstallationException(
                         "The update installation failed and rollback also failed.",
+                        rolledBack: false,
                         new AggregateException(
                             installationException,
                             rollbackException));
                 }
 
-                throw new InvalidOperationException(
+                throw new UpdateInstallationException(
                     "The update installation failed. The previous WinBoost version was restored.",
+                    rolledBack: true,
                     installationException);
             }
         }

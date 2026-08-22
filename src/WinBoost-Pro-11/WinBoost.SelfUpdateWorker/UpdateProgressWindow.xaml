@@ -1,0 +1,68 @@
+﻿<Window
+    x:Class="WinBoost.SelfUpdateWorker.UpdateProgressWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="WinBoost Pro 11"
+    Width="520"
+    Height="250"
+    WindowStartupLocation="CenterScreen"
+    ResizeMode="NoResize"
+    WindowStyle="SingleBorderWindow"
+    ShowInTaskbar="True"
+    Topmost="True"
+    Background="#1E1E1E">
+
+	<Grid Margin="28">
+
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+
+		<!-- TITLU -->
+
+		<TextBlock
+            Grid.Row="0"
+            Text="WinBoost Pro 11"
+            FontSize="24"
+            FontWeight="Bold"
+            Foreground="White"/>
+
+		<!-- STARE -->
+
+		<TextBlock
+            x:Name="StatusTextBlock"
+            Grid.Row="1"
+            Margin="0,18,0,0"
+            Text="Se pregătește actualizarea..."
+            FontSize="17"
+            FontWeight="SemiBold"
+            Foreground="#FFD740"
+            TextWrapping="Wrap"/>
+
+		<!-- PROGRES -->
+
+		<ProgressBar
+            x:Name="UpdateProgressBar"
+            Grid.Row="2"
+            Margin="0,22,0,0"
+            Height="12"
+            Minimum="0"
+            Maximum="100"
+            Value="0"/>
+
+		<!-- NOTĂ -->
+
+		<TextBlock
+            Grid.Row="3"
+            Margin="0,18,0,0"
+            Text="Nu închideți calculatorul în timpul instalării actualizării."
+            FontSize="13"
+            Foreground="#BDBDBD"
+            TextWrapping="Wrap"/>
+
+	</Grid>
+
+</Window>

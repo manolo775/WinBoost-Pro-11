@@ -127,18 +127,26 @@ namespace WinBoost.Licensing.Server
             // ======================================
 
             app.MapGet(
-                "/api/licensing/offers",
-                (
-                    LicenseOffersService
-                        licenseOffersService) =>
-                {
-                    var response =
-                        licenseOffersService
-                            .GetCurrentOffers();
+     "/api/update/package/preview-3",
+     () =>
+     {
+         string packagePath =
+             Path.Combine(
+                 Path.GetTempPath(),
+                 "WinBoost",
+                 "WinBoost-1.0.0-preview.3.zip");
 
-                    return Results.Ok(
-                        response);
-                });
+         if (!File.Exists(packagePath))
+         {
+             return Results.NotFound(
+                 "WinBoost preview update package was not found.");
+         }
+
+         return Results.File(
+             packagePath,
+             "application/zip",
+             "WinBoost-1.0.0-preview.3.zip");
+     });
 
             // ======================================
             // PURCHASE SESSION

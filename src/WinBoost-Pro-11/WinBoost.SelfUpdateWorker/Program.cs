@@ -14,6 +14,9 @@ namespace WinBoost.SelfUpdateWorker
             UpdateLogger.Write(
                 "Self Update Worker started.");
 
+            UpdateProgressWindowHost? progressWindow =
+                null;
+
             try
             {
                 // ======================================
@@ -172,6 +175,23 @@ namespace WinBoost.SelfUpdateWorker
                 }
 
                 // ======================================
+                // START PROGRESS WINDOW
+                // ======================================
+
+                progressWindow =
+                    new UpdateProgressWindowHost();
+
+                if (!progressWindow.Start())
+                {
+                    UpdateLogger.Write(
+                        "Self update will continue without the progress window.");
+                }
+
+                progressWindow.UpdateProgress(
+                    "Se verifică pachetul de actualizare...",
+                    10);
+
+                // ======================================
                 // VERIFY SHA-256
                 // ======================================
 
@@ -193,6 +213,12 @@ namespace WinBoost.SelfUpdateWorker
                     UpdateResultStore.SaveFailure(
                         message,
                         rolledBack: false);
+
+                    progressWindow.UpdateStatus(
+                        "Verificarea pachetului de actualizare a eșuat.");
+
+                    System.Threading.Thread.Sleep(
+                        2000);
 
                     Console.Error.WriteLine(
                         message);
@@ -226,6 +252,10 @@ namespace WinBoost.SelfUpdateWorker
                 // WAIT FOR WINBOOST TO CLOSE
                 // ======================================
 
+                progressWindow.UpdateProgress(
+                    "Se așteaptă închiderea WinBoost...",
+                    25);
+
                 Console.WriteLine(
                     "Waiting for WinBoost to close...");
 
@@ -249,6 +279,12 @@ namespace WinBoost.SelfUpdateWorker
                         message,
                         rolledBack: false);
 
+                    progressWindow.UpdateStatus(
+                        "WinBoost nu s-a închis la timp. Actualizarea a fost anulată.");
+
+                    System.Threading.Thread.Sleep(
+                        2000);
+
                     Console.Error.WriteLine(
                         message);
 
@@ -264,6 +300,10 @@ namespace WinBoost.SelfUpdateWorker
                 // ======================================
                 // EXTRACT UPDATE PACKAGE TO STAGING
                 // ======================================
+
+                progressWindow.UpdateProgress(
+                    "Se extrage pachetul de actualizare...",
+                    40);
 
                 Console.WriteLine(
                     "Extracting update package...");
@@ -286,6 +326,10 @@ namespace WinBoost.SelfUpdateWorker
                 // CREATE INSTALLATION BACKUP
                 // ======================================
 
+                progressWindow.UpdateProgress(
+                    "Se creează copia de siguranță...",
+                    55);
+
                 Console.WriteLine(
                     "Creating WinBoost backup...");
 
@@ -306,6 +350,10 @@ namespace WinBoost.SelfUpdateWorker
                 // ======================================
                 // INSTALL UPDATE
                 // ======================================
+
+                progressWindow.UpdateProgress(
+                    "Se instalează actualizarea...",
+                    75);
 
                 Console.WriteLine(
                     "Installing WinBoost update...");
@@ -329,8 +377,29 @@ namespace WinBoost.SelfUpdateWorker
                     $"Backup directory: {backupDirectory}");
 
                 // ======================================
+                // SAVE SUCCESS RESULT
+                // ======================================
+
+                progressWindow.UpdateProgress(
+                    "Se pregătește repornirea WinBoost...",
+                    95);
+
+                UpdateResultStore
+                    .SaveSuccess();
+
+                UpdateLogger.Write(
+                    "Update result saved as successful.");
+
+                // ======================================
                 // RESTART WINBOOST
                 // ======================================
+
+                progressWindow.UpdateProgress(
+                    "Actualizarea a fost finalizată. Se repornește WinBoost...",
+                    100);
+
+                System.Threading.Thread.Sleep(
+                    700);
 
                 Console.WriteLine(
                     "Restarting WinBoost...");
@@ -348,16 +417,6 @@ namespace WinBoost.SelfUpdateWorker
                 UpdateLogger.Write(
                     "WinBoost restarted successfully.");
 
-                // ======================================
-                // SAVE SUCCESS RESULT
-                // ======================================
-
-                UpdateResultStore
-                    .SaveSuccess();
-
-                UpdateLogger.Write(
-                    "Update result saved as successful.");
-
                 return 0;
             }
             catch (Exception ex)
@@ -371,6 +430,69 @@ namespace WinBoost.SelfUpdateWorker
                         ex.Message,
                         rolledBack);
 
+                if (progressWindow != null)
+                {
+                    if (rolledBack)
+                    {
+                        progressWindow.UpdateStatus(
+                            "Instalarea a eșuat. Versiunea anterioară WinBoost a fost restaurată.");
+                    }
+                    else
+                    {
+                        progressWindow.UpdateStatus(
+                            "Actualizarea WinBoost nu a putut fi instalată.");
+                    }
+
+                    System.Threading.Thread.Sleep(
+                        5000);
+                }
+
+                // ======================================
+                // RESTART RESTORED WINBOOST
+                // ======================================
+
+                if (rolledBack)
+                {
+                    try
+                    {
+                        Dictionary<string, string>
+                            recoveryArguments =
+                                ParseArguments(args);
+
+                        if (recoveryArguments.TryGetValue(
+                                "target-dir",
+                                out string? recoveryTargetDirectory) &&
+                            !string.IsNullOrWhiteSpace(
+                                recoveryTargetDirectory))
+                        {
+                            recoveryTargetDirectory =
+                                Path.GetFullPath(
+                                    recoveryTargetDirectory);
+
+                            UpdateLogger.Write(
+                                "Restarting restored WinBoost after rollback.");
+
+                            UpdateRestartManager
+                                .Restart(
+                                    recoveryTargetDirectory);
+
+                            UpdateLogger.Write(
+                                "Restored WinBoost restarted successfully.");
+                        }
+                        else
+                        {
+                            UpdateLogger.Write(
+                                "Restored WinBoost could not be restarted because target directory is unavailable.");
+                        }
+                    }
+                    catch (Exception restartException)
+                    {
+                        UpdateLogger.WriteException(
+                            "Restored WinBoost could not be restarted after rollback",
+                            restartException);
+                    }
+                }
+
                 UpdateLogger.WriteException(
                     "Self update failed",
                     ex);
@@ -383,6 +505,10 @@ namespace WinBoost.SelfUpdateWorker
 
                 return 100;
             }
+            finally
+            {
+                progressWindow?.Dispose();
+            }
         }
 
         // ======================================
@@ -393,10 +519,9 @@ namespace WinBoost.SelfUpdateWorker
             Exception exception)
         {
             return exception
-                       is InvalidOperationException &&
-                   exception.Message.Contains(
-                       "previous WinBoost version was restored",
-                       StringComparison.OrdinalIgnoreCase);
+                       is UpdateInstallationException
+                       updateInstallationException &&
+                   updateInstallationException.RolledBack;
         }
 
         // ======================================
