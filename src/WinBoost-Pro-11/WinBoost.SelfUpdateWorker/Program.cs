@@ -182,6 +182,17 @@ namespace WinBoost.SelfUpdateWorker
                         packagePath);
 
                 // ======================================
+                // CLEANUP OLD DOWNLOADED PACKAGES
+                // ======================================
+
+                UpdateCleanupManager
+                    .CleanupOldDownloadedPackages(
+                        packagePath);
+
+                UpdateLogger.Write(
+                    "Old downloaded update packages cleanup completed.");
+
+                // ======================================
                 // VALIDATE PACKAGE
                 // ======================================
 
