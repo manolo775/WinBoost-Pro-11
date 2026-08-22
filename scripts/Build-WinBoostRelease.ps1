@@ -3,7 +3,11 @@ param(
     [string]$Version,
 
     [ValidateSet("Preview", "Stable")]
-    [string]$Channel = "Preview"
+    [string]$Channel = "Preview",
+
+    [string]$DownloadBaseUrl = "",
+
+    [string]$ReleaseNotes = ""
 )
 
 $ErrorActionPreference = "Stop"
@@ -39,6 +43,9 @@ $packagePath =
 $releaseInfoPath =
     Join-Path $versionRoot "release-info.json"
 
+$updateManifestPath =
+    Join-Path $versionRoot "update-manifest.json"
+
 # ======================================
 # VALIDATION
 # ======================================
@@ -51,6 +58,24 @@ if ([string]::IsNullOrWhiteSpace($Version))
 if (-not (Test-Path $appProject))
 {
     throw "WinBoost.App.csproj was not found: $appProject"
+}
+
+if (-not [string]::IsNullOrWhiteSpace($DownloadBaseUrl))
+{
+    try
+    {
+        $downloadBaseUri =
+            New-Object System.Uri($DownloadBaseUrl)
+    }
+    catch
+    {
+        throw "DownloadBaseUrl is not a valid absolute URL."
+    }
+
+    if ($downloadBaseUri.Scheme -ne "https")
+    {
+        throw "DownloadBaseUrl must use HTTPS."
+    }
 }
 
 Write-Host ""
@@ -149,6 +174,20 @@ $sha256 =
     (Get-FileHash $packagePath -Algorithm SHA256).Hash.ToUpperInvariant()
 
 # ======================================
+# DOWNLOAD URL
+# ======================================
+
+$downloadUrl = ""
+
+if (-not [string]::IsNullOrWhiteSpace($DownloadBaseUrl))
+{
+    $downloadUrl =
+        $DownloadBaseUrl.TrimEnd("/") +
+        "/" +
+        $packageName
+}
+
+# ======================================
 # RELEASE INFORMATION
 # ======================================
 
@@ -168,6 +207,25 @@ $releaseInfo |
         -Encoding UTF8
 
 # ======================================
+# UPDATE MANIFEST
+# ======================================
+
+$updateManifest =
+    [ordered]@{
+        Version = $Version
+        Channel = $Channel
+        DownloadUrl = $downloadUrl
+        Sha256 = $sha256
+        ReleaseNotes = $ReleaseNotes
+    }
+
+$updateManifest |
+    ConvertTo-Json |
+    Set-Content `
+        $updateManifestPath `
+        -Encoding UTF8
+
+# ======================================
 # RESULT
 # ======================================
 
@@ -176,9 +234,18 @@ Write-Host "========================================"
 Write-Host " Release completed successfully"
 Write-Host "========================================"
 Write-Host ""
-Write-Host "Version : $Version"
-Write-Host "Channel : $Channel"
-Write-Host "Package : $packagePath"
-Write-Host "SHA-256 : $sha256"
-Write-Host "Info    : $releaseInfoPath"
+Write-Host "Version  : $Version"
+Write-Host "Channel  : $Channel"
+Write-Host "Package  : $packagePath"
+Write-Host "SHA-256  : $sha256"
+Write-Host "Info     : $releaseInfoPath"
+Write-Host "Manifest : $updateManifestPath"
+
+if ([string]::IsNullOrWhiteSpace($downloadUrl))
+{
+    Write-Host ""
+    Write-Host "NOTE: Download URL was not configured."
+    Write-Host "Provide -DownloadBaseUrl when building a production release."
+}
+
 Write-Host ""
