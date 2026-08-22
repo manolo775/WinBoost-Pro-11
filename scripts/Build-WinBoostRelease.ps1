@@ -26,38 +26,201 @@ $repositoryRoot =
     Split-Path -Parent $PSScriptRoot
 
 $solutionRoot =
-    Join-Path $repositoryRoot "src\WinBoost-Pro-11"
+    Join-Path `
+        $repositoryRoot `
+        "src\WinBoost-Pro-11"
 
 $appProject =
-    Join-Path $solutionRoot "WinBoost.App\WinBoost.App.csproj"
+    Join-Path `
+        $solutionRoot `
+        "WinBoost.App\WinBoost.App.csproj"
 
 $releaseRoot =
-    Join-Path $repositoryRoot "releases"
+    Join-Path `
+        $repositoryRoot `
+        "releases"
 
 $versionRoot =
-    Join-Path $releaseRoot $Version
+    Join-Path `
+        $releaseRoot `
+        $Version
 
 $publishDirectory =
-    Join-Path $versionRoot "publish"
+    Join-Path `
+        $versionRoot `
+        "publish"
 
 $packageName =
     "WinBoost-$Version.zip"
 
 $packagePath =
-    Join-Path $versionRoot $packageName
+    Join-Path `
+        $versionRoot `
+        $packageName
 
 $releaseInfoPath =
-    Join-Path $versionRoot "release-info.json"
+    Join-Path `
+        $versionRoot `
+        "release-info.json"
 
 $updateManifestPath =
-    Join-Path $versionRoot "update-manifest.json"
+    Join-Path `
+        $versionRoot `
+        "update-manifest.json"
 
 $npxCommand = ""
 
 $publishToR2Succeeded = $false
 
+
 # ======================================
-# WRANGLER HELPER
+# UTF-8 WITHOUT BOM
+# ======================================
+
+function Write-JsonUtf8NoBom
+{
+    param(
+        [Parameter(Mandatory = $true)]
+        $Value,
+
+        [Parameter(Mandatory = $true)]
+        [string]$Path
+    )
+
+    $json =
+        $Value |
+        ConvertTo-Json -Depth 10
+
+    $utf8WithoutBom =
+        New-Object `
+            System.Text.UTF8Encoding($false)
+
+    [System.IO.File]::WriteAllText(
+        $Path,
+        $json + [Environment]::NewLine,
+        $utf8WithoutBom)
+}
+
+
+# ======================================
+# DETERMINISTIC ZIP
+# ======================================
+
+function New-DeterministicZip
+{
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$SourceDirectory,
+
+        [Parameter(Mandatory = $true)]
+        [string]$DestinationPath
+    )
+
+    Add-Type `
+        -AssemblyName System.IO.Compression
+
+    Add-Type `
+        -AssemblyName System.IO.Compression.FileSystem
+
+    if (Test-Path $DestinationPath)
+    {
+        Remove-Item `
+            $DestinationPath `
+            -Force
+    }
+
+    $sourceRoot =
+        [System.IO.Path]::GetFullPath(
+            $SourceDirectory)
+
+    $sourceRoot =
+        $sourceRoot.TrimEnd(
+            [System.IO.Path]::DirectorySeparatorChar,
+            [System.IO.Path]::AltDirectorySeparatorChar
+        ) +
+        [System.IO.Path]::DirectorySeparatorChar
+
+    $files =
+        Get-ChildItem `
+            -Path $SourceDirectory `
+            -File `
+            -Recurse |
+        Sort-Object FullName
+
+    $fileStream =
+        [System.IO.File]::Open(
+            $DestinationPath,
+            [System.IO.FileMode]::CreateNew,
+            [System.IO.FileAccess]::ReadWrite,
+            [System.IO.FileShare]::None)
+
+    try
+    {
+        $archive =
+            New-Object `
+                System.IO.Compression.ZipArchive(
+                    $fileStream,
+                    [System.IO.Compression.ZipArchiveMode]::Create,
+                    $false)
+
+        try
+        {
+            foreach ($file in $files)
+            {
+                $relativePath =
+                    $file.FullName.Substring(
+                        $sourceRoot.Length)
+
+                $relativePath =
+                    $relativePath.Replace(
+                        "\",
+                        "/")
+
+                $entry =
+                    $archive.CreateEntry(
+                        $relativePath,
+                        [System.IO.Compression.CompressionLevel]::Optimal)
+
+                # Fixăm timestamp-ul din ZIP.
+                # Astfel, aceeași versiune construită din
+                # aceleași fișiere produce același pachet.
+                $entry.LastWriteTime =
+                    [System.DateTimeOffset]::Parse(
+                        "2000-01-01T00:00:00Z")
+
+                $inputStream =
+                    [System.IO.File]::OpenRead(
+                        $file.FullName)
+
+                $outputStream =
+                    $entry.Open()
+
+                try
+                {
+                    $inputStream.CopyTo(
+                        $outputStream)
+                }
+                finally
+                {
+                    $outputStream.Dispose()
+                    $inputStream.Dispose()
+                }
+            }
+        }
+        finally
+        {
+            $archive.Dispose()
+        }
+    }
+    finally
+    {
+        $fileStream.Dispose()
+    }
+}
+
+
+# ======================================
+# WRANGLER
 # ======================================
 
 function Invoke-Wrangler
@@ -67,71 +230,240 @@ function Invoke-Wrangler
         [string[]]$Arguments
     )
 
-    & $npxCommand `
+    & $script:npxCommand `
         --yes `
-        "wrangler@$WranglerVersion" `
+        "wrangler@$script:WranglerVersion" `
         @Arguments
 
-    if ($LASTEXITCODE -ne 0)
+    $exitCode =
+        $LASTEXITCODE
+
+    if ($exitCode -ne 0)
     {
         throw (
-            "Wrangler command failed: wrangler " +
+            "Wrangler command failed with exit code " +
+            "$exitCode`: wrangler " +
             ($Arguments -join " ")
         )
     }
 }
 
+
+# ======================================
+# PUBLIC DOWNLOAD HELPERS
+# ======================================
+
+function Add-VerificationQuery
+{
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Url
+    )
+
+    $verificationToken =
+        [Guid]::NewGuid().
+            ToString("N")
+
+    if ($Url.Contains("?"))
+    {
+        return (
+            $Url +
+            "&winboost_verify=" +
+            $verificationToken
+        )
+    }
+
+    return (
+        $Url +
+        "?winboost_verify=" +
+        $verificationToken
+    )
+}
+
+
+function Invoke-PublicDownload
+{
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$Url,
+
+        [Parameter(Mandatory = $true)]
+        [string]$DestinationPath,
+
+        [int]$Attempts = 1,
+
+        [int]$DelaySeconds = 2,
+
+        [switch]$AllowNotFound
+    )
+
+    $lastStatusCode = ""
+    $lastExitCode = 0
+
+    for (
+        $attempt = 1;
+        $attempt -le $Attempts;
+        $attempt++
+    )
+    {
+        Remove-Item `
+            $DestinationPath `
+            -Force `
+            -ErrorAction SilentlyContinue
+
+        $requestUrl =
+            Add-VerificationQuery `
+                -Url $Url
+
+        Write-Host (
+            "Public verification attempt " +
+            "$attempt of $Attempts..."
+        )
+
+        $statusOutput =
+            & curl.exe `
+                -sS `
+                -L `
+                --connect-timeout 20 `
+                --max-time 180 `
+                -H "Cache-Control: no-cache" `
+                -H "Pragma: no-cache" `
+                -o $DestinationPath `
+                -w "%{http_code}" `
+                $requestUrl
+
+        $lastExitCode =
+            $LASTEXITCODE
+
+        $lastStatusCode =
+            (
+                $statusOutput |
+                Out-String
+            ).Trim()
+
+        if (
+            $lastExitCode -eq 0 -and
+            $lastStatusCode -match "^2\d\d$" -and
+            (Test-Path $DestinationPath)
+        )
+        {
+            return $true
+        }
+
+        if (
+            $lastStatusCode -eq "404"
+        )
+        {
+            Remove-Item `
+                $DestinationPath `
+                -Force `
+                -ErrorAction SilentlyContinue
+
+            if (
+                $AllowNotFound -and
+                $attempt -ge $Attempts
+            )
+            {
+                return $false
+            }
+        }
+
+        if ($attempt -lt $Attempts)
+        {
+            Start-Sleep `
+                -Seconds $DelaySeconds
+        }
+    }
+
+    if (
+        $AllowNotFound -and
+        $lastStatusCode -eq "404"
+    )
+    {
+        return $false
+    }
+
+    throw (
+        "Public download verification failed. " +
+        "URL='$Url', " +
+        "HTTP='$lastStatusCode', " +
+        "curl exit code='$lastExitCode'."
+    )
+}
+
+
 # ======================================
 # VALIDATION
 # ======================================
 
-if ([string]::IsNullOrWhiteSpace($Version))
+if ([string]::IsNullOrWhiteSpace(
+        $Version))
 {
     throw "Version is required."
 }
 
-if (-not (Test-Path $appProject))
+if (-not
+    (Test-Path $appProject))
 {
-    throw "WinBoost.App.csproj was not found: $appProject"
+    throw (
+        "WinBoost.App.csproj was not found: " +
+        $appProject
+    )
 }
 
 $downloadBaseUri = $null
 
-if (-not [string]::IsNullOrWhiteSpace($DownloadBaseUrl))
+if (-not
+    [string]::IsNullOrWhiteSpace(
+        $DownloadBaseUrl))
 {
     try
     {
         $downloadBaseUri =
-            New-Object System.Uri($DownloadBaseUrl)
+            New-Object `
+                System.Uri(
+                    $DownloadBaseUrl)
     }
     catch
     {
-        throw "DownloadBaseUrl is not a valid absolute URL."
+        throw (
+            "DownloadBaseUrl is not a valid " +
+            "absolute URL."
+        )
     }
 
-    if (-not $downloadBaseUri.IsAbsoluteUri)
+    if (-not
+        $downloadBaseUri.IsAbsoluteUri)
     {
-        throw "DownloadBaseUrl must be an absolute URL."
+        throw (
+            "DownloadBaseUrl must be an " +
+            "absolute URL."
+        )
     }
 
     if ($downloadBaseUri.Scheme -ne "https")
     {
-        throw "DownloadBaseUrl must use HTTPS."
+        throw (
+            "DownloadBaseUrl must use HTTPS."
+        )
     }
 }
 
 if ($PublishToR2)
 {
-    if ([string]::IsNullOrWhiteSpace($DownloadBaseUrl))
+    if ([string]::IsNullOrWhiteSpace(
+            $DownloadBaseUrl))
     {
         throw (
-            "DownloadBaseUrl is required when " +
-            "PublishToR2 is enabled."
+            "DownloadBaseUrl is required " +
+            "when PublishToR2 is enabled."
         )
     }
 
-    if ($downloadBaseUri.IsLoopback -or
-        $downloadBaseUri.Host -eq "localhost")
+    if (
+        $downloadBaseUri.IsLoopback -or
+        $downloadBaseUri.Host -eq "localhost"
+    )
     {
         throw (
             "PublishToR2 cannot use localhost " +
@@ -139,9 +471,22 @@ if ($PublishToR2)
         )
     }
 
-    if ([string]::IsNullOrWhiteSpace($R2Bucket))
+    if ([string]::IsNullOrWhiteSpace(
+            $R2Bucket))
     {
         throw "R2Bucket is required."
+    }
+
+    $curlCommand =
+        Get-Command `
+            "curl.exe" `
+            -ErrorAction SilentlyContinue
+
+    if ($null -eq $curlCommand)
+    {
+        throw (
+            "curl.exe was not found."
+        )
     }
 
     $npxCommandInfo =
@@ -168,12 +513,17 @@ if ($PublishToR2)
         }
     }
 
-    if ([string]::IsNullOrWhiteSpace($npxCommand) -or
-        -not (Test-Path $npxCommand))
+    if (
+        [string]::IsNullOrWhiteSpace(
+            $npxCommand) -or
+        -not
+            (Test-Path $npxCommand)
+    )
     {
         throw (
             "npx.cmd was not found. " +
-            "Install Node.js LTS before publishing to R2."
+            "Install Node.js LTS before " +
+            "publishing to R2."
         )
     }
 
@@ -182,10 +532,12 @@ if ($PublishToR2)
             $env:SystemRoot `
             "System32\cmd.exe"
 
-    if (-not [string]::Equals(
+    if (-not
+        [string]::Equals(
             $env:ComSpec,
             $expectedComSpec,
-            [System.StringComparison]::OrdinalIgnoreCase))
+            [System.StringComparison]::
+                OrdinalIgnoreCase))
     {
         throw (
             "ComSpec is not configured correctly. " +
@@ -194,6 +546,11 @@ if ($PublishToR2)
         )
     }
 }
+
+
+# ======================================
+# HEADER
+# ======================================
 
 Write-Host ""
 Write-Host "========================================"
@@ -215,13 +572,16 @@ else
 
 Write-Host ""
 
+
 # ======================================
 # CLEAN RELEASE DIRECTORY
 # ======================================
 
 if (Test-Path $versionRoot)
 {
-    Write-Host "Removing previous release directory..."
+    Write-Host (
+        "Removing previous local release directory..."
+    )
 
     Remove-Item `
         $versionRoot `
@@ -234,6 +594,7 @@ New-Item `
     -Path $publishDirectory `
     -Force |
     Out-Null
+
 
 # ======================================
 # PUBLISH WINBOOST
@@ -254,6 +615,7 @@ if ($LASTEXITCODE -ne 0)
     throw "WinBoost publish failed."
 }
 
+
 # ======================================
 # VERIFY PUBLISHED VERSION
 # ======================================
@@ -263,9 +625,13 @@ $appExecutable =
         $publishDirectory `
         "WinBoost.App.exe"
 
-if (-not (Test-Path $appExecutable))
+if (-not
+    (Test-Path $appExecutable))
 {
-    throw "Published WinBoost.App.exe was not found."
+    throw (
+        "Published WinBoost.App.exe " +
+        "was not found."
+    )
 }
 
 $productVersion =
@@ -282,23 +648,32 @@ if ($productVersion -ne $Version)
     )
 }
 
-Write-Host "Published version verified: $productVersion"
+Write-Host (
+    "Published version verified: " +
+    $productVersion
+)
+
 
 # ======================================
-# CREATE UPDATE PACKAGE
+# CREATE DETERMINISTIC PACKAGE
 # ======================================
 
-Write-Host "Creating update package..."
+Write-Host (
+    "Creating deterministic update package..."
+)
 
-Compress-Archive `
-    -Path "$publishDirectory\*" `
-    -DestinationPath $packagePath `
-    -Force
+New-DeterministicZip `
+    -SourceDirectory $publishDirectory `
+    -DestinationPath $packagePath
 
-if (-not (Test-Path $packagePath))
+if (-not
+    (Test-Path $packagePath))
 {
-    throw "Update package was not created."
+    throw (
+        "Update package was not created."
+    )
 }
+
 
 # ======================================
 # SHA-256
@@ -313,13 +688,15 @@ $sha256 =
         Hash.
         ToUpperInvariant()
 
+
 # ======================================
 # DOWNLOAD URL
 # ======================================
 
 $downloadUrl = ""
 
-if (-not [string]::IsNullOrWhiteSpace(
+if (-not
+    [string]::IsNullOrWhiteSpace(
         $DownloadBaseUrl))
 {
     $downloadUrl =
@@ -327,6 +704,7 @@ if (-not [string]::IsNullOrWhiteSpace(
         "/" +
         $packageName
 }
+
 
 # ======================================
 # RELEASE INFORMATION
@@ -344,11 +722,10 @@ $releaseInfo =
                 ToString("o")
     }
 
-$releaseInfo |
-    ConvertTo-Json |
-    Set-Content `
-        $releaseInfoPath `
-        -Encoding UTF8
+Write-JsonUtf8NoBom `
+    -Value $releaseInfo `
+    -Path $releaseInfoPath
+
 
 # ======================================
 # UPDATE MANIFEST
@@ -363,14 +740,13 @@ $updateManifest =
         ReleaseNotes = $ReleaseNotes
     }
 
-$updateManifest |
-    ConvertTo-Json |
-    Set-Content `
-        $updateManifestPath `
-        -Encoding UTF8
+Write-JsonUtf8NoBom `
+    -Value $updateManifest `
+    -Path $updateManifestPath
+
 
 # ======================================
-# CLOUDFLARE R2 PUBLISH
+# CLOUDFLARE R2 PUBLICATION
 # ======================================
 
 if ($PublishToR2)
@@ -386,7 +762,8 @@ if ($PublishToR2)
             ([System.IO.Path]::GetTempPath()) `
             (
                 "WinBoost\ReleaseVerification\" +
-                [Guid]::NewGuid().ToString("N")
+                [Guid]::NewGuid().
+                    ToString("N")
             )
 
     New-Item `
@@ -395,81 +772,87 @@ if ($PublishToR2)
         -Force |
         Out-Null
 
-    $remotePackageVerificationPath =
+    $publicPackagePath =
         Join-Path `
             $verificationDirectory `
-            $packageName
+            "public-package.zip"
 
     $previousManifestPath =
         Join-Path `
             $verificationDirectory `
             "previous-update-manifest.json"
 
-    $remoteManifestVerificationPath =
+    $publicManifestPath =
         Join-Path `
             $verificationDirectory `
-            "verified-update-manifest.json"
+            "public-update-manifest.json"
 
     $previousManifestExists = $false
+
+    $publicManifestUrl =
+        $DownloadBaseUrl.TrimEnd("/") +
+        "/update-manifest.json"
 
     try
     {
         # ======================================
-        # CHECK EXISTING REMOTE PACKAGE
+        # CHECK EXISTING PACKAGE
         # ======================================
 
-        Write-Host "Checking existing R2 package..."
+        Write-Host (
+            "Checking whether the package " +
+            "already exists publicly..."
+        )
 
-        Remove-Item `
-            $remotePackageVerificationPath `
-            -Force `
-            -ErrorAction SilentlyContinue
+        $packageAlreadyExists =
+            Invoke-PublicDownload `
+                -Url $downloadUrl `
+                -DestinationPath $publicPackagePath `
+                -Attempts 3 `
+                -DelaySeconds 2 `
+                -AllowNotFound
 
-        & $npxCommand `
-            --yes `
-            "wrangler@$WranglerVersion" `
-            r2 `
-            object `
-            get `
-            "$R2Bucket/$packageName" `
-            "--file=$remotePackageVerificationPath" `
-            --remote `
-            *> $null
-
-        $remotePackageAlreadyExists =
-            (
-                $LASTEXITCODE -eq 0 -and
-                (Test-Path $remotePackageVerificationPath)
+        if ($packageAlreadyExists)
+        {
+            Write-Host (
+                "Remote package already exists."
             )
 
-        if ($remotePackageAlreadyExists)
-        {
             $existingRemoteSha =
                 (Get-FileHash `
-                    $remotePackageVerificationPath `
+                    $publicPackagePath `
                     -Algorithm SHA256).
                     Hash.
                     ToUpperInvariant()
 
-            if (-not [string]::Equals(
+            Write-Host (
+                "Existing remote SHA-256: " +
+                $existingRemoteSha
+            )
+
+            if (-not
+                [string]::Equals(
                     $sha256,
                     $existingRemoteSha,
-                    [System.StringComparison]::OrdinalIgnoreCase))
+                    [System.StringComparison]::
+                        OrdinalIgnoreCase))
             {
                 throw (
-                    "The R2 package '$packageName' already exists " +
-                    "with a different SHA-256. " +
-                    "Refusing to overwrite an immutable release package. " +
-                    "Use a new WinBoost version."
+                    "The public package '$packageName' " +
+                    "already exists with a different " +
+                    "SHA-256. Refusing to overwrite " +
+                    "an immutable WinBoost release. " +
+                    "Use a new version number."
                 )
             }
 
             Write-Host (
-                "Remote package already exists and " +
-                "matches the local SHA-256."
+                "Existing package SHA-256 matches."
             )
 
-            Write-Host "Package upload skipped."
+            Write-Host (
+                "Package upload skipped."
+            )
         }
         else
         {
@@ -477,7 +860,13 @@ if ($PublishToR2)
             # UPLOAD PACKAGE
             # ======================================
 
-            Write-Host "Uploading package to R2..."
+            Write-Host (
+                "Remote package does not exist yet."
+            )
+
+            Write-Host (
+                "Uploading package to R2..."
+            )
 
             Invoke-Wrangler `
                 -Arguments @(
@@ -491,121 +880,101 @@ if ($PublishToR2)
                     "--remote"
                 )
 
-            # ======================================
-            # DOWNLOAD PACKAGE FROM R2
-            # ======================================
-
             Write-Host (
-                "Downloading uploaded package " +
-                "from R2 for verification..."
-            )
-
-            Remove-Item `
-                $remotePackageVerificationPath `
-                -Force `
-                -ErrorAction SilentlyContinue
-
-            Invoke-Wrangler `
-                -Arguments @(
-                    "r2",
-                    "object",
-                    "get",
-                    "$R2Bucket/$packageName",
-                    "--file=$remotePackageVerificationPath",
-                    "--remote"
-                )
-        }
-
-        # ======================================
-        # VERIFY REMOTE PACKAGE SHA-256
-        # ======================================
-
-        if (-not (Test-Path $remotePackageVerificationPath))
-        {
-            throw (
-                "The package could not be downloaded " +
-                "from R2 for verification."
+                "Package upload completed."
             )
         }
 
-        $remotePackageSha =
+
+        # ======================================
+        # VERIFY PUBLIC PACKAGE
+        # ======================================
+
+        Write-Host (
+            "Downloading package through " +
+            "downloads.winboostapp.com..."
+        )
+
+        Invoke-PublicDownload `
+            -Url $downloadUrl `
+            -DestinationPath $publicPackagePath `
+            -Attempts 8 `
+            -DelaySeconds 2 |
+            Out-Null
+
+        $publicPackageSha =
             (Get-FileHash `
-                $remotePackageVerificationPath `
+                $publicPackagePath `
                 -Algorithm SHA256).
                 Hash.
                 ToUpperInvariant()
 
-        if (-not [string]::Equals(
+        Write-Host (
+            "Public package SHA-256: " +
+            $publicPackageSha
+        )
+
+        if (-not
+            [string]::Equals(
                 $sha256,
-                $remotePackageSha,
-                [System.StringComparison]::OrdinalIgnoreCase))
+                $publicPackageSha,
+                [System.StringComparison]::
+                    OrdinalIgnoreCase))
         {
             throw (
-                "R2 package SHA-256 verification failed. " +
-                "Expected '$sha256', " +
-                "received '$remotePackageSha'."
+                "Public package SHA-256 " +
+                "verification failed. Expected '" +
+                $sha256 +
+                "', received '" +
+                $publicPackageSha +
+                "'."
             )
         }
 
         Write-Host (
-            "R2 package SHA-256 verified: " +
-            $remotePackageSha
+            "Public package SHA-256 verified."
         )
 
+
         # ======================================
-        # BACKUP CURRENT REMOTE MANIFEST
+        # BACKUP CURRENT PUBLIC MANIFEST
         # ======================================
 
         Write-Host (
-            "Backing up current remote manifest " +
-            "if one exists..."
+            "Backing up current public manifest..."
         )
 
-        Remove-Item `
-            $previousManifestPath `
-            -Force `
-            -ErrorAction SilentlyContinue
+        $previousManifestExists =
+            Invoke-PublicDownload `
+                -Url $publicManifestUrl `
+                -DestinationPath $previousManifestPath `
+                -Attempts 3 `
+                -DelaySeconds 2 `
+                -AllowNotFound
 
-        & $npxCommand `
-            --yes `
-            "wrangler@$WranglerVersion" `
-            r2 `
-            object `
-            get `
-            "$R2Bucket/update-manifest.json" `
-            "--file=$previousManifestPath" `
-            --remote `
-            *> $null
-
-        if ($LASTEXITCODE -eq 0 -and
-            (Test-Path $previousManifestPath))
+        if ($previousManifestExists)
         {
-            $previousManifestExists = $true
-
-            Write-Host "Current manifest backup created."
+            Write-Host (
+                "Current manifest backup created."
+            )
         }
         else
         {
-            $previousManifestExists = $false
-
-            Remove-Item `
-                $previousManifestPath `
-                -Force `
-                -ErrorAction SilentlyContinue
-
             Write-Host (
-                "No existing remote manifest " +
-                "was available for backup."
+                "No current public manifest exists."
             )
         }
 
+
         # ======================================
-        # PUBLISH MANIFEST
+        # PUBLISH NEW MANIFEST
         # ======================================
 
         try
         {
-            Write-Host "Publishing update manifest to R2..."
+            Write-Host (
+                "Publishing update manifest to R2..."
+            )
 
             Invoke-Wrangler `
                 -Arguments @(
@@ -619,192 +988,108 @@ if ($PublishToR2)
                     "--remote"
                 )
 
-            # ======================================
-            # VERIFY REMOTE MANIFEST
-            # ======================================
+            Write-Host (
+                "Manifest upload completed."
+            )
 
-            Write-Host "Verifying remote update manifest..."
-
-            Remove-Item `
-                $remoteManifestVerificationPath `
-                -Force `
-                -ErrorAction SilentlyContinue
-
-            Invoke-Wrangler `
-                -Arguments @(
-                    "r2",
-                    "object",
-                    "get",
-                    "$R2Bucket/update-manifest.json",
-                    "--file=$remoteManifestVerificationPath",
-                    "--remote"
-                )
-
-            if (-not (Test-Path $remoteManifestVerificationPath))
-            {
-                throw (
-                    "The published update manifest " +
-                    "could not be downloaded for verification."
-                )
-            }
-
-            $localManifestSha =
-                (Get-FileHash `
-                    $updateManifestPath `
-                    -Algorithm SHA256).
-                    Hash.
-                    ToUpperInvariant()
-
-            $remoteManifestSha =
-                (Get-FileHash `
-                    $remoteManifestVerificationPath `
-                    -Algorithm SHA256).
-                    Hash.
-                    ToUpperInvariant()
-
-            if (-not [string]::Equals(
-                    $localManifestSha,
-                    $remoteManifestSha,
-                    [System.StringComparison]::OrdinalIgnoreCase))
-            {
-                throw (
-                    "Remote update manifest verification failed. " +
-                    "The uploaded manifest differs from the local manifest."
-                )
-            }
-
-            $remoteManifest =
-                Get-Content `
-                    $remoteManifestVerificationPath `
-                    -Raw |
-                ConvertFrom-Json
-
-            if ($remoteManifest.Version -ne $Version)
-            {
-                throw (
-                    "Remote manifest version mismatch. " +
-                    "Expected '$Version', " +
-                    "found '$($remoteManifest.Version)'."
-                )
-            }
-
-            if ($remoteManifest.Channel -ne $Channel)
-            {
-                throw (
-                    "Remote manifest channel mismatch."
-                )
-            }
-
-            if ($remoteManifest.DownloadUrl -ne $downloadUrl)
-            {
-                throw (
-                    "Remote manifest DownloadUrl mismatch."
-                )
-            }
-
-            if (-not [string]::Equals(
-                    $remoteManifest.Sha256,
-                    $sha256,
-                    [System.StringComparison]::OrdinalIgnoreCase))
-            {
-                throw (
-                    "Remote manifest SHA-256 value mismatch."
-                )
-            }
 
             # ======================================
             # VERIFY PUBLIC MANIFEST
             # ======================================
 
-            $publicManifestUrl =
-                $DownloadBaseUrl.TrimEnd("/") +
-                "/update-manifest.json"
+            Write-Host (
+                "Verifying public update manifest..."
+            )
 
-            $publicManifestVerified = $false
+            Invoke-PublicDownload `
+                -Url $publicManifestUrl `
+                -DestinationPath $publicManifestPath `
+                -Attempts 8 `
+                -DelaySeconds 2 |
+                Out-Null
 
-            for ($attempt = 1; $attempt -le 3; $attempt++)
-            {
-                try
-                {
-                    Write-Host (
-                        "Verifying public manifest " +
-                        "(attempt $attempt of 3)..."
-                    )
+            $publicManifestJson =
+                [System.IO.File]::ReadAllText(
+                    $publicManifestPath,
+                    [System.Text.Encoding]::UTF8)
 
-                    $verificationToken =
-                        [Guid]::NewGuid().
-                            ToString("N")
+            $publicManifest =
+                $publicManifestJson |
+                ConvertFrom-Json
 
-                    $publicManifest =
-                        Invoke-RestMethod `
-                            -Uri (
-                                $publicManifestUrl +
-                                "?verify=" +
-                                $verificationToken
-                            ) `
-                            -Method Get
-
-                    if ($publicManifest.Version -ne $Version)
-                    {
-                        throw (
-                            "Public manifest version mismatch."
-                        )
-                    }
-
-                    if ($publicManifest.DownloadUrl -ne $downloadUrl)
-                    {
-                        throw (
-                            "Public manifest DownloadUrl mismatch."
-                        )
-                    }
-
-                    if (-not [string]::Equals(
-                            $publicManifest.Sha256,
-                            $sha256,
-                            [System.StringComparison]::OrdinalIgnoreCase))
-                    {
-                        throw (
-                            "Public manifest SHA-256 mismatch."
-                        )
-                    }
-
-                    $publicManifestVerified = $true
-
-                    break
-                }
-                catch
-                {
-                    if ($attempt -ge 3)
-                    {
-                        throw
-                    }
-
-                    Start-Sleep -Seconds 2
-                }
-            }
-
-            if (-not $publicManifestVerified)
+            if ($publicManifest.Version -ne
+                $Version)
             {
                 throw (
-                    "Public update manifest verification failed."
+                    "Public manifest version mismatch. " +
+                    "Expected '$Version', found " +
+                    "'$($publicManifest.Version)'."
                 )
             }
 
-            Write-Host "Remote manifest verified."
-            Write-Host "Public manifest verified."
+            if ($publicManifest.Channel -ne
+                $Channel)
+            {
+                throw (
+                    "Public manifest channel mismatch. " +
+                    "Expected '$Channel', found " +
+                    "'$($publicManifest.Channel)'."
+                )
+            }
+
+            if ($publicManifest.DownloadUrl -ne
+                $downloadUrl)
+            {
+                throw (
+                    "Public manifest DownloadUrl " +
+                    "mismatch."
+                )
+            }
+
+            if (-not
+                [string]::Equals(
+                    $publicManifest.Sha256,
+                    $sha256,
+                    [System.StringComparison]::
+                        OrdinalIgnoreCase))
+            {
+                throw (
+                    "Public manifest SHA-256 " +
+                    "value mismatch."
+                )
+            }
+
+            if (
+                [string]$publicManifest.ReleaseNotes -ne
+                [string]$ReleaseNotes
+            )
+            {
+                throw (
+                    "Public manifest ReleaseNotes " +
+                    "mismatch."
+                )
+            }
+
+            Write-Host (
+                "Public manifest verified."
+            )
 
             $publishToR2Succeeded = $true
         }
         catch
         {
-            $manifestPublishException =
+            $manifestException =
                 $_.Exception
+
+            Write-Warning (
+                "Manifest publication or " +
+                "verification failed."
+            )
 
             if ($previousManifestExists)
             {
                 Write-Warning (
-                    "Manifest publication failed. " +
-                    "Restoring the previous manifest..."
+                    "Restoring previous manifest..."
                 )
 
                 try
@@ -822,19 +1107,49 @@ if ($PublishToR2)
                         )
 
                     Write-Host (
-                        "Previous remote manifest restored."
+                        "Previous manifest restored."
                     )
                 }
                 catch
                 {
                     Write-Warning (
-                        "The previous remote manifest " +
-                        "could not be restored automatically."
+                        "Previous manifest could not " +
+                        "be restored automatically."
+                    )
+                }
+            }
+            else
+            {
+                Write-Warning (
+                    "No previous manifest exists. " +
+                    "Removing failed new manifest..."
+                )
+
+                try
+                {
+                    Invoke-Wrangler `
+                        -Arguments @(
+                            "r2",
+                            "object",
+                            "delete",
+                            "$R2Bucket/update-manifest.json",
+                            "--remote"
+                        )
+
+                    Write-Host (
+                        "Failed manifest removed."
+                    )
+                }
+                catch
+                {
+                    Write-Warning (
+                        "Failed manifest could not " +
+                        "be removed automatically."
                     )
                 }
             }
 
-            throw $manifestPublishException
+            throw $manifestException
         }
     }
     finally
@@ -846,6 +1161,7 @@ if ($PublishToR2)
             -ErrorAction SilentlyContinue
     }
 }
+
 
 # ======================================
 # RESULT
@@ -874,15 +1190,25 @@ if ($PublishToR2)
     }
 
     Write-Host ""
-    Write-Host "Cloudflare R2 publication: SUCCESS"
+    Write-Host (
+        "Cloudflare R2 publication: SUCCESS"
+    )
+
     Write-Host "Bucket   : $R2Bucket"
     Write-Host "Package  : $packageName"
-    Write-Host "Manifest : update-manifest.json"
+    Write-Host (
+        "Manifest : update-manifest.json"
+    )
 }
-elseif ([string]::IsNullOrWhiteSpace($downloadUrl))
+elseif (
+    [string]::IsNullOrWhiteSpace(
+        $downloadUrl))
 {
     Write-Host ""
-    Write-Host "NOTE: Download URL was not configured."
+    Write-Host (
+        "NOTE: Download URL was not configured."
+    )
+
     Write-Host (
         "Provide -DownloadBaseUrl when " +
         "building a production release."
@@ -891,7 +1217,10 @@ elseif ([string]::IsNullOrWhiteSpace($downloadUrl))
 else
 {
     Write-Host ""
-    Write-Host "NOTE: R2 publication was not requested."
+    Write-Host (
+        "NOTE: R2 publication was not requested."
+    )
+
     Write-Host (
         "Use -PublishToR2 when the release " +
         "is ready to be published."
