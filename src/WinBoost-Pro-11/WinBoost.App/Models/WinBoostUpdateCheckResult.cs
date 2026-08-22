@@ -48,6 +48,12 @@
             set;
         } = string.Empty;
 
+        public string PackageSignature
+        {
+            get;
+            set;
+        } = string.Empty;
+
         public string ReleaseNotes
         {
             get;

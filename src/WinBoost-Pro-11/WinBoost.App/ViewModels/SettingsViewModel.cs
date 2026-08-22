@@ -1513,11 +1513,11 @@ namespace WinBoost.App.ViewModels
             }
 
             bool started =
-                _winBoostSelfUpdateLauncher.TryStart(
-                    _winBoostUpdateDownloadResult.FilePath,
-                    _winBoostUpdateDownloadResult.ExpectedSha256,
-                    out string errorMessage);
-
+           _winBoostSelfUpdateLauncher.TryStart(
+           _winBoostUpdateDownloadResult.FilePath,
+           _winBoostUpdateDownloadResult.ExpectedSha256,
+           _winBoostUpdateResult.PackageSignature,
+           out string errorMessage);
             if (!started)
             {
                 Debug.WriteLine(

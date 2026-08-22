@@ -174,6 +174,18 @@ namespace WinBoost.SelfUpdateWorker
                 }
 
                 // ======================================
+                // PACKAGE SIGNATURE
+                // ======================================
+
+                arguments.TryGetValue(
+                    "package-signature",
+                    out string? expectedPackageSignature);
+
+                expectedPackageSignature =
+                    expectedPackageSignature?
+                        .Trim();
+
+                // ======================================
                 // NORMALIZE PACKAGE PATH
                 // ======================================
 
@@ -271,6 +283,47 @@ namespace WinBoost.SelfUpdateWorker
 
                 UpdateLogger.Write(
                     "Update package SHA-256 verified successfully.");
+
+                // ======================================
+                // VERIFY PACKAGE SIGNATURE
+                // ======================================
+
+                if (!string.IsNullOrWhiteSpace(
+                        expectedPackageSignature))
+                {
+                    progressWindow.UpdateProgress(
+                        "Se verifică semnătura digitală a actualizării...",
+                        15);
+
+                    bool signatureValid =
+                        UpdatePackageSignatureVerifier.Verify(
+                            packagePath,
+                            expectedPackageSignature,
+                            UpdateSigningPublicKey.Pem);
+
+                    if (!signatureValid)
+                    {
+                        return HandleFailure(
+                            "Update package signature verification failed.",
+                            19,
+                            progressWindow,
+                            "Semnătura digitală a pachetului de actualizare nu este validă.",
+                            targetDirectory,
+                            parentProcessId,
+                            tryRestart: true);
+                    }
+
+                    Console.WriteLine(
+                        "Update package signature verified.");
+
+                    UpdateLogger.Write(
+                        "Update package signature verified successfully.");
+                }
+                else
+                {
+                    UpdateLogger.Write(
+                        "Update package signature is not present. Legacy SHA-256-only verification is being used.");
+                }
 
                 // ======================================
                 // INFORMATION

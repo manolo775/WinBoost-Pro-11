@@ -14,6 +14,19 @@ namespace WinBoost.App.Services.AppUpdate
             string expectedSha256,
             out string errorMessage)
         {
+            return TryStart(
+                packagePath,
+                expectedSha256,
+                string.Empty,
+                out errorMessage);
+        }
+
+        public bool TryStart(
+            string packagePath,
+            string expectedSha256,
+            string expectedPackageSignature,
+            out string errorMessage)
+        {
             errorMessage =
                 string.Empty;
 
@@ -101,6 +114,13 @@ namespace WinBoost.App.Services.AppUpdate
 
                 startInfo.ArgumentList.Add(
                     $"--sha256={expectedSha256}");
+
+                if (!string.IsNullOrWhiteSpace(
+                        expectedPackageSignature))
+                {
+                    startInfo.ArgumentList.Add(
+                        $"--package-signature={expectedPackageSignature}");
+                }
 
                 Process? process =
                     Process.Start(

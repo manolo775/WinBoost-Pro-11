@@ -133,6 +133,9 @@ namespace WinBoost.App.Services.AppUpdate
                     Sha256 =
                         manifest.Sha256,
 
+                    PackageSignature =
+                         manifest.PackageSignature,
+
                     ReleaseNotes =
                         manifest.ReleaseNotes,
 
