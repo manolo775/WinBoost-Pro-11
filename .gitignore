@@ -15,3 +15,5 @@ obj/
 winboost-licensing.db
 winboost-licensing.db-shm
 winboost-licensing.db-wal
+# WinBoost generated release packages
+releases/
