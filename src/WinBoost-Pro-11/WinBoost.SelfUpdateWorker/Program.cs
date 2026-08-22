@@ -17,6 +17,12 @@ namespace WinBoost.SelfUpdateWorker
             UpdateProgressWindowHost? progressWindow =
                 null;
 
+            string? recoveryTargetDirectory =
+                null;
+
+            int? recoveryParentProcessId =
+                null;
+
             try
             {
                 // ======================================
@@ -34,6 +40,41 @@ namespace WinBoost.SelfUpdateWorker
                         ParseArguments(args);
 
                 // ======================================
+                // PREPARE RECOVERY INFORMATION
+                // ======================================
+
+                if (arguments.TryGetValue(
+                        "target-dir",
+                        out string? recoveryTargetText) &&
+                    !string.IsNullOrWhiteSpace(
+                        recoveryTargetText))
+                {
+                    try
+                    {
+                        recoveryTargetDirectory =
+                            Path.GetFullPath(
+                                recoveryTargetText);
+                    }
+                    catch
+                    {
+                        recoveryTargetDirectory =
+                            null;
+                    }
+                }
+
+                if (arguments.TryGetValue(
+                        "parent-pid",
+                        out string? recoveryParentPidText) &&
+                    int.TryParse(
+                        recoveryParentPidText,
+                        out int recoveryParentPid) &&
+                    recoveryParentPid > 0)
+                {
+                    recoveryParentProcessId =
+                        recoveryParentPid;
+                }
+
+                // ======================================
                 // PACKAGE
                 // ======================================
 
@@ -43,54 +84,54 @@ namespace WinBoost.SelfUpdateWorker
                     string.IsNullOrWhiteSpace(
                         packagePath))
                 {
-                    UpdateLogger.Write(
-                        "Missing --package argument.");
-
-                    Console.Error.WriteLine(
-                        "Missing --package argument.");
-
-                    return 10;
+                    return HandleFailure(
+                        "Missing --package argument.",
+                        10,
+                        progressWindow,
+                        null,
+                        recoveryTargetDirectory,
+                        recoveryParentProcessId,
+                        tryRestart: true);
                 }
 
                 // ======================================
                 // TARGET DIRECTORY
                 // ======================================
 
-                if (!arguments.TryGetValue(
-                        "target-dir",
-                        out string? targetDirectory) ||
-                    string.IsNullOrWhiteSpace(
-                        targetDirectory))
+                if (string.IsNullOrWhiteSpace(
+                        recoveryTargetDirectory))
                 {
-                    UpdateLogger.Write(
-                        "Missing --target-dir argument.");
-
-                    Console.Error.WriteLine(
-                        "Missing --target-dir argument.");
-
-                    return 11;
+                    return HandleFailure(
+                        "Missing or invalid --target-dir argument.",
+                        11,
+                        progressWindow,
+                        null,
+                        null,
+                        recoveryParentProcessId,
+                        tryRestart: false);
                 }
+
+                string targetDirectory =
+                    recoveryTargetDirectory;
 
                 // ======================================
                 // PARENT PROCESS ID
                 // ======================================
 
-                if (!arguments.TryGetValue(
-                        "parent-pid",
-                        out string? parentPidText) ||
-                    !int.TryParse(
-                        parentPidText,
-                        out int parentProcessId) ||
-                    parentProcessId <= 0)
+                if (!recoveryParentProcessId.HasValue)
                 {
-                    UpdateLogger.Write(
-                        "Invalid --parent-pid argument.");
-
-                    Console.Error.WriteLine(
-                        "Invalid --parent-pid argument.");
-
-                    return 12;
+                    return HandleFailure(
+                        "Invalid --parent-pid argument.",
+                        12,
+                        progressWindow,
+                        null,
+                        targetDirectory,
+                        null,
+                        tryRestart: false);
                 }
+
+                int parentProcessId =
+                    recoveryParentProcessId.Value;
 
                 // ======================================
                 // EXPECTED SHA-256
@@ -102,13 +143,14 @@ namespace WinBoost.SelfUpdateWorker
                     string.IsNullOrWhiteSpace(
                         expectedSha256))
                 {
-                    UpdateLogger.Write(
-                        "Missing --sha256 argument.");
-
-                    Console.Error.WriteLine(
-                        "Missing --sha256 argument.");
-
-                    return 16;
+                    return HandleFailure(
+                        "Missing --sha256 argument.",
+                        16,
+                        progressWindow,
+                        null,
+                        targetDirectory,
+                        parentProcessId,
+                        tryRestart: true);
                 }
 
                 expectedSha256 =
@@ -121,26 +163,23 @@ namespace WinBoost.SelfUpdateWorker
 
                 if (expectedSha256.Length != 64)
                 {
-                    UpdateLogger.Write(
-                        "Invalid --sha256 argument.");
-
-                    Console.Error.WriteLine(
-                        "Invalid --sha256 argument.");
-
-                    return 17;
+                    return HandleFailure(
+                        "Invalid --sha256 argument.",
+                        17,
+                        progressWindow,
+                        null,
+                        targetDirectory,
+                        parentProcessId,
+                        tryRestart: true);
                 }
 
                 // ======================================
-                // NORMALIZE PATHS
+                // NORMALIZE PACKAGE PATH
                 // ======================================
 
                 packagePath =
                     Path.GetFullPath(
                         packagePath);
-
-                targetDirectory =
-                    Path.GetFullPath(
-                        targetDirectory);
 
                 // ======================================
                 // VALIDATE PACKAGE
@@ -149,13 +188,14 @@ namespace WinBoost.SelfUpdateWorker
                 if (!File.Exists(
                         packagePath))
                 {
-                    UpdateLogger.Write(
-                        $"Update package does not exist: {packagePath}");
-
-                    Console.Error.WriteLine(
-                        "Update package does not exist.");
-
-                    return 13;
+                    return HandleFailure(
+                        $"Update package does not exist: {packagePath}",
+                        13,
+                        progressWindow,
+                        null,
+                        targetDirectory,
+                        parentProcessId,
+                        tryRestart: true);
                 }
 
                 // ======================================
@@ -165,13 +205,14 @@ namespace WinBoost.SelfUpdateWorker
                 if (!Directory.Exists(
                         targetDirectory))
                 {
-                    UpdateLogger.Write(
-                        $"Target directory does not exist: {targetDirectory}");
-
-                    Console.Error.WriteLine(
-                        "Target directory does not exist.");
-
-                    return 14;
+                    return HandleFailure(
+                        $"Target directory does not exist: {targetDirectory}",
+                        14,
+                        progressWindow,
+                        null,
+                        targetDirectory,
+                        parentProcessId,
+                        tryRestart: false);
                 }
 
                 // ======================================
@@ -204,26 +245,14 @@ namespace WinBoost.SelfUpdateWorker
                         actualSha256,
                         StringComparison.OrdinalIgnoreCase))
                 {
-                    const string message =
-                        "Update package SHA-256 verification failed.";
-
-                    UpdateLogger.Write(
-                        message);
-
-                    UpdateResultStore.SaveFailure(
-                        message,
-                        rolledBack: false);
-
-                    progressWindow.UpdateStatus(
-                        "Verificarea pachetului de actualizare a eșuat.");
-
-                    System.Threading.Thread.Sleep(
-                        2000);
-
-                    Console.Error.WriteLine(
-                        message);
-
-                    return 18;
+                    return HandleFailure(
+                        "Update package SHA-256 verification failed.",
+                        18,
+                        progressWindow,
+                        "Verificarea pachetului de actualizare a eșuat.",
+                        targetDirectory,
+                        parentProcessId,
+                        tryRestart: true);
                 }
 
                 Console.WriteLine(
@@ -269,26 +298,14 @@ namespace WinBoost.SelfUpdateWorker
 
                 if (!parentExited)
                 {
-                    const string message =
-                        "WinBoost did not close within the safety timeout.";
-
-                    UpdateLogger.Write(
-                        message);
-
-                    UpdateResultStore.SaveFailure(
-                        message,
-                        rolledBack: false);
-
-                    progressWindow.UpdateStatus(
-                        "WinBoost nu s-a închis la timp. Actualizarea a fost anulată.");
-
-                    System.Threading.Thread.Sleep(
-                        2000);
-
-                    Console.Error.WriteLine(
-                        message);
-
-                    return 15;
+                    return HandleFailure(
+                        "WinBoost did not close within the safety timeout.",
+                        15,
+                        progressWindow,
+                        "WinBoost nu s-a închis la timp. Actualizarea a fost anulată.",
+                        targetDirectory,
+                        parentProcessId,
+                        tryRestart: false);
                 }
 
                 Console.WriteLine(
@@ -448,50 +465,12 @@ namespace WinBoost.SelfUpdateWorker
                 }
 
                 // ======================================
-                // RESTART RESTORED WINBOOST
+                // RESTART AVAILABLE WINBOOST
                 // ======================================
 
-                if (rolledBack)
-                {
-                    try
-                    {
-                        Dictionary<string, string>
-                            recoveryArguments =
-                                ParseArguments(args);
-
-                        if (recoveryArguments.TryGetValue(
-                                "target-dir",
-                                out string? recoveryTargetDirectory) &&
-                            !string.IsNullOrWhiteSpace(
-                                recoveryTargetDirectory))
-                        {
-                            recoveryTargetDirectory =
-                                Path.GetFullPath(
-                                    recoveryTargetDirectory);
-
-                            UpdateLogger.Write(
-                                "Restarting restored WinBoost after rollback.");
-
-                            UpdateRestartManager
-                                .Restart(
-                                    recoveryTargetDirectory);
-
-                            UpdateLogger.Write(
-                                "Restored WinBoost restarted successfully.");
-                        }
-                        else
-                        {
-                            UpdateLogger.Write(
-                                "Restored WinBoost could not be restarted because target directory is unavailable.");
-                        }
-                    }
-                    catch (Exception restartException)
-                    {
-                        UpdateLogger.WriteException(
-                            "Restored WinBoost could not be restarted after rollback",
-                            restartException);
-                    }
-                }
+                TryRestartWinBoostAfterFailure(
+                    recoveryTargetDirectory,
+                    recoveryParentProcessId);
 
                 UpdateLogger.WriteException(
                     "Self update failed",
@@ -508,6 +487,122 @@ namespace WinBoost.SelfUpdateWorker
             finally
             {
                 progressWindow?.Dispose();
+            }
+        }
+
+        // ======================================
+        // HANDLE EXPECTED FAILURE
+        // ======================================
+
+        private static int HandleFailure(
+            string message,
+            int exitCode,
+            UpdateProgressWindowHost? progressWindow,
+            string? progressStatus,
+            string? targetDirectory,
+            int? parentProcessId,
+            bool tryRestart)
+        {
+            UpdateLogger.Write(
+                message);
+
+            UpdateResultStore
+                .SaveFailure(
+                    message,
+                    rolledBack: false);
+
+            if (progressWindow != null &&
+                !string.IsNullOrWhiteSpace(
+                    progressStatus))
+            {
+                progressWindow.UpdateStatus(
+                    progressStatus);
+
+                System.Threading.Thread.Sleep(
+                    2000);
+            }
+
+            Console.Error.WriteLine(
+                message);
+
+            if (tryRestart)
+            {
+                TryRestartWinBoostAfterFailure(
+                    targetDirectory,
+                    parentProcessId);
+            }
+
+            return exitCode;
+        }
+
+        // ======================================
+        // RESTART AFTER FAILURE
+        // ======================================
+
+        private static void TryRestartWinBoostAfterFailure(
+            string? targetDirectory,
+            int? parentProcessId)
+        {
+            if (string.IsNullOrWhiteSpace(
+                    targetDirectory))
+            {
+                UpdateLogger.Write(
+                    "WinBoost restart after failure was skipped because the target directory is unavailable.");
+
+                return;
+            }
+
+            if (!Directory.Exists(
+                    targetDirectory))
+            {
+                UpdateLogger.Write(
+                    $"WinBoost restart after failure was skipped because the target directory does not exist: {targetDirectory}");
+
+                return;
+            }
+
+            if (!parentProcessId.HasValue ||
+                parentProcessId.Value <= 0)
+            {
+                UpdateLogger.Write(
+                    "WinBoost restart after failure was skipped because the original process ID is unavailable.");
+
+                return;
+            }
+
+            try
+            {
+                UpdateLogger.Write(
+                    "Waiting for the original WinBoost process before failure recovery restart.");
+
+                bool parentExited =
+                    WaitForParentProcessExit(
+                        parentProcessId.Value,
+                        TimeSpan.FromSeconds(10));
+
+                if (!parentExited)
+                {
+                    UpdateLogger.Write(
+                        "WinBoost restart after failure was skipped because the original WinBoost process is still running.");
+
+                    return;
+                }
+
+                UpdateLogger.Write(
+                    "Restarting WinBoost after update failure.");
+
+                UpdateRestartManager
+                    .Restart(
+                        targetDirectory);
+
+                UpdateLogger.Write(
+                    "WinBoost restarted successfully after update failure.");
+            }
+            catch (Exception restartException)
+            {
+                UpdateLogger.WriteException(
+                    "WinBoost could not be restarted after update failure",
+                    restartException);
             }
         }
 
