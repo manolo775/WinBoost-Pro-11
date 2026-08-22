@@ -110,6 +110,61 @@ namespace WinBoost.Licensing.Server
             var app =
                 builder.Build();
 
+            // ======================================
+            // PRODUCTION UPDATE MANIFEST SAFETY
+            // ======================================
+
+            if (!app.Environment.IsDevelopment())
+            {
+                UpdateManifestOptions manifest =
+                    app.Services
+                        .GetRequiredService<
+                            IOptions<UpdateManifestOptions>>()
+                        .Value;
+
+                if (string.IsNullOrWhiteSpace(
+                        manifest.Version))
+                {
+                    throw new InvalidOperationException(
+                        "The production update manifest version is not configured.");
+                }
+
+                if (string.IsNullOrWhiteSpace(
+                        manifest.DownloadUrl))
+                {
+                    throw new InvalidOperationException(
+                        "The production update download URL is not configured.");
+                }
+
+                if (!Uri.TryCreate(
+                        manifest.DownloadUrl,
+                        UriKind.Absolute,
+                        out Uri? downloadUri))
+                {
+                    throw new InvalidOperationException(
+                        "The production update download URL is invalid.");
+                }
+
+                if (!string.Equals(
+                        downloadUri.Scheme,
+                        Uri.UriSchemeHttps,
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException(
+                        "The production update download URL must use HTTPS.");
+                }
+
+                if (downloadUri.IsLoopback ||
+                    string.Equals(
+                        downloadUri.Host,
+                        "localhost",
+                        StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException(
+                        "The production update download URL cannot use localhost or a loopback address.");
+                }
+            }
+
             // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
@@ -520,31 +575,6 @@ namespace WinBoost.Licensing.Server
                             releaseNotes =
                                 manifest.ReleaseNotes
                         });
-                });
-            // ======================================
-            // TEMPORARY PREVIEW UPDATE PACKAGE
-            // ======================================
-
-            app.MapGet(
-                "/api/update/package/preview-2",
-                () =>
-                {
-                    string packagePath =
-                        Path.Combine(
-                            Path.GetTempPath(),
-                            "WinBoost",
-                            "WinBoost-1.0.0-preview.2.zip");
-
-                    if (!File.Exists(packagePath))
-                    {
-                        return Results.NotFound(
-                            "WinBoost preview update package was not found.");
-                    }
-
-                    return Results.File(
-                        packagePath,
-                        "application/zip",
-                        "WinBoost-1.0.0-preview.2.zip");
                 });
 
             app.Run();
