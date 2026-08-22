@@ -63,6 +63,10 @@ namespace WinBoost.App.Services.AppUpdate
 
                     if (result == null)
                     {
+                        // Fișierul există, dar nu conține
+                        // un rezultat valid.
+                        TryDeleteResultFile();
+
                         return null;
                     }
 
@@ -78,8 +82,39 @@ namespace WinBoost.App.Services.AppUpdate
 
                     return _cachedResult;
                 }
+                catch (JsonException)
+                {
+                    // JSON corupt sau incomplet.
+                    // Nu îl păstrăm pentru următoarea pornire.
+                    TryDeleteResultFile();
+
+                    return null;
+                }
+                catch (NotSupportedException)
+                {
+                    // Structura JSON nu mai poate fi
+                    // interpretată de versiunea curentă.
+                    TryDeleteResultFile();
+
+                    return null;
+                }
+                catch (IOException)
+                {
+                    // Poate fi o problemă temporară
+                    // de acces la fișier.
+                    // Îl păstrăm pentru următoarea pornire.
+                    return null;
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    // Nu ștergem rezultatul dacă Windows
+                    // nu permite momentan accesul.
+                    return null;
+                }
                 catch
                 {
+                    // Orice altă problemă legată de
+                    // rezultat nu trebuie să blocheze WinBoost.
                     return null;
                 }
             }
