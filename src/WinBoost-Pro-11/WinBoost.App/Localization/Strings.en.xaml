@@ -2741,6 +2741,17 @@
 	<sys:String x:Key="SettingsUpdateInstallButton">Install update</sys:String>
 	<sys:String x:Key="SettingsUpdateInstalling">Installing update...</sys:String>
 	<sys:String x:Key="SettingsUpdateReadyToInstall">The update is ready to install.</sys:String>
+	<sys:String x:Key="SettingsSelfUpdateSuccess">
+		The WinBoost update was installed successfully.
+	</sys:String>
+
+	<sys:String x:Key="SettingsSelfUpdateRollback">
+		The update could not be installed. The previous WinBoost version was restored.
+	</sys:String>
+
+	<sys:String x:Key="SettingsSelfUpdateFailed">
+		The WinBoost update could not be installed.
+	</sys:String>
 	
 	<sys:String x:Key="SettingsAboutDescription">Information about the application and installed version.</sys:String>
 	<sys:String x:Key="SettingsAboutProduct">Product</sys:String>

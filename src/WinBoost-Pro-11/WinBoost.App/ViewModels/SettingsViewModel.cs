@@ -63,6 +63,12 @@ namespace WinBoost.App.ViewModels
         private readonly WinBoostSelfUpdateLauncher
              _winBoostSelfUpdateLauncher;
 
+        private readonly WinBoostSelfUpdateResultService
+           _winBoostSelfUpdateResultService;
+
+        private readonly WinBoostSelfUpdateResult?
+            _lastSelfUpdateResult;
+
         private WinBoostUpdateDownloadResult
             _winBoostUpdateDownloadResult =
                 new WinBoostUpdateDownloadResult();
@@ -126,6 +132,13 @@ namespace WinBoost.App.ViewModels
 
             _winBoostSelfUpdateLauncher =
                  new WinBoostSelfUpdateLauncher();
+
+            _winBoostSelfUpdateResultService =
+                 new WinBoostSelfUpdateResultService();
+
+            _lastSelfUpdateResult =
+                _winBoostSelfUpdateResultService
+                    .ReadAndConsume();
 
             AvailableLicenseOffers =
                 new ObservableCollection<
@@ -268,6 +281,9 @@ namespace WinBoost.App.ViewModels
 
                 OnPropertyChanged(
                     nameof(CanStartLicensePurchase));
+
+                OnPropertyChanged(
+                    nameof(WinBoostSelfUpdateResultText));
             }
         }
 
@@ -464,6 +480,43 @@ namespace WinBoost.App.ViewModels
 
         public string DownloadedWinBoostUpdateFilePath =>
             _winBoostUpdateDownloadResult.FilePath;
+
+        public bool HasWinBoostSelfUpdateResult =>
+    _lastSelfUpdateResult != null;
+
+        public bool IsWinBoostSelfUpdateSuccess =>
+            _lastSelfUpdateResult?.Success == true;
+
+        public bool IsWinBoostSelfUpdateRollback =>
+            _lastSelfUpdateResult != null &&
+            !_lastSelfUpdateResult.Success &&
+            _lastSelfUpdateResult.RolledBack;
+
+        public string WinBoostSelfUpdateResultText
+        {
+            get
+            {
+                if (_lastSelfUpdateResult == null)
+                {
+                    return string.Empty;
+                }
+
+                if (_lastSelfUpdateResult.Success)
+                {
+                    return LocalizationHelper.Get(
+                        "SettingsSelfUpdateSuccess");
+                }
+
+                if (_lastSelfUpdateResult.RolledBack)
+                {
+                    return LocalizationHelper.Get(
+                        "SettingsSelfUpdateRollback");
+                }
+
+                return LocalizationHelper.Get(
+                    "SettingsSelfUpdateFailed");
+            }
+        }
 
         public string WinBoostUpdateDownloadStatusText
         {
@@ -1521,8 +1574,8 @@ namespace WinBoost.App.ViewModels
         }
 
         private void OnLanguageChanged(
-            object? sender,
-            EventArgs e)
+    object? sender,
+    EventArgs e)
         {
             OnPropertyChanged(
                 nameof(LicenseStatusText));
@@ -1536,13 +1589,16 @@ namespace WinBoost.App.ViewModels
             OnPropertyChanged(
                 nameof(DownloadWinBoostUpdateButtonText));
 
-            _ = LoadLicenseOffersAsync();
-
             OnPropertyChanged(
-               nameof(WinBoostUpdateStatusText));
+                nameof(WinBoostUpdateStatusText));
 
             OnPropertyChanged(
                 nameof(CheckWinBoostUpdateButtonText));
+
+            OnPropertyChanged(
+                nameof(WinBoostSelfUpdateResultText));
+
+            _ = LoadLicenseOffersAsync();
         }
 
         private void OnPropertyChanged(

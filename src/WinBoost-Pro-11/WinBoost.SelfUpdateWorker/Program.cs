@@ -14,14 +14,18 @@ namespace WinBoost.SelfUpdateWorker
             UpdateLogger.Write(
                 "Self Update Worker started.");
 
-            UpdateCleanupManager
-                .CleanupOldTemporaryData();
-
-            UpdateLogger.Write(
-                "Old updater temporary data cleanup completed.");
-
             try
             {
+                // ======================================
+                // CLEANUP OLD TEMPORARY DATA
+                // ======================================
+
+                UpdateCleanupManager
+                    .CleanupOldTemporaryData();
+
+                UpdateLogger.Write(
+                    "Old updater temporary data cleanup completed.");
+
                 Dictionary<string, string>
                     arguments =
                         ParseArguments(args);
@@ -180,11 +184,18 @@ namespace WinBoost.SelfUpdateWorker
                         actualSha256,
                         StringComparison.OrdinalIgnoreCase))
                 {
+                    const string message =
+                        "Update package SHA-256 verification failed.";
+
                     UpdateLogger.Write(
-                        "Update package SHA-256 verification failed.");
+                        message);
+
+                    UpdateResultStore.SaveFailure(
+                        message,
+                        rolledBack: false);
 
                     Console.Error.WriteLine(
-                        "Update package SHA-256 verification failed.");
+                        message);
 
                     return 18;
                 }
@@ -228,11 +239,18 @@ namespace WinBoost.SelfUpdateWorker
 
                 if (!parentExited)
                 {
+                    const string message =
+                        "WinBoost did not close within the safety timeout.";
+
                     UpdateLogger.Write(
-                        "WinBoost did not close within the safety timeout.");
+                        message);
+
+                    UpdateResultStore.SaveFailure(
+                        message,
+                        rolledBack: false);
 
                     Console.Error.WriteLine(
-                        "WinBoost did not close within the safety timeout.");
+                        message);
 
                     return 15;
                 }
@@ -330,10 +348,29 @@ namespace WinBoost.SelfUpdateWorker
                 UpdateLogger.Write(
                     "WinBoost restarted successfully.");
 
+                // ======================================
+                // SAVE SUCCESS RESULT
+                // ======================================
+
+                UpdateResultStore
+                    .SaveSuccess();
+
+                UpdateLogger.Write(
+                    "Update result saved as successful.");
+
                 return 0;
             }
             catch (Exception ex)
             {
+                bool rolledBack =
+                    WasRollbackSuccessful(
+                        ex);
+
+                UpdateResultStore
+                    .SaveFailure(
+                        ex.Message,
+                        rolledBack);
+
                 UpdateLogger.WriteException(
                     "Self update failed",
                     ex);
@@ -346,6 +383,20 @@ namespace WinBoost.SelfUpdateWorker
 
                 return 100;
             }
+        }
+
+        // ======================================
+        // ROLLBACK RESULT
+        // ======================================
+
+        private static bool WasRollbackSuccessful(
+            Exception exception)
+        {
+            return exception
+                       is InvalidOperationException &&
+                   exception.Message.Contains(
+                       "previous WinBoost version was restored",
+                       StringComparison.OrdinalIgnoreCase);
         }
 
         // ======================================
@@ -402,6 +453,7 @@ namespace WinBoost.SelfUpdateWorker
                 // Procesul nu mai există.
                 // Pentru updater înseamnă că
                 // WinBoost este deja închis.
+
                 return true;
             }
         }

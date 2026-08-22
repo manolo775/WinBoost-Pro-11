@@ -2745,7 +2745,17 @@
 	<sys:String x:Key="SettingsUpdateInstallButton">Instalează actualizarea</sys:String>
 	<sys:String x:Key="SettingsUpdateInstalling">Se instalează actualizarea...</sys:String>
 	<sys:String x:Key="SettingsUpdateReadyToInstall">Actualizarea este pregătită pentru instalare.</sys:String>
-	
+	<sys:String x:Key="SettingsSelfUpdateSuccess">
+		Actualizarea WinBoost a fost instalată cu succes.
+	</sys:String>
+
+	<sys:String x:Key="SettingsSelfUpdateRollback">
+		Actualizarea nu a putut fi instalată. Versiunea anterioară WinBoost a fost restaurată.
+	</sys:String>
+
+	<sys:String x:Key="SettingsSelfUpdateFailed">
+		Actualizarea WinBoost nu a putut fi instalată.
+	</sys:String>
 	<sys:String x:Key="SettingsAboutDescription">Informații despre aplicație și versiunea instalată.</sys:String>
 	<sys:String x:Key="SettingsAboutProduct">Produs</sys:String>
 	<sys:String x:Key="SettingsAboutVersion">Versiune</sys:String>

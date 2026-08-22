@@ -1451,7 +1451,6 @@
 										Text="{Binding WinBoostUpdateStatusText}"
 										TextWrapping="Wrap"
 										Foreground="#BDBDBD"/>
-
 									<TextBlock
 										Margin="0,6,0,0"
 										Text="{Binding WinBoostUpdateDownloadStatusText}"
@@ -1481,6 +1480,88 @@
 										</TextBlock.Style>
 
 									</TextBlock>
+
+									<!-- REZULTAT ULTIMA ACTUALIZARE -->
+
+									<Border
+										Margin="0,12,0,0"
+										Padding="12"
+										CornerRadius="4"
+										BorderThickness="1">
+
+										<Border.Style>
+
+											<Style TargetType="Border">
+
+												<Setter
+													Property="Visibility"
+													Value="Collapsed"/>
+
+												<!-- EROARE -->
+												<Setter
+													Property="Background"
+													Value="#3A2020"/>
+
+												<Setter
+													Property="BorderBrush"
+													Value="#D9534F"/>
+
+												<Style.Triggers>
+
+													<!-- EXISTĂ REZULTAT -->
+													<DataTrigger
+														Binding="{Binding HasWinBoostSelfUpdateResult}"
+														Value="True">
+
+														<Setter
+															Property="Visibility"
+															Value="Visible"/>
+
+													</DataTrigger>
+
+													<!-- UPDATE REUȘIT -->
+													<DataTrigger
+														Binding="{Binding IsWinBoostSelfUpdateSuccess}"
+														Value="True">
+
+														<Setter
+															Property="Background"
+															Value="#1F3524"/>
+
+														<Setter
+															Property="BorderBrush"
+															Value="#4CAF50"/>
+
+													</DataTrigger>
+
+													<!-- ROLLBACK REUȘIT -->
+													<DataTrigger
+														Binding="{Binding IsWinBoostSelfUpdateRollback}"
+														Value="True">
+
+														<Setter
+															Property="Background"
+															Value="#3A3020"/>
+
+														<Setter
+															Property="BorderBrush"
+															Value="#FFB74D"/>
+
+													</DataTrigger>
+
+												</Style.Triggers>
+
+											</Style>
+
+										</Border.Style>
+
+										<TextBlock
+											Text="{Binding WinBoostSelfUpdateResultText}"
+											Foreground="White"
+											FontSize="13"
+											TextWrapping="Wrap"/>
+
+									</Border>
 
 								</StackPanel>
 
